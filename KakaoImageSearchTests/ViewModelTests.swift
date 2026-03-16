@@ -246,7 +246,7 @@ struct MainViewModelTests {
         sut.onSearchTextChanged("abc")
 
         // debounce(1초) 대기
-        try await Task.sleep(for: .seconds(1.2))
+        try await Task.sleep(for: .seconds(0.5))
 
         #expect(searchRepo.searchCallCount == 1)
         #expect(searchRepo.lastQuery == "abc")
