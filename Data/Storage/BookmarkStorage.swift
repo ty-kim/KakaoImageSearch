@@ -25,6 +25,11 @@ actor BookmarkStorage {
         self.fileURL = directory.appendingPathComponent("bookmarks.json")
     }
 
+    /// 테스트용: 임의의 파일 경로를 지정할 수 있는 이니셜라이저
+    init(fileURL: URL) {
+        self.fileURL = fileURL
+    }
+
     func save(_ item: ImageItem) throws {
         var items = try fetchAll()
         guard !items.contains(where: { $0.id == item.id }) else {
