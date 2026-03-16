@@ -24,13 +24,12 @@
 		FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */; };
 		FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F72F680D860081FC81 /* APIEndpoint.swift */; };
 		FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */; };
-		FCCD77102F680E070081FC81 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770D2F680E070081FC81 /* SceneDelegate.swift */; };
-		FCCD77112F680E070081FC81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77062F680E070081FC81 /* AppDelegate.swift */; };
-		FCCD77122F680E070081FC81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770E2F680E070081FC81 /* ViewController.swift */; };
-		FCCD77132F680E070081FC81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77072F680E070081FC81 /* Assets.xcassets */; };
-		FCCD77142F680E070081FC81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770C2F680E070081FC81 /* Main.storyboard */; };
-		FCCD77152F680E070081FC81 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77082F680E070081FC81 /* Info.plist */; };
-		FCCD77162F680E070081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
+		FCCD77252F6818370081FC81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770E2F680E070081FC81 /* ViewController.swift */; };
+		FCCD77262F68183F0081FC81 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770D2F680E070081FC81 /* SceneDelegate.swift */; };
+		FCCD77272F6818530081FC81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770C2F680E070081FC81 /* Main.storyboard */; };
+		FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
+		FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77072F680E070081FC81 /* Assets.xcassets */; };
+		FCCD772B2F6818750081FC81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77062F680E070081FC81 /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -414,6 +413,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCCD77272F6818530081FC81 /* Main.storyboard in Resources */,
+				FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */,
+				FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -421,10 +423,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCCD77132F680E070081FC81 /* Assets.xcassets in Resources */,
-				FCCD77142F680E070081FC81 /* Main.storyboard in Resources */,
-				FCCD77152F680E070081FC81 /* Info.plist in Resources */,
-				FCCD77162F680E070081FC81 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -443,6 +441,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */,
+				FCCD77252F6818370081FC81 /* ViewController.swift in Sources */,
 				FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */,
 				FCCD76FC2F680D860081FC81 /* NetworkService.swift in Sources */,
 				FCCD76FD2F680D860081FC81 /* DIContainer.swift in Sources */,
@@ -455,8 +454,10 @@
 				FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */,
 				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
 				FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */,
+				FCCD77262F68183F0081FC81 /* SceneDelegate.swift in Sources */,
 				FCCD76ED2F680D710081FC81 /* SearchImageUseCase.swift in Sources */,
 				FCCD76EE2F680D710081FC81 /* ManageBookmarkUseCase.swift in Sources */,
+				FCCD772B2F6818750081FC81 /* AppDelegate.swift in Sources */,
 				FCCD76EF2F680D710081FC81 /* ImageSearchRepository.swift in Sources */,
 				FCCD76DC2F680CB20081FC81 /* BookmarkStorage.swift in Sources */,
 			);
@@ -466,9 +467,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				FCCD77102F680E070081FC81 /* SceneDelegate.swift in Sources */,
-				FCCD77112F680E070081FC81 /* AppDelegate.swift in Sources */,
-				FCCD77122F680E070081FC81 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -524,11 +522,13 @@
 				DEVELOPMENT_TEAM = 58P2TR7FR9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KakaoImageSearch/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -556,11 +556,13 @@
 				DEVELOPMENT_TEAM = 58P2TR7FR9;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = KakaoImageSearch/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.photography";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
