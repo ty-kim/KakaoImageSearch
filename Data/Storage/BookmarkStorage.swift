@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import OSLog
 
 /// FileManager + JSON 파일 기반 북마크 영속성 저장소.
 /// actor로 선언해 Swift 6 동시성 안전성을 보장합니다.
@@ -26,21 +27,28 @@ actor BookmarkStorage {
 
     func save(_ item: ImageItem) throws {
         var items = try fetchAll()
-        guard !items.contains(where: { $0.id == item.id }) else { return }
+        guard !items.contains(where: { $0.id == item.id }) else {
+            Logger.bookmark.debugPrint("Already bookmarked: \(item.id)")
+            return
+        }
         items.append(item)
         try persist(items)
+        Logger.bookmark.debugPrint("Saved bookmark: \(item.id) (total: \(items.count))")
     }
 
     func delete(id: String) throws {
         var items = try fetchAll()
         items.removeAll { $0.id == id }
         try persist(items)
+        Logger.bookmark.debugPrint("Deleted bookmark: \(id) (total: \(items.count))")
     }
 
     func fetchAll() throws -> [ImageItem] {
         guard FileManager.default.fileExists(atPath: fileURL.path) else { return [] }
         let data = try Data(contentsOf: fileURL)
-        return try decoder.decode([ImageItem].self, from: data)
+        let items = try decoder.decode([ImageItem].self, from: data)
+        Logger.bookmark.debugPrint("Fetched \(items.count) bookmarks")
+        return items
     }
 
     func isBookmarked(id: String) throws -> Bool {

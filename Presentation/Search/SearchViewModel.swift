@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import OSLog
 
 @Observable
 @MainActor
@@ -33,15 +34,18 @@ final class SearchViewModel {
         isLoading = true
         errorMessage = nil
         hasSearched = true
+        Logger.presentation.debugPrint("Search started: \"\(query)\"")
 
         do {
             items = try await searchImageUseCase.execute(query: query)
+            Logger.presentation.debugPrint("Search completed: \(items.count) results")
             if items.isEmpty {
                 errorMessage = L10n.Search.emptyNoResults
             }
         } catch {
             items = []
             errorMessage = L10n.Search.error(error.localizedDescription)
+            Logger.presentation.errorPrint("Search failed: \(error)")
         }
 
         isLoading = false
@@ -50,11 +54,13 @@ final class SearchViewModel {
     func toggleBookmark(for item: ImageItem) async {
         do {
             let isNowBookmarked = try await manageBookmarkUseCase.toggle(item)
+            Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
             if let index = items.firstIndex(where: { $0.id == item.id }) {
                 items[index].isBookmarked = isNowBookmarked
             }
         } catch {
             errorMessage = L10n.Search.error(error.localizedDescription)
+            Logger.presentation.errorPrint("Bookmark toggle failed: \(error)")
         }
     }
 
@@ -62,5 +68,6 @@ final class SearchViewModel {
         items = []
         errorMessage = nil
         hasSearched = false
+        Logger.presentation.debugPrint("Search results cleared")
     }
 }

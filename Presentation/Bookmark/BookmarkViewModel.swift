@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import OSLog
 
 @Observable
 @MainActor
@@ -25,8 +26,10 @@ final class BookmarkViewModel {
         isLoading = true
         do {
             items = try await manageBookmarkUseCase.fetchAll()
+            Logger.presentation.debugPrint("Loaded \(items.count) bookmarks")
         } catch {
             items = []
+            Logger.presentation.errorPrint("Load bookmarks failed: \(error)")
         }
         isLoading = false
     }
@@ -34,9 +37,10 @@ final class BookmarkViewModel {
     func removeBookmark(for item: ImageItem) async {
         do {
             _ = try await manageBookmarkUseCase.toggle(item)
+            Logger.presentation.debugPrint("Removed bookmark: \(item.id)")
             await loadBookmarks()
         } catch {
-            // 북마크 해제 실패 시 무시 (목록 갱신 없음)
+            Logger.presentation.errorPrint("Remove bookmark failed: \(error)")
         }
     }
 }

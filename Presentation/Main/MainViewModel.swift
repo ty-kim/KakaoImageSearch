@@ -7,6 +7,7 @@
 
 import Foundation
 import Observation
+import OSLog
 
 @Observable
 @MainActor
@@ -39,6 +40,7 @@ final class MainViewModel {
             return
         }
 
+        Logger.presentation.debugPrint("Debounce queued: \"\(trimmed)\"")
         debounceTask = Task {
             try? await Task.sleep(for: .seconds(1))
             guard !Task.isCancelled else { return }
