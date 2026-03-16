@@ -6,6 +6,33 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
+		FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */; };
+		FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */; };
+		FCCD76DC2F680CB20081FC81 /* BookmarkStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76DB2F680CB20081FC81 /* BookmarkStorage.swift */; };
+		FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E42F680D710081FC81 /* BookmarkRepository.swift */; };
+		FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E22F680D710081FC81 /* ImageItem.swift */; };
+		FCCD76ED2F680D710081FC81 /* SearchImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */; };
+		FCCD76EE2F680D710081FC81 /* ManageBookmarkUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */; };
+		FCCD76EF2F680D710081FC81 /* ImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E52F680D710081FC81 /* ImageSearchRepository.swift */; };
+		FCCD76FC2F680D860081FC81 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F92F680D860081FC81 /* NetworkService.swift */; };
+		FCCD76FD2F680D860081FC81 /* DIContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F02F680D860081FC81 /* DIContainer.swift */; };
+		FCCD76FE2F680D860081FC81 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F42F680D860081FC81 /* ImageCache.swift */; };
+		FCCD76FF2F680D860081FC81 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F52F680D860081FC81 /* ImageDownloader.swift */; };
+		FCCD77002F680D860081FC81 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F82F680D860081FC81 /* NetworkError.swift */; };
+		FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */; };
+		FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F72F680D860081FC81 /* APIEndpoint.swift */; };
+		FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */; };
+		FCCD77102F680E070081FC81 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770D2F680E070081FC81 /* SceneDelegate.swift */; };
+		FCCD77112F680E070081FC81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77062F680E070081FC81 /* AppDelegate.swift */; };
+		FCCD77122F680E070081FC81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770E2F680E070081FC81 /* ViewController.swift */; };
+		FCCD77132F680E070081FC81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77072F680E070081FC81 /* Assets.xcassets */; };
+		FCCD77142F680E070081FC81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770C2F680E070081FC81 /* Main.storyboard */; };
+		FCCD77152F680E070081FC81 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77082F680E070081FC81 /* Info.plist */; };
+		FCCD77162F680E070081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		FCCD76832F680A850081FC81 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,27 +54,33 @@
 		FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakaoImageSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD76822F680A850081FC81 /* KakaoImageSearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD768C2F680A850081FC81 /* KakaoImageSearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoSearchResponseDTO.swift; sourceTree = "<group>"; };
+		FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultImageSearchRepository.swift; sourceTree = "<group>"; };
+		FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiefaultBookmarkRepository.swift; sourceTree = "<group>"; };
+		FCCD76DB2F680CB20081FC81 /* BookmarkStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStorage.swift; sourceTree = "<group>"; };
+		FCCD76E22F680D710081FC81 /* ImageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageItem.swift; sourceTree = "<group>"; };
+		FCCD76E42F680D710081FC81 /* BookmarkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkRepository.swift; sourceTree = "<group>"; };
+		FCCD76E52F680D710081FC81 /* ImageSearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchRepository.swift; sourceTree = "<group>"; };
+		FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageBookmarkUseCase.swift; sourceTree = "<group>"; };
+		FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchImageUseCase.swift; sourceTree = "<group>"; };
+		FCCD76F02F680D860081FC81 /* DIContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DIContainer.swift; sourceTree = "<group>"; };
+		FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
+		FCCD76F42F680D860081FC81 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		FCCD76F52F680D860081FC81 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
+		FCCD76F72F680D860081FC81 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
+		FCCD76F82F680D860081FC81 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		FCCD76F92F680D860081FC81 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoImageSearchApp.swift; sourceTree = "<group>"; };
+		FCCD77062F680E070081FC81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		FCCD77072F680E070081FC81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		FCCD77082F680E070081FC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FCCD77092F680E070081FC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		FCCD770B2F680E070081FC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		FCCD770D2F680E070081FC81 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		FCCD770E2F680E070081FC81 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		FCCD76942F680A850081FC81 /* Exceptions for "KakaoImageSearch" folder in "KakaoImageSearch" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = FCCD766B2F680A840081FC81 /* KakaoImageSearch */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		FCCD766E2F680A840081FC81 /* KakaoImageSearch */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				FCCD76942F680A850081FC81 /* Exceptions for "KakaoImageSearch" folder in "KakaoImageSearch" target */,
-			);
-			path = KakaoImageSearch;
-			sourceTree = "<group>";
-		};
 		FCCD76852F680A850081FC81 /* KakaoImageSearchTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = KakaoImageSearchTests;
@@ -88,7 +121,12 @@
 		FCCD76632F680A840081FC81 = {
 			isa = PBXGroup;
 			children = (
-				FCCD766E2F680A840081FC81 /* KakaoImageSearch */,
+				FCCD770F2F680E070081FC81 /* KakaoImageSearch */,
+				FCCD76DE2F680CE20081FC81 /* Presentation */,
+				FCCD76A52F680ACB0081FC81 /* Data */,
+				FCCD76FB2F680D860081FC81 /* Core */,
+				FCCD76EA2F680D710081FC81 /* Domain */,
+				FCCD77042F680D9B0081FC81 /* App */,
 				FCCD76852F680A850081FC81 /* KakaoImageSearchTests */,
 				FCCD768F2F680A850081FC81 /* KakaoImageSearchUITests */,
 				FCCD766D2F680A840081FC81 /* Products */,
@@ -105,6 +143,160 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		FCCD76A52F680ACB0081FC81 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76D42F680C750081FC81 /* Storage */,
+				FCCD76D32F680C6A0081FC81 /* Repository */,
+				FCCD76D22F680C630081FC81 /* DTO */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
+		FCCD76D22F680C630081FC81 /* DTO */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */,
+			);
+			path = DTO;
+			sourceTree = "<group>";
+		};
+		FCCD76D32F680C6A0081FC81 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */,
+				FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		FCCD76D42F680C750081FC81 /* Storage */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76DB2F680CB20081FC81 /* BookmarkStorage.swift */,
+			);
+			path = Storage;
+			sourceTree = "<group>";
+		};
+		FCCD76DE2F680CE20081FC81 /* Presentation */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76DF2F680D000081FC81 /* Main */,
+			);
+			path = Presentation;
+			sourceTree = "<group>";
+		};
+		FCCD76DF2F680D000081FC81 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		FCCD76E32F680D710081FC81 /* Entity */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76E22F680D710081FC81 /* ImageItem.swift */,
+			);
+			path = Entity;
+			sourceTree = "<group>";
+		};
+		FCCD76E62F680D710081FC81 /* Repository */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76E42F680D710081FC81 /* BookmarkRepository.swift */,
+				FCCD76E52F680D710081FC81 /* ImageSearchRepository.swift */,
+			);
+			path = Repository;
+			sourceTree = "<group>";
+		};
+		FCCD76E92F680D710081FC81 /* UseCase */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */,
+				FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */,
+			);
+			path = UseCase;
+			sourceTree = "<group>";
+		};
+		FCCD76EA2F680D710081FC81 /* Domain */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76E32F680D710081FC81 /* Entity */,
+				FCCD76E62F680D710081FC81 /* Repository */,
+				FCCD76E92F680D710081FC81 /* UseCase */,
+			);
+			path = Domain;
+			sourceTree = "<group>";
+		};
+		FCCD76F12F680D860081FC81 /* DI */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76F02F680D860081FC81 /* DIContainer.swift */,
+			);
+			path = DI;
+			sourceTree = "<group>";
+		};
+		FCCD76F22F680D860081FC81 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		FCCD76F62F680D860081FC81 /* ImageLoader */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */,
+				FCCD76F42F680D860081FC81 /* ImageCache.swift */,
+				FCCD76F52F680D860081FC81 /* ImageDownloader.swift */,
+			);
+			path = ImageLoader;
+			sourceTree = "<group>";
+		};
+		FCCD76FA2F680D860081FC81 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76F72F680D860081FC81 /* APIEndpoint.swift */,
+				FCCD76F82F680D860081FC81 /* NetworkError.swift */,
+				FCCD76F92F680D860081FC81 /* NetworkService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		FCCD76FB2F680D860081FC81 /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD76F12F680D860081FC81 /* DI */,
+				FCCD76F22F680D860081FC81 /* Extensions */,
+				FCCD76F62F680D860081FC81 /* ImageLoader */,
+				FCCD76FA2F680D860081FC81 /* Network */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		FCCD77042F680D9B0081FC81 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		FCCD770F2F680E070081FC81 /* KakaoImageSearch */ = {
+			isa = PBXGroup;
+			children = (
+				FCCD77062F680E070081FC81 /* AppDelegate.swift */,
+				FCCD77072F680E070081FC81 /* Assets.xcassets */,
+				FCCD77082F680E070081FC81 /* Info.plist */,
+				FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */,
+				FCCD770C2F680E070081FC81 /* Main.storyboard */,
+				FCCD770D2F680E070081FC81 /* SceneDelegate.swift */,
+				FCCD770E2F680E070081FC81 /* ViewController.swift */,
+			);
+			path = KakaoImageSearch;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -119,9 +311,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				FCCD766E2F680A840081FC81 /* KakaoImageSearch */,
 			);
 			name = KakaoImageSearch;
 			packageProductDependencies = (
@@ -232,6 +421,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCCD77132F680E070081FC81 /* Assets.xcassets in Resources */,
+				FCCD77142F680E070081FC81 /* Main.storyboard in Resources */,
+				FCCD77152F680E070081FC81 /* Info.plist in Resources */,
+				FCCD77162F680E070081FC81 /* LaunchScreen.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -249,6 +442,23 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */,
+				FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */,
+				FCCD76FC2F680D860081FC81 /* NetworkService.swift in Sources */,
+				FCCD76FD2F680D860081FC81 /* DIContainer.swift in Sources */,
+				FCCD76FE2F680D860081FC81 /* ImageCache.swift in Sources */,
+				FCCD76FF2F680D860081FC81 /* ImageDownloader.swift in Sources */,
+				FCCD77002F680D860081FC81 /* NetworkError.swift in Sources */,
+				FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */,
+				FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */,
+				FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */,
+				FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */,
+				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
+				FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */,
+				FCCD76ED2F680D710081FC81 /* SearchImageUseCase.swift in Sources */,
+				FCCD76EE2F680D710081FC81 /* ManageBookmarkUseCase.swift in Sources */,
+				FCCD76EF2F680D710081FC81 /* ImageSearchRepository.swift in Sources */,
+				FCCD76DC2F680CB20081FC81 /* BookmarkStorage.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -256,6 +466,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCCD77102F680E070081FC81 /* SceneDelegate.swift in Sources */,
+				FCCD77112F680E070081FC81 /* AppDelegate.swift in Sources */,
+				FCCD77122F680E070081FC81 /* ViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -280,6 +493,25 @@
 			targetProxy = FCCD768D2F680A850081FC81 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FCCD77092F680E070081FC81 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		FCCD770C2F680E070081FC81 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				FCCD770B2F680E070081FC81 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		FCCD76962F680A850081FC81 /* Debug */ = {

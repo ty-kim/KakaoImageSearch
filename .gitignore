@@ -1,0 +1,56 @@
+# Xcode
+*.xcodeproj/project.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+xcuserdata/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Build
+build/
+Build/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+Packages/
+Package.pins
+Package.resolved
+
+# CocoaPods (사용하지 않지만 혹시 모를 상황 대비)
+Pods/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+
+# macOS
+.DS_Store
+*.swp
+*~
+._*
+
+# Xcode Previews
+Previews/
+
+# Instruments
+*.trace
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
+
+# API Key (보안)
+# APIKey.swift 는 .gitignore에 포함하지 않되,
+# 실제 키 값은 커밋하지 않도록 주의
