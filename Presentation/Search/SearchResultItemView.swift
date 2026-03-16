@@ -20,7 +20,7 @@ struct SearchResultItemView: View {
                     width: screenWidth,
                     height: screenWidth * item.aspectRatio
                 )
-                .clipped()
+                .clipShape(RoundedRectangle(cornerRadius: 15))
 
             BookmarkButton(isBookmarked: item.isBookmarked, action: onBookmarkToggle)
                 .padding(12)
