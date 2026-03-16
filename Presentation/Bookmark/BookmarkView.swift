@@ -20,8 +20,7 @@ struct BookmarkView: View {
                         .accessibilityIdentifier("bookmarkView.loadingIndicator")
 
                 } else if viewModel.items.isEmpty {
-                    EmptyStateView(message: L10n.Bookmark.empty)
-                        .accessibilityIdentifier("bookmarkView.emptyState")
+                    EmptyStateView(message: L10n.Bookmark.empty, accessibilityID: "bookmarkView.emptyState")
 
                 } else {
                     ScrollView {

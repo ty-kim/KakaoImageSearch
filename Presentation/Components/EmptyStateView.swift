@@ -10,6 +10,7 @@ import SwiftUI
 struct EmptyStateView: View {
 
     let message: String
+    var accessibilityID: String = ""
 
     var body: some View {
         VStack(spacing: 16) {
@@ -24,5 +25,7 @@ struct EmptyStateView: View {
                 .padding(.horizontal, 32)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .accessibilityElement(children: .combine)
+        .accessibilityIdentifier(accessibilityID)
     }
 }

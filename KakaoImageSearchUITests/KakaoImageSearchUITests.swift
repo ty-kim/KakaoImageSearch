@@ -16,6 +16,7 @@ final class KakaoImageSearchUITests: XCTestCase {
         super.setUp()
         continueAfterFailure = false
         app = XCUIApplication()
+        app.launchArguments += ["--resetBookmarks"]
         app.launch()
     }
 
@@ -36,7 +37,7 @@ final class KakaoImageSearchUITests: XCTestCase {
     }
 
     func test_launch_initialEmptyStateVisible() {
-        let emptyState = app.otherElements["searchView.emptyState"]
+        let emptyState = app.descendants(matching: .any).matching(identifier: "searchView.emptyState").firstMatch
         XCTAssertTrue(emptyState.waitForExistence(timeout: 3))
     }
 
@@ -64,7 +65,7 @@ final class KakaoImageSearchUITests: XCTestCase {
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
         clearButton.tap()
 
-        XCTAssertFalse(clearButton.exists)
+        XCTAssertTrue(clearButton.waitForNonExistence(timeout: 2))
     }
 
     func test_searchBar_clearButton_notVisibleOnLaunch() {
@@ -80,7 +81,7 @@ final class KakaoImageSearchUITests: XCTestCase {
 
         tabBar.buttons.element(boundBy: 1).tap()
 
-        let emptyState = app.otherElements["bookmarkView.emptyState"]
+        let emptyState = app.descendants(matching: .any).matching(identifier: "bookmarkView.emptyState").firstMatch
         XCTAssertTrue(emptyState.waitForExistence(timeout: 3))
     }
 
@@ -91,7 +92,7 @@ final class KakaoImageSearchUITests: XCTestCase {
         tabBar.buttons.element(boundBy: 1).tap()
         tabBar.buttons.element(boundBy: 0).tap()
 
-        let emptyState = app.otherElements["searchView.emptyState"]
+        let emptyState = app.descendants(matching: .any).matching(identifier: "searchView.emptyState").firstMatch
         XCTAssertTrue(emptyState.waitForExistence(timeout: 3))
     }
 
@@ -120,7 +121,7 @@ final class KakaoImageSearchUITests: XCTestCase {
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
         clearButton.tap()
 
-        let emptyState = app.otherElements["searchView.emptyState"]
+        let emptyState = app.descendants(matching: .any).matching(identifier: "searchView.emptyState").firstMatch
         XCTAssertTrue(emptyState.waitForExistence(timeout: 3))
     }
 

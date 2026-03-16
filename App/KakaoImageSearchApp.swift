@@ -12,6 +12,12 @@ import Foundation
 enum AppDependencies {
 
     static func makeMainViewModel() -> MainViewModel {
+        if CommandLine.arguments.contains("--resetBookmarks") {
+            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            let url = appSupport.appendingPathComponent("KakaoImageSearch/bookmarks.json")
+            try? FileManager.default.removeItem(at: url)
+        }
+
         let networkService = NetworkService()
         let bookmarkStorage = BookmarkStorage()
 

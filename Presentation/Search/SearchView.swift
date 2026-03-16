@@ -20,12 +20,10 @@ struct SearchView: View {
                         .accessibilityIdentifier("searchView.loadingIndicator")
 
                 } else if let message = viewModel.errorMessage {
-                    EmptyStateView(message: message)
-                        .accessibilityIdentifier("searchView.emptyState")
+                    EmptyStateView(message: message, accessibilityID: "searchView.emptyState")
 
                 } else if !viewModel.hasSearched {
-                    EmptyStateView(message: L10n.Search.emptyInitial)
-                        .accessibilityIdentifier("searchView.emptyState")
+                    EmptyStateView(message: L10n.Search.emptyInitial, accessibilityID: "searchView.emptyState")
 
                 } else {
                     ScrollView {
