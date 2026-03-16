@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F42F681C9F008CAC25 /* L10n.swift */; };
+		FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */; };
 		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
 		FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */; };
 		FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */; };
@@ -50,6 +52,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FC1E89F42F681C9F008CAC25 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
+		FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakaoImageSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD76822F680A850081FC81 /* KakaoImageSearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD768C2F680A850081FC81 /* KakaoImageSearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -266,6 +270,7 @@
 		FCCD76FB2F680D860081FC81 /* Core */ = {
 			isa = PBXGroup;
 			children = (
+				FC1E89F42F681C9F008CAC25 /* L10n.swift */,
 				FCCD76F12F680D860081FC81 /* DI */,
 				FCCD76F22F680D860081FC81 /* Extensions */,
 				FCCD76F62F680D860081FC81 /* ImageLoader */,
@@ -292,6 +297,7 @@
 				FCCD770C2F680E070081FC81 /* Main.storyboard */,
 				FCCD770D2F680E070081FC81 /* SceneDelegate.swift */,
 				FCCD770E2F680E070081FC81 /* ViewController.swift */,
+				FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */,
 			);
 			path = KakaoImageSearch;
 			sourceTree = "<group>";
@@ -415,6 +421,7 @@
 			files = (
 				FCCD77272F6818530081FC81 /* Main.storyboard in Resources */,
 				FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */,
+				FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */,
 				FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -451,6 +458,7 @@
 				FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */,
 				FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */,
 				FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */,
+				FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */,
 				FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */,
 				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
 				FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */,
