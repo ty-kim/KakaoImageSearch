@@ -24,7 +24,7 @@ struct BookmarkView: View {
 
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: 0) {
+                        LazyVStack(spacing: 20) {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
@@ -33,7 +33,6 @@ struct BookmarkView: View {
                                     Task { await viewModel.removeBookmark(for: item) }
                                 }
                                 .accessibilityIdentifier("bookmarkItem.\(item.id)")
-                                Divider()
                             }
                         }
                     }
