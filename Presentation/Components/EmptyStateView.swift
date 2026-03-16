@@ -13,7 +13,7 @@ struct EmptyStateView: View {
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "photo.on.rectangle.angled")
+            Image(systemName: "photo.stack")
                 .font(.system(size: 52))
                 .foregroundStyle(.secondary)
 

@@ -34,7 +34,7 @@ struct CachedAsyncImage: View {
                     .aspectRatio(contentMode: .fill)
 
             case .failure:
-                placeholder(systemName: "photo.slash")
+                placeholder(systemName: "exclamationmark.triangle")
             }
         }
     }
