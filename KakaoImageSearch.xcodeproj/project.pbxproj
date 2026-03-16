@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F42F681C9F008CAC25 /* L10n.swift */; };
 		FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */; };
+		FC1E89FA2F68236A008CAC25 /* KakaoImageSearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */; };
+		FC1E89FC2F6823DE008CAC25 /* KakaoAPIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */; };
 		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
 		FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */; };
 		FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */; };
@@ -54,6 +56,8 @@
 /* Begin PBXFileReference section */
 		FC1E89F42F681C9F008CAC25 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoImageSearchEndpoint.swift; sourceTree = "<group>"; };
+		FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoAPIKey.swift; sourceTree = "<group>"; };
 		FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakaoImageSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD76822F680A850081FC81 /* KakaoImageSearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD768C2F680A850081FC81 /* KakaoImageSearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -121,9 +125,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		FC1E89F92F68236A008CAC25 /* API */ = {
+			isa = PBXGroup;
+			children = (
+				FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */,
+			);
+			path = API;
+			sourceTree = "<group>";
+		};
 		FCCD76632F680A840081FC81 = {
 			isa = PBXGroup;
 			children = (
+				FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */,
 				FCCD770F2F680E070081FC81 /* KakaoImageSearch */,
 				FCCD76DE2F680CE20081FC81 /* Presentation */,
 				FCCD76A52F680ACB0081FC81 /* Data */,
@@ -149,6 +162,7 @@
 		FCCD76A52F680ACB0081FC81 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				FC1E89F92F68236A008CAC25 /* API */,
 				FCCD76D42F680C750081FC81 /* Storage */,
 				FCCD76D32F680C6A0081FC81 /* Repository */,
 				FCCD76D22F680C630081FC81 /* DTO */,
@@ -454,6 +468,7 @@
 				FCCD76FD2F680D860081FC81 /* DIContainer.swift in Sources */,
 				FCCD76FE2F680D860081FC81 /* ImageCache.swift in Sources */,
 				FCCD76FF2F680D860081FC81 /* ImageDownloader.swift in Sources */,
+				FC1E89FC2F6823DE008CAC25 /* KakaoAPIKey.swift in Sources */,
 				FCCD77002F680D860081FC81 /* NetworkError.swift in Sources */,
 				FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */,
 				FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */,
@@ -461,6 +476,7 @@
 				FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */,
 				FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */,
 				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
+				FC1E89FA2F68236A008CAC25 /* KakaoImageSearchEndpoint.swift in Sources */,
 				FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */,
 				FCCD77262F68183F0081FC81 /* SceneDelegate.swift in Sources */,
 				FCCD76ED2F680D710081FC81 /* SearchImageUseCase.swift in Sources */,

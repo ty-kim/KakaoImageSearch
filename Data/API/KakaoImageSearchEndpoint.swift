@@ -1,0 +1,37 @@
+//
+//  KakaoImageSearchEndpoint.swift
+//  KakaoImageSearch
+//
+//  Created by tykim on 3/16/26.
+//
+//  ⚠️ API Key 설정 방법:
+//  1. KakaoAPIKey.swift 파일을 프로젝트 루트에 생성 (gitignore 대상)
+//  2. 아래 형식으로 작성:
+//     enum KakaoAPIKey { static let restAPIKey = "YOUR_KAKAO_REST_API_KEY" }
+
+import Foundation
+
+enum KakaoImageSearchEndpoint: APIEndpoint, Sendable {
+    case searchImages(query: String, page: Int, size: Int = 30)
+
+    var baseURL: String { "https://dapi.kakao.com" }
+
+    var path: String { "/v2/search/image" }
+
+    var method: HTTPMethod { .get }
+
+    var headers: [String: String] {
+        ["Authorization": "KakaoAK \(KakaoAPIKey.restAPIKey)"]
+    }
+
+    var queryItems: [URLQueryItem]? {
+        switch self {
+        case let .searchImages(query, page, size):
+            return [
+                URLQueryItem(name: "query", value: query),
+                URLQueryItem(name: "page", value: String(page)),
+                URLQueryItem(name: "size", value: String(size))
+            ]
+        }
+    }
+}

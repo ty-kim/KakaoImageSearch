@@ -54,3 +54,4 @@ playground.xcworkspace
 # API Key (보안)
 # APIKey.swift 는 .gitignore에 포함하지 않되,
 # 실제 키 값은 커밋하지 않도록 주의
+KakaoAPIKey.swift
