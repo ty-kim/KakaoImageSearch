@@ -5,4 +5,54 @@
 //  Created by tykim on 3/16/26.
 //
 
-import Foundation
+import UIKit
+
+/// 메모리(NSCache) + 디스크 2단계 이미지 캐시.
+/// actor로 선언해 Swift 6 기본 MainActor 격리 충돌을 방지하고 스레드 안전성을 보장합니다.
+actor ImageCache {
+
+    private let memoryCache = NSCache<NSString, UIImage>()
+    private let fileManager = FileManager.default
+    private let diskCacheURL: URL
+
+    init() {
+        let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
+        diskCacheURL = caches.appendingPathComponent("ImageCache", isDirectory: true)
+        try? fileManager.createDirectory(at: diskCacheURL, withIntermediateDirectories: true)
+
+        memoryCache.countLimit = 100
+        memoryCache.totalCostLimit = 50 * 1024 * 1024 // 50 MB
+    }
+
+    func get(for url: URL) -> UIImage? {
+        let key = cacheKey(for: url)
+
+        if let image = memoryCache.object(forKey: key as NSString) {
+            return image
+        }
+
+        let diskURL = diskCacheURL.appendingPathComponent(key)
+        if let data = try? Data(contentsOf: diskURL), let image = UIImage(data: data) {
+            memoryCache.setObject(image, forKey: key as NSString)
+            return image
+        }
+
+        return nil
+    }
+
+    func set(_ image: UIImage, for url: URL) {
+        let key = cacheKey(for: url)
+        memoryCache.setObject(image, forKey: key as NSString)
+
+        let diskURL = diskCacheURL.appendingPathComponent(key)
+        if let data = image.jpegData(compressionQuality: 0.8) {
+            try? data.write(to: diskURL)
+        }
+    }
+
+    private func cacheKey(for url: URL) -> String {
+        url.absoluteString
+            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)
+            ?? url.lastPathComponent
+    }
+}

@@ -5,4 +5,61 @@
 //  Created by tykim on 3/16/26.
 //
 
-import Foundation
+import SwiftUI
+
+/// ImageDownloader를 통해 캐시를 지원하는 SwiftUI 이미지 컴포넌트.
+struct CachedAsyncImage: View {
+
+    let url: URL?
+
+    @State private var phase: Phase = .idle
+
+    private enum Phase {
+        case idle
+        case loading
+        case success(UIImage)
+        case failure
+    }
+
+    var body: some View {
+        Group {
+            switch phase {
+            case .idle, .loading:
+                placeholder(systemName: "photo")
+                    .onAppear(perform: load)
+
+            case .success(let image):
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+
+            case .failure:
+                placeholder(systemName: "photo.slash")
+            }
+        }
+    }
+
+    private func placeholder(systemName: String) -> some View {
+        Rectangle()
+            .fill(Color(.systemGray5))
+            .overlay(
+                Image(systemName: systemName)
+                    .font(.title)
+                    .foregroundStyle(.secondary)
+            )
+    }
+
+    private func load() {
+        guard let url, case .idle = phase else { return }
+        phase = .loading
+
+        Task {
+            do {
+                let image = try await ImageDownloader.shared.download(from: url)
+                phase = .success(image)
+            } catch {
+                phase = .failure
+            }
+        }
+    }
+}
