@@ -6,3 +6,7 @@
 //
 
 import Foundation
+
+protocol ImageSearchRepository: Sendable {
+    func search(query: String, page: Int) async throws -> [ImageItem]
+}
