@@ -11,13 +11,9 @@ import Foundation
 /// actor로 선언해 Swift 6 데이터 레이스 안전성을 보장합니다.
 actor NetworkService {
     private let session: URLSession
-    private let decoder: JSONDecoder
 
     init(session: URLSession = .shared) {
         self.session = session
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        self.decoder = decoder
     }
 
     func request<T: Decodable & Sendable>(_ endpoint: some APIEndpoint) async throws -> T {
@@ -39,8 +35,16 @@ actor NetworkService {
         }
 
         do {
+            // decoder를 매번 생성해 @MainActor 격리 충돌을 방지합니다.
+            let decoder = JSONDecoder()
+            decoder.keyDecodingStrategy = .convertFromSnakeCase
             return try decoder.decode(T.self, from: data)
         } catch {
+            #if DEBUG
+            let raw = String(data: data, encoding: .utf8) ?? "non-UTF8 data"
+            print("[NetworkService] Decoding failed: \(error)")
+            print("[NetworkService] Raw JSON:\n\(raw)")
+            #endif
             throw NetworkError.decodingError(error)
         }
     }
