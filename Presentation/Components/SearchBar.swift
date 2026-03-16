@@ -21,6 +21,7 @@ struct SearchBar: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .submitLabel(.search)
+                .accessibilityIdentifier("searchBar.textField")
 
             if !text.isEmpty {
                 Button {
@@ -30,6 +31,7 @@ struct SearchBar: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
+                .accessibilityIdentifier("searchBar.clearButton")
             }
         }
         .padding(.horizontal, 12)

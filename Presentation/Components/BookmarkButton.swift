@@ -21,5 +21,6 @@ struct BookmarkButton: View {
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier(isBookmarked ? "bookmarkButton.active" : "bookmarkButton.inactive")
     }
 }

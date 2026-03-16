@@ -17,9 +17,11 @@ struct BookmarkView: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityIdentifier("bookmarkView.loadingIndicator")
 
                 } else if viewModel.items.isEmpty {
                     EmptyStateView(message: L10n.Bookmark.empty)
+                        .accessibilityIdentifier("bookmarkView.emptyState")
 
                 } else {
                     ScrollView {
@@ -31,10 +33,12 @@ struct BookmarkView: View {
                                 ) {
                                     Task { await viewModel.removeBookmark(for: item) }
                                 }
+                                .accessibilityIdentifier("bookmarkItem.\(item.id)")
                                 Divider()
                             }
                         }
                     }
+                    .accessibilityIdentifier("bookmarkView.list")
                 }
             }
         }

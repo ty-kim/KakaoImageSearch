@@ -17,12 +17,15 @@ struct SearchView: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityIdentifier("searchView.loadingIndicator")
 
                 } else if let message = viewModel.errorMessage {
                     EmptyStateView(message: message)
+                        .accessibilityIdentifier("searchView.emptyState")
 
                 } else if !viewModel.hasSearched {
                     EmptyStateView(message: L10n.Search.emptyInitial)
+                        .accessibilityIdentifier("searchView.emptyState")
 
                 } else {
                     ScrollView {
@@ -34,10 +37,12 @@ struct SearchView: View {
                                 ) {
                                     Task { await viewModel.toggleBookmark(for: item) }
                                 }
+                                .accessibilityIdentifier("searchResultItem.\(item.id)")
                                 Divider()
                             }
                         }
                     }
+                    .accessibilityIdentifier("searchView.resultsList")
                 }
             }
         }
