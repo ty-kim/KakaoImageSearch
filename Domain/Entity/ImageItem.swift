@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct ImageItem: Identifiable, Hashable, Codable, Sendable {
+struct ImageItem: Identifiable, Codable, Sendable {
     let id: String          // 이미지 URL을 고유 식별자로 사용
     let imageURL: URL?
     let thumbnailURL: URL?
@@ -19,5 +19,33 @@ struct ImageItem: Identifiable, Hashable, Codable, Sendable {
     var aspectRatio: Double {
         guard let width, let height, width > 0 else { return 1 }
         return Double(height) / Double(width)
+    }
+}
+
+extension ImageItem {
+    nonisolated init(
+        id: String,
+        imageURL: URL,
+        thumbnailURL: URL,
+        width: Int,
+        height: Int,
+        isBookmarked: Bool
+    ) {
+        self.id = id
+        self.imageURL = imageURL
+        self.thumbnailURL = thumbnailURL
+        self.width = width
+        self.height = height
+        self.isBookmarked = isBookmarked
+    }
+}
+
+extension ImageItem: Hashable {
+    nonisolated func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    nonisolated static func == (lhs: ImageItem, rhs: ImageItem) -> Bool {
+        lhs.id == rhs.id
     }
 }
