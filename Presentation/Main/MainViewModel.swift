@@ -42,7 +42,7 @@ final class MainViewModel {
 
         Logger.presentation.debugPrint("Debounce queued: \"\(trimmed)\"")
         debounceTask = Task {
-            try? await Task.sleep(for: .seconds(0.3))
+            try? await Task.sleep(for: .seconds(1.0))
             guard !Task.isCancelled else { return }
             await searchViewModel.search(query: trimmed)
         }

@@ -105,7 +105,7 @@ final class KakaoImageSearchUITests: XCTestCase {
         searchField.tap()
         searchField.typeText("cat")
 
-        // debounce 0.3초 + 네트워크 응답 대기
+        // debounce 1.0초 + 네트워크 응답 대기
         let resultsList = app.scrollViews["searchView.resultsList"]
         XCTAssertTrue(resultsList.waitForExistence(timeout: 10))
     }
