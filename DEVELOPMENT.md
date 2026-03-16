@@ -1,0 +1,73 @@
+# 개발 방향 및 AI 활용 범위
+
+---
+
+## 개발 방향
+
+### 1. "외부 라이브러리 없음"을 역량 어필의 기회로
+
+과제 조건인 "외부 라이브러리 금지"를 제약이 아닌 어필 포인트로 삼았습니다.
+Kingfisher, Alamofire 없이 직접 구현함으로써 각 라이브러리가 내부에서 해결하는 문제들을 직접 다뤘습니다.
+
+| 직접 구현한 것 | 대체되는 라이브러리 |
+|---|---|
+| URLSession Generic 래퍼 + snake_case 변환 | Alamofire / Moya |
+| 메모리 + 디스크 2단계 이미지 캐시 + in-flight dedup | Kingfisher / SDWebImage |
+| 타입 안전 DI 컨테이너 | Swinject |
+
+### 2. Swift 6 Strict Concurrency 정면 돌파
+
+Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일 타임에 데이터 레이스를 차단했습니다.
+경고를 억제하는 `@preconcurrency` 우회 대신, `actor` / `nonisolated` / `nonisolated init(from:)` 으로 근본 원인을 해결했습니다.
+이 과정에서 발생한 문제들(DTO 런타임 크래시, Logger 격리 문제, DI 팩토리 타입 오류 등)을 하나씩 디버깅하며 Swift Concurrency 모델을 깊이 있게 다뤘습니다.
+
+### 3. 시니어 역량 어필: 다국어 + 테스트
+
+단순 기능 구현을 넘어 프로덕션 수준의 코드를 목표로 했습니다.
+
+- **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
+- **유닛 테스트**: Swift Testing Framework, 41개 케이스, Domain + ViewModel 커버리지 100%
+- **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
+
+---
+
+## AI 활용 범위
+
+이 프로젝트는 **Claude(Anthropic)** 를 페어 프로그래머로 활용해 개발했습니다.
+AI 활용 자체를 숨기기보다, 어떤 판단을 직접 내렸는지를 투명하게 기술합니다.
+
+### AI가 도운 것
+
+| 영역 | 내용 |
+|---|---|
+| **보일러플레이트 작성** | DTO `nonisolated init(from:)`, Repository 구현체, Mock 클래스 등 반복적인 코드 |
+| **Swift 6 오류 메시지 해석** | 컴파일러 에러 원인 분석 및 수정 방향 제시 |
+| **테스트 케이스 초안** | 테스트 구조와 케이스 목록 초안 생성 |
+| **커밋 메시지 작성** | Conventional Commits 형식의 메시지 초안 |
+| **문서 작성** | README, DEVELOPMENT.md 초안 작성 |
+
+### 직접 판단하고 결정한 것
+
+| 영역 | 내용 |
+|---|---|
+| **아키텍처 설계** | Clean Architecture + MVVM 레이어 구조 및 의존 방향 결정 |
+| **Swift 6 전략** | `@preconcurrency` 우회 거부, `nonisolated` 직접 선언 방식 채택 |
+| **기술적 트레이드오프** | `actor` vs `final class`, `UserDefaults` vs `FileManager` 등 |
+| **AI 제안 코드 검토** | 생성된 코드를 직접 읽고 이해한 후 채택 여부 결정 / 수정 |
+| **디버깅** | 런타임 크래시(DTO 디코딩, Main.storyboard) 원인 파악 및 수정 |
+| **테스트 케이스 엣지 케이스 판단** | 커버리지 분석 후 추가 필요한 엣지 케이스 직접 식별 |
+
+### AI 활용에 대한 입장
+
+AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
+하지만 "왜 이렇게 설계하는가", "이 트레이드오프가 맞는가"에 대한 판단은 여전히 개발자의 몫입니다.
+이 프로젝트에서 AI는 타이핑 속도를 높이는 도구였고, 아키텍처와 품질 기준은 제가 직접 설정하고 검증했습니다.
+
+---
+
+## 아쉬운 점 / 추가하고 싶었던 것
+
+- **페이지네이션**: 카카오 API의 `page` 파라미터를 활용한 무한 스크롤 (UseCase에 인터페이스는 구현)
+- **검색 히스토리**: 최근 검색어 저장 및 자동완성
+- **UI 테스트**: XCUITest 기반 주요 플로우 검증
+- **에러 토스트**: `errorMessage`를 현재 텍스트로만 표시 중, 토스트/스낵바 UI로 개선 여지 있음
