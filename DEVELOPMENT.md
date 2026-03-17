@@ -27,11 +27,23 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
 
 - **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
 - **유닛 테스트**: Swift Testing Framework, 47개 케이스, Domain + ViewModel 커버리지 100%
-- **UI 테스트**: XCUITest, 15개 케이스, 실제 사용자 플로우 검증
+- **UI 테스트**: XCUITest, 21개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
 - **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
 
-### 4. 페이지네이션 & 에러 핸들링 UX
+### 4. iPad 적응형 레이아웃
+
+과제 조건에 "iPad 레이아웃 변경 가능"으로 명시된 부분을 적극 활용했습니다.
+
+- **분기 기준**: `@Environment(\.horizontalSizeClass)` — iPhone(compact) / iPad(regular) 분리
+- **iPhone**: 기존 `TabView` 구조 그대로 유지
+- **iPad**: `NavigationSplitView`로 검색 결과(사이드바)와 북마크(디테일)를 동시 표시
+  - 단일 화면에서 검색과 북마크를 한눈에 볼 수 있어 콘텐츠 탐색 효율 향상
+- **그리드**: `LazyVGrid` 2열, 좌우 패딩 20pt, 컬럼 간격 20pt
+  - `itemWidth = (전체 너비 - 패딩 × 2 - 컬럼 간격) / 열 수` 로 정확히 계산
+- **iPad UI 테스트**: `XCTSkipIf(userInterfaceIdiom != .pad)`로 iPad 시뮬레이터에서만 실행
+
+### 5. 페이지네이션 & 에러 핸들링 UX
 
 API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 제공하는 데 집중했습니다.
 
