@@ -21,13 +21,23 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
 경고를 억제하는 `@preconcurrency` 우회 대신, `actor` / `nonisolated` / `nonisolated init(from:)` 으로 근본 원인을 해결했습니다.
 이 과정에서 발생한 문제들(DTO 런타임 크래시, Logger 격리 문제, DI 팩토리 타입 오류 등)을 하나씩 디버깅하며 Swift Concurrency 모델을 깊이 있게 다뤘습니다.
 
-### 3. 시니어 역량 어필: 다국어 + 테스트
+### 3. 시니어 역량 어필: 다국어 + 테스트 + 상태 설계
 
 단순 기능 구현을 넘어 프로덕션 수준의 코드를 목표로 했습니다.
 
 - **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
-- **유닛 테스트**: Swift Testing Framework, 41개 케이스, Domain + ViewModel 커버리지 100%
+- **유닛 테스트**: Swift Testing Framework, 47개 케이스, Domain + ViewModel 커버리지 100%
+- **UI 테스트**: XCUITest, 15개 케이스, 실제 사용자 플로우 검증
 - **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
+- **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
+
+### 4. 페이지네이션 & 에러 핸들링 UX
+
+API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 제공하는 데 집중했습니다.
+
+- **무한 스크롤**: `LazyVStack` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별
+- **재시도 UX**: 검색 실패 / 추가 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공
+- **에러 vs 결과없음 구분**: `hasError` / `errorMessage` 플래그 분리로 UX 분기 명확화
 
 ---
 
@@ -67,7 +77,7 @@ AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
 
 ## 아쉬운 점 / 추가하고 싶었던 것
 
-- **페이지네이션**: 카카오 API의 `page` 파라미터를 활용한 무한 스크롤 (UseCase에 인터페이스는 구현)
 - **검색 히스토리**: 최근 검색어 저장 및 자동완성
-- **UI 테스트**: XCUITest 기반 주요 플로우 검증
-- **에러 토스트**: `errorMessage`를 현재 텍스트로만 표시 중, 토스트/스낵바 UI로 개선 여지 있음
+- **에러 토스트**: `errorMessage`를 EmptyStateView 텍스트로 표시 중, 토스트/스낵바 UI로 개선 여지 있음
+- **이미지 저장 순서 유지**: 북마크 저장 시 최근 추가 순으로 정렬하는 옵션
+- **iPad 레이아웃**: 과제 조건에 "변경 가능"으로 명시되어 있으나, GeometryReader를 활용한 2열 그리드 구성 여지 있음
