@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FC116B732F69131000111870 /* DEVELOPMENT.md in Resources */ = {isa = PBXBuildFile; fileRef = FC116B722F69131000111870 /* DEVELOPMENT.md */; };
+		FC116B752F69131700111870 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FC116B742F69131700111870 /* README.md */; };
 		FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F42F681C9F008CAC25 /* L10n.swift */; };
 		FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */; };
 		FC1E89FA2F68236A008CAC25 /* KakaoImageSearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */; };
@@ -64,6 +66,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		FC116B722F69131000111870 /* DEVELOPMENT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DEVELOPMENT.md; sourceTree = "<group>"; };
+		FC116B742F69131700111870 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		FC1E89F42F681C9F008CAC25 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoImageSearchEndpoint.swift; sourceTree = "<group>"; };
@@ -193,6 +197,8 @@
 		FCCD76632F680A840081FC81 = {
 			isa = PBXGroup;
 			children = (
+				FC116B742F69131700111870 /* README.md */,
+				FC116B722F69131000111870 /* DEVELOPMENT.md */,
 				FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */,
 				FCCD770F2F680E070081FC81 /* KakaoImageSearch */,
 				FCCD76DE2F680CE20081FC81 /* Presentation */,
@@ -487,7 +493,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FC116B732F69131000111870 /* DEVELOPMENT.md in Resources */,
 				FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */,
+				FC116B752F69131700111870 /* README.md in Resources */,
 				FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */,
 				FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */,
 			);

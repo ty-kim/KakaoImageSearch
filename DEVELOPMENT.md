@@ -39,6 +39,22 @@ API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 
 - **재시도 UX**: 검색 실패 / 추가 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공
 - **에러 vs 결과없음 구분**: `hasError` / `errorMessage` 플래그 분리로 UX 분기 명확화
 
+이 패턴은 웹툰/콘텐츠 앱의 핵심 흐름(작품 목록 무한 스크롤 → 북마크/찜 → 에러 복구)과 구조적으로 동일합니다.
+
+### 5. RxSwift 대신 Swift Concurrency
+
+과제 조건(Zero External Dependency)으로 RxSwift/RxCocoa를 사용하지 않았습니다.
+대신 Swift Concurrency로 동일한 반응형 데이터 흐름을 구현했습니다.
+
+| RxSwift 패턴 | 이번 구현 |
+|---|---|
+| `PublishSubject` + `debounce` | `Task.sleep(1.0)` + `Task.cancel()` |
+| `BehaviorRelay` / `Driver` | `@Observable` + `@MainActor` |
+| `DisposeBag` | `Task` 명시적 취소 (`searchTask?.cancel()`) |
+| `flatMapLatest` | `Task` 재생성으로 이전 요청 취소 |
+
+Swift Concurrency는 컴파일 타임 데이터 레이스 감지라는 RxSwift에 없는 안전성을 제공합니다.
+
 ---
 
 ## AI 활용 범위
@@ -80,4 +96,3 @@ AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
 - **검색 히스토리**: 최근 검색어 저장 및 자동완성
 - **에러 토스트**: `errorMessage`를 EmptyStateView 텍스트로 표시 중, 토스트/스낵바 UI로 개선 여지 있음
 - **이미지 저장 순서 유지**: 북마크 저장 시 최근 추가 순으로 정렬하는 옵션
-- **iPad 레이아웃**: 과제 조건에 "변경 가능"으로 명시되어 있으나, GeometryReader를 활용한 2열 그리드 구성 여지 있음
