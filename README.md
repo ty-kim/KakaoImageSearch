@@ -6,6 +6,12 @@
 
 ## 스크린샷
 
+<div>
+  <img width="201" height="437" alt="Image" src="https://github.com/user-attachments/assets/ac0f4914-a232-45cb-9c3e-6eb6989bcb89" />
+  <img width="201" height="437" alt="Image" src="https://github.com/user-attachments/assets/a83a1517-5b29-431e-8bf6-7fc33cbe260e" />
+  <img width="201" height="437" alt="Image" src="https://github.com/user-attachments/assets/49b9f1f8-3f0f-4e58-acf6-e6e5b67b68c8" />
+</div>
+
 | 검색 | 북마크 |
 |------|--------|
 | 키워드 입력 → 1.0초 debounce → 결과 표시 | 북마크 탭에서 저장 목록 확인 |
