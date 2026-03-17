@@ -54,7 +54,7 @@ final class BookmarkStore {
             if let index = bookmarkedItems.firstIndex(where: { $0.id == item.id }) {
                 bookmarkedItems[index] = updated
             } else {
-                bookmarkedItems.insert(updated, at: 0)
+                bookmarkedItems.append(updated)
             }
 
             bookmarkedIDs.insert(item.id)
