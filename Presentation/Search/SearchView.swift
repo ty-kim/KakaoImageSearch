@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchView: View {
 
     let viewModel: SearchViewModel
+    var columns: Int = 1
 
     var body: some View {
         GeometryReader { geometry in
@@ -30,12 +31,17 @@ struct SearchView: View {
                     EmptyStateView(message: L10n.Search.emptyInitial, accessibilityID: "searchView.emptyState")
 
                 } else {
+                    let horizontalPadding: CGFloat = 20
+                    let columnSpacing: CGFloat = 20
+                    let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
+                    let gridColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
+
                     ScrollView {
-                        LazyVStack(spacing: 20) {
+                        LazyVGrid(columns: gridColumns, spacing: 20) {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
-                                    screenWidth: geometry.size.width
+                                    screenWidth: itemWidth
                                 ) {
                                     Task { await viewModel.toggleBookmark(for: item) }
                                 }
@@ -46,28 +52,29 @@ struct SearchView: View {
                                     }
                                 }
                             }
+                        }
+                        .padding(.horizontal, horizontalPadding)
 
-                            if viewModel.isLoadingMore {
-                                ProgressView()
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 20)
-                                    .accessibilityIdentifier("searchView.loadingMore")
-                            } else if viewModel.hasLoadMoreError {
-                                Button {
-                                    Task { await viewModel.retryLoadMore() }
-                                } label: {
-                                    Text(L10n.Search.loadMoreRetry)
-                                        .font(.callout.weight(.medium))
-                                        .padding(.horizontal, 24)
-                                        .padding(.vertical, 10)
-                                        .background(.tint.opacity(0.12))
-                                        .foregroundStyle(.tint)
-                                        .clipShape(Capsule())
-                                }
+                        if viewModel.isLoadingMore {
+                            ProgressView()
                                 .frame(maxWidth: .infinity)
-                                .padding(.vertical, 12)
-                                .accessibilityIdentifier("searchView.loadMoreRetryButton")
+                                .padding(.vertical, 20)
+                                .accessibilityIdentifier("searchView.loadingMore")
+                        } else if viewModel.hasLoadMoreError {
+                            Button {
+                                Task { await viewModel.retryLoadMore() }
+                            } label: {
+                                Text(L10n.Search.loadMoreRetry)
+                                    .font(.callout.weight(.medium))
+                                    .padding(.horizontal, 24)
+                                    .padding(.vertical, 10)
+                                    .background(.tint.opacity(0.12))
+                                    .foregroundStyle(.tint)
+                                    .clipShape(Capsule())
                             }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 12)
+                            .accessibilityIdentifier("searchView.loadMoreRetryButton")
                         }
                     }
                     .accessibilityIdentifier("searchView.resultsList")

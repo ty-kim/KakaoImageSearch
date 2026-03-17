@@ -218,3 +218,93 @@ final class KakaoImageSearchRetryUITests: XCTestCase {
         XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
     }
 }
+
+// MARK: - iPad 레이아웃 (NavigationSplitView)
+
+@MainActor
+final class KakaoImageSearchIPadUITests: XCTestCase {
+
+    nonisolated(unsafe) private var app: XCUIApplication!
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
+        try XCTSkipIf(!isIPad, "iPad 전용 테스트입니다. iPad 시뮬레이터에서 실행하세요.")
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments += ["--resetBookmarks"]
+        app.launch()
+    }
+
+    override func tearDown() {
+        app = nil
+        super.tearDown()
+    }
+
+    // MARK: - 레이아웃 구조
+
+    func test_iPad_noTabBar() {
+        // NavigationSplitView 레이아웃이므로 탭바 없음
+        XCTAssertFalse(app.tabBars.firstMatch.exists)
+    }
+
+    func test_iPad_searchBarVisible() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+    }
+
+    func test_iPad_bothPanelsVisibleOnLaunch() {
+        // 검색 패널(사이드바)과 북마크 패널(디테일)이 동시에 표시
+        let searchEmpty = app.descendants(matching: .any)
+            .matching(identifier: "searchView.emptyState").firstMatch
+        XCTAssertTrue(searchEmpty.waitForExistence(timeout: 3))
+
+        let bookmarkEmpty = app.descendants(matching: .any)
+            .matching(identifier: "bookmarkView.emptyState").firstMatch
+        XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
+    }
+
+    // MARK: - 검색 인터랙션
+
+    func test_iPad_search_showsResultsInSidebar() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+
+        searchField.tap()
+        searchField.typeText("cat")
+
+        let resultsList = app.scrollViews["searchView.resultsList"]
+        XCTAssertTrue(resultsList.waitForExistence(timeout: 10))
+    }
+
+    func test_iPad_clearSearch_restoresEmptyState() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+
+        searchField.tap()
+        searchField.typeText("고양이")
+
+        let clearButton = app.buttons["searchBar.clearButton"]
+        XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
+        clearButton.tap()
+
+        let searchEmpty = app.descendants(matching: .any)
+            .matching(identifier: "searchView.emptyState").firstMatch
+        XCTAssertTrue(searchEmpty.waitForExistence(timeout: 3))
+    }
+
+    // MARK: - 양쪽 패널 독립성
+
+    func test_iPad_bookmarkPanelVisibleWhileSearching() {
+        // 검색 중에도 북마크 패널이 항상 노출 (TabView와의 핵심 차이)
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+
+        searchField.tap()
+        searchField.typeText("cat")
+
+        let bookmarkEmpty = app.descendants(matching: .any)
+            .matching(identifier: "bookmarkView.emptyState").firstMatch
+        XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
+    }
+}
