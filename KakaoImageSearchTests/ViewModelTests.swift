@@ -199,8 +199,8 @@ struct SearchViewModelTests {
         #expect(sut.items[0].isBookmarked == true)
     }
 
-    @Test("toggleBookmark 실패 시 errorMessage 설정")
-    func toggleBookmark_failure_setsErrorMessage() async throws {
+    @Test("toggleBookmark 실패 시 toastMessage 설정")
+    func toggleBookmark_failure_setsToastMessage() async throws {
         let item = ImageItem.fixture(id: "a")
         let (sut, _, bookmarkRepo) = makeSUT(searchItems: [item])
         await sut.search(query: "cat")
@@ -208,7 +208,31 @@ struct SearchViewModelTests {
 
         await sut.toggleBookmark(for: sut.items[0])
 
-        #expect(sut.errorMessage != nil)
+        #expect(sut.toastMessage != nil)
+    }
+
+    @Test("toggleBookmark 실패해도 errorMessage 변경 없음")
+    func toggleBookmark_failure_doesNotSetErrorMessage() async throws {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, _, bookmarkRepo) = makeSUT(searchItems: [item])
+        await sut.search(query: "cat")
+        bookmarkRepo.stubbedSaveError = TestError.stub
+
+        await sut.toggleBookmark(for: sut.items[0])
+
+        #expect(sut.errorMessage == nil)
+    }
+
+    @Test("toggleBookmark 실패해도 기존 검색 결과 유지")
+    func toggleBookmark_failure_doesNotClearSearchResults() async throws {
+        let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
+        let (sut, _, bookmarkRepo) = makeSUT(searchItems: items)
+        await sut.search(query: "cat")
+        bookmarkRepo.stubbedSaveError = TestError.stub
+
+        await sut.toggleBookmark(for: sut.items[0])
+
+        #expect(sut.items.count == 2)
     }
 }
 
@@ -254,6 +278,18 @@ struct BookmarkViewModelTests {
 
         #expect(sut.items.isEmpty)
         #expect(sut.isLoading == false)
+    }
+
+    @Test("removeBookmark 실패 시 toastMessage 설정")
+    func removeBookmark_failure_setsToastMessage() async throws {
+        let item = ImageItem.fixture(id: "a", isBookmarked: true)
+        let (sut, repo) = makeSUT(initialItems: [item])
+        await sut.loadBookmarks()
+        repo.stubbedDeleteError = TestError.stub
+
+        await sut.removeBookmark(for: item)
+
+        #expect(sut.toastMessage != nil)
     }
 
     @Test("removeBookmark 호출 시 해당 아이템 제거 후 목록 갱신")
