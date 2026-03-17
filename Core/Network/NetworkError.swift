@@ -7,8 +7,7 @@
 
 import Foundation
 
-@MainActor
-enum NetworkError: Error, @preconcurrency LocalizedError {
+enum NetworkError: Error, LocalizedError {
     case invalidURL
     case invalidResponse
     case httpError(statusCode: Int)

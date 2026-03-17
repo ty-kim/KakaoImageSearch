@@ -8,7 +8,7 @@
 
 import Foundation
 
-enum L10n {
+nonisolated enum L10n {
 
     enum Network {
         static var invalidURL: String {
