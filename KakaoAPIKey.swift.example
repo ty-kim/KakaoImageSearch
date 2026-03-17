@@ -1,0 +1,13 @@
+//
+//  KakaoAPIKey.swift.example
+//  KakaoImageSearch
+//
+//  이 파일을 복사해 KakaoAPIKey.swift 로 이름을 바꾸고 REST API 키를 입력하세요.
+//  카카오 개발자 콘솔(https://developers.kakao.com)에서 REST API 키를 발급받을 수 있습니다.
+//
+//  ⚠️ KakaoAPIKey.swift 는 .gitignore에 등록되어 있습니다. 절대 커밋하지 마세요.
+//
+
+enum KakaoAPIKey {
+    static let restAPIKey = "여기에_REST_API_키_입력"
+}
