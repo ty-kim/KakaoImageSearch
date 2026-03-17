@@ -25,7 +25,7 @@
 		FC6EA6E12F69036A00D51FD9 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6EA6E02F69036A00D51FD9 /* BookmarkStore.swift */; };
 		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
 		FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */; };
-		FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */; };
+		FCCD76DA2F680CA50081FC81 /* DefaultBookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D92F680CA50081FC81 /* DefaultBookmarkRepository.swift */; };
 		FCCD76DC2F680CB20081FC81 /* BookmarkStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76DB2F680CB20081FC81 /* BookmarkStorage.swift */; };
 		FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E42F680D710081FC81 /* BookmarkRepository.swift */; };
 		FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E22F680D710081FC81 /* ImageItem.swift */; };
@@ -85,7 +85,7 @@
 		FCCD768C2F680A850081FC81 /* KakaoImageSearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoSearchResponseDTO.swift; sourceTree = "<group>"; };
 		FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultImageSearchRepository.swift; sourceTree = "<group>"; };
-		FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DiefaultBookmarkRepository.swift; sourceTree = "<group>"; };
+		FCCD76D92F680CA50081FC81 /* DefaultBookmarkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DefaultBookmarkRepository.swift; sourceTree = "<group>"; };
 		FCCD76DB2F680CB20081FC81 /* BookmarkStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStorage.swift; sourceTree = "<group>"; };
 		FCCD76E22F680D710081FC81 /* ImageItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageItem.swift; sourceTree = "<group>"; };
 		FCCD76E42F680D710081FC81 /* BookmarkRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkRepository.swift; sourceTree = "<group>"; };
@@ -239,7 +239,7 @@
 			isa = PBXGroup;
 			children = (
 				FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */,
-				FCCD76D92F680CA50081FC81 /* DiefaultBookmarkRepository.swift */,
+				FCCD76D92F680CA50081FC81 /* DefaultBookmarkRepository.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -531,7 +531,7 @@
 				FC1E8A0D2F682759008CAC25 /* MainView.swift in Sources */,
 				FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */,
 				FC1E8A0F2F682768008CAC25 /* SearchView.swift in Sources */,
-				FCCD76DA2F680CA50081FC81 /* DiefaultBookmarkRepository.swift in Sources */,
+				FCCD76DA2F680CA50081FC81 /* DefaultBookmarkRepository.swift in Sources */,
 				FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */,
 				FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */,
 				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
