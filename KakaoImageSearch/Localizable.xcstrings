@@ -300,6 +300,29 @@
         }
       }
     },
+    "bookmark.error.toggle" : {
+      "comment" : "Toast message shown when bookmarking or unbookmarking fails",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to update bookmark."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマークの更新に失敗しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크 저장에 실패했습니다."
+          }
+        }
+      }
+    },
     "bookmark.empty" : {
       "comment" : "Shown when the bookmark list is empty",
       "localizations" : {

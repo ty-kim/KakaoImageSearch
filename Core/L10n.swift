@@ -62,5 +62,8 @@ enum L10n {
         static var empty: String {
             String(localized: "bookmark.empty")
         }
+        static var toggleError: String {
+            String(localized: "bookmark.error.toggle")
+        }
     }
 }

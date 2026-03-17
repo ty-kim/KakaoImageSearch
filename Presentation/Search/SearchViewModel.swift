@@ -21,9 +21,11 @@ final class SearchViewModel {
     private(set) var hasLoadMoreError: Bool = false
     private(set) var errorMessage: String? = nil
     private(set) var hasSearched: Bool = false
+    private(set) var toastMessage: String? = nil
 
     private var currentQuery: String = ""
     private var currentPage: Int = 1
+    private var toastTask: Task<Void, Never>? = nil
 
     private let searchImageUseCase: SearchImageUseCase
     private let bookmarkStore: BookmarkStore
@@ -109,8 +111,18 @@ final class SearchViewModel {
         do {
             _ = try await bookmarkStore.toggle(item)
         } catch {
-            errorMessage = L10n.Search.error(error.localizedDescription)
+            showToast(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(error)")
+        }
+    }
+
+    private func showToast(_ message: String) {
+        toastTask?.cancel()
+        toastMessage = message
+        toastTask = Task {
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            toastMessage = nil
         }
     }
 

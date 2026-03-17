@@ -15,6 +15,7 @@
 		FC1E89FC2F6823DE008CAC25 /* KakaoAPIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */; };
 		FC1E89FE2F6826AC008CAC25 /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89FD2F6826AC008CAC25 /* MainViewModel.swift */; };
 		FC1E8A032F6826B2008CAC25 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A002F6826B2008CAC25 /* EmptyStateView.swift */; };
+		FCCC21252F699A0000363054 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCC21262F699A0000363054 /* ToastView.swift */; };
 		FC1E8A042F6826B2008CAC25 /* BookmarkButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89FF2F6826B2008CAC25 /* BookmarkButton.swift */; };
 		FC1E8A052F6826B2008CAC25 /* SearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A012F6826B2008CAC25 /* SearchBar.swift */; };
 		FC1E8A082F6826B8008CAC25 /* BookmarkViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A062F6826B8008CAC25 /* BookmarkViewModel.swift */; };
@@ -76,6 +77,7 @@
 		FC1E89FD2F6826AC008CAC25 /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
 		FC1E89FF2F6826B2008CAC25 /* BookmarkButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkButton.swift; sourceTree = "<group>"; };
 		FC1E8A002F6826B2008CAC25 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+		FCCC21262F699A0000363054 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		FC1E8A012F6826B2008CAC25 /* SearchBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBar.swift; sourceTree = "<group>"; };
 		FC1E8A062F6826B8008CAC25 /* BookmarkViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkViewModel.swift; sourceTree = "<group>"; };
 		FC1E8A092F6826C5008CAC25 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
@@ -165,6 +167,7 @@
 				FC1E89FF2F6826B2008CAC25 /* BookmarkButton.swift */,
 				FC1E8A002F6826B2008CAC25 /* EmptyStateView.swift */,
 				FC1E8A012F6826B2008CAC25 /* SearchBar.swift */,
+				FCCC21262F699A0000363054 /* ToastView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -536,6 +539,7 @@
 				FC6EA6E12F69036A00D51FD9 /* BookmarkStore.swift in Sources */,
 				FC1E8A032F6826B2008CAC25 /* EmptyStateView.swift in Sources */,
 				FC1E8A042F6826B2008CAC25 /* BookmarkButton.swift in Sources */,
+				FCCC21252F699A0000363054 /* ToastView.swift in Sources */,
 				FC5B19DC2F682D6B0030ACAE /* AppLogger.swift in Sources */,
 				FC1E8A052F6826B2008CAC25 /* SearchBar.swift in Sources */,
 				FCCD77002F680D860081FC81 /* NetworkError.swift in Sources */,

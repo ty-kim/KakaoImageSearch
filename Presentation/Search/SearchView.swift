@@ -80,6 +80,14 @@ struct SearchView: View {
                     .accessibilityIdentifier("searchView.resultsList")
                 }
             }
+            .overlay(alignment: .bottom) {
+                if let msg = viewModel.toastMessage {
+                    ToastView(message: msg)
+                        .padding(.bottom, 16)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                }
+            }
+            .animation(.easeInOut(duration: 0.3), value: viewModel.toastMessage)
         }
     }
 }

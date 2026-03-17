@@ -14,6 +14,8 @@ import OSLog
 final class BookmarkViewModel {
 
     private let bookmarkStore: BookmarkStore
+    private(set) var toastMessage: String? = nil
+    private var toastTask: Task<Void, Never>? = nil
 
     var items: [ImageItem] {
         bookmarkStore.bookmarkedItems
@@ -36,7 +38,18 @@ final class BookmarkViewModel {
             _ = try await bookmarkStore.toggle(item)
             Logger.presentation.debugPrint("Removed bookmark: \(item.id)")
         } catch {
+            showToast(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Remove bookmark failed: \(error)")
+        }
+    }
+
+    private func showToast(_ message: String) {
+        toastTask?.cancel()
+        toastMessage = message
+        toastTask = Task {
+            try? await Task.sleep(for: .seconds(3))
+            guard !Task.isCancelled else { return }
+            toastMessage = nil
         }
     }
 }
