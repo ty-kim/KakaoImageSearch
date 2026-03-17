@@ -27,7 +27,7 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
 
 - **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
 - **유닛 테스트**: Swift Testing Framework, 47개 케이스, Domain + ViewModel 커버리지 100%
-- **UI 테스트**: XCUITest, 21개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
+- **UI 테스트**: XCUITest, 25개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
 - **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
 
@@ -41,13 +41,13 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
   - 단일 화면에서 검색과 북마크를 한눈에 볼 수 있어 콘텐츠 탐색 효율 향상
 - **그리드**: `LazyVGrid` 2열, 좌우 패딩 20pt, 컬럼 간격 20pt
   - `itemWidth = (전체 너비 - 패딩 × 2 - 컬럼 간격) / 열 수` 로 정확히 계산
-- **iPad UI 테스트**: `XCTSkipIf(userInterfaceIdiom != .pad)`로 iPad 시뮬레이터에서만 실행
+- **iPad UI 테스트**: `setUpWithError` + `XCTSkipIf(!isIPad)`로 클래스 단위에서 iPad 시뮬레이터 전용 실행
 
-### 5. 페이지네이션 & 에러 핸들링 UX
+### 6. 페이지네이션 & 에러 핸들링 UX
 
 API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 제공하는 데 집중했습니다.
 
-- **무한 스크롤**: `LazyVStack` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별
+- **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별
 - **재시도 UX**: 검색 실패 / 추가 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공
 - **에러 vs 결과없음 구분**: `hasError` / `errorMessage` 플래그 분리로 UX 분기 명확화
 
