@@ -15,9 +15,12 @@ final class DefaultImageSearchRepository: ImageSearchRepository {
         self.networkService = networkService
     }
 
-    func search(query: String, page: Int) async throws -> [ImageItem] {
+    func search(query: String, page: Int) async throws -> SearchResultPage {
         let endpoint = KakaoImageSearchEndpoint.searchImages(query: query, page: page)
         let response: KakaoSearchResponseDTO = try await networkService.request(endpoint)
-        return response.documents.compactMap { $0.toImageItem() }
+        return SearchResultPage(
+            items: response.documents.compactMap { $0.toImageItem() },
+            isEnd: response.meta.isEnd
+        )
     }
 }

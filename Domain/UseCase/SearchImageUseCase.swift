@@ -21,17 +21,18 @@ final class SearchImageUseCase: Sendable {
     }
 
     /// 검색 결과에 북마크 상태를 merge해서 반환합니다.
-    func execute(query: String, page: Int = 1) async throws -> [ImageItem] {
+    func execute(query: String, page: Int = 1) async throws -> SearchResultPage {
         async let searchResult = imageSearchRepository.search(query: query, page: page)
         async let bookmarks = bookmarkRepository.fetchAll()
 
-        var items = try await searchResult
+        let result = try await searchResult
         let bookmarkedIDs = Set(try await bookmarks.map(\.id))
 
+        var items = result.items
         for i in items.indices {
             items[i].isBookmarked = bookmarkedIDs.contains(items[i].id)
         }
 
-        return items
+        return SearchResultPage(items: items, isEnd: result.isEnd)
     }
 }

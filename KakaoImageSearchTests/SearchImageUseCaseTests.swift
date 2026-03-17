@@ -43,8 +43,8 @@ struct SearchImageUseCaseTests {
 
         let result = try await sut.execute(query: "cat")
 
-        #expect(result.count == 2)
-        #expect(result.allSatisfy { !$0.isBookmarked })
+        #expect(result.items.count == 2)
+        #expect(result.items.allSatisfy { !$0.isBookmarked })
     }
 
     @Test("북마크된 id와 일치하는 아이템은 isBookmarked = true")
@@ -57,8 +57,8 @@ struct SearchImageUseCaseTests {
 
         let result = try await sut.execute(query: "cat")
 
-        let resultA = try #require(result.first { $0.id == "a" })
-        let resultB = try #require(result.first { $0.id == "b" })
+        let resultA = try #require(result.items.first { $0.id == "a" })
+        let resultB = try #require(result.items.first { $0.id == "b" })
         #expect(resultA.isBookmarked == true)
         #expect(resultB.isBookmarked == false)
     }
@@ -69,7 +69,7 @@ struct SearchImageUseCaseTests {
 
         let result = try await sut.execute(query: "zzz")
 
-        #expect(result.isEmpty)
+        #expect(result.items.isEmpty)
     }
 
     @Test("검색 Repository 에러 시 throws")
@@ -102,7 +102,7 @@ struct SearchImageUseCaseTests {
 
         let result = try await sut.execute(query: "cat")
 
-        #expect(result.allSatisfy { $0.isBookmarked })
+        #expect(result.items.allSatisfy { $0.isBookmarked })
     }
 
     @Test("쿼리 문자열이 Repository에 올바르게 전달됨")

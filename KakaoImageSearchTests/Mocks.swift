@@ -12,15 +12,18 @@ import Foundation
 
 final class MockImageSearchRepository: ImageSearchRepository, @unchecked Sendable {
     var stubbedResult: [ImageItem] = []
+    var stubbedIsEnd: Bool = false
     var stubbedError: Error?
     private(set) var searchCallCount = 0
     private(set) var lastQuery: String?
+    private(set) var lastPage: Int?
 
-    func search(query: String, page: Int) async throws -> [ImageItem] {
+    func search(query: String, page: Int) async throws -> SearchResultPage {
         searchCallCount += 1
         lastQuery = query
+        lastPage = page
         if let error = stubbedError { throw error }
-        return stubbedResult
+        return SearchResultPage(items: stubbedResult, isEnd: stubbedIsEnd)
     }
 }
 

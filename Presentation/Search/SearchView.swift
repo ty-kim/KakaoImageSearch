@@ -36,6 +36,18 @@ struct SearchView: View {
                                     Task { await viewModel.toggleBookmark(for: item) }
                                 }
                                 .accessibilityIdentifier("searchResultItem.\(item.id)")
+                                .onAppear {
+                                    if item.id == viewModel.items.last?.id {
+                                        Task { await viewModel.loadMore() }
+                                    }
+                                }
+                            }
+
+                            if viewModel.isLoadingMore {
+                                ProgressView()
+                                    .frame(maxWidth: .infinity)
+                                    .padding(.vertical, 20)
+                                    .accessibilityIdentifier("searchView.loadingMore")
                             }
                         }
                     }

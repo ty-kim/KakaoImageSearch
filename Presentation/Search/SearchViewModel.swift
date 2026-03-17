@@ -15,8 +15,13 @@ final class SearchViewModel {
 
     private(set) var rawItems: [ImageItem] = []
     private(set) var isLoading: Bool = false
+    private(set) var isLoadingMore: Bool = false
+    private(set) var isEnd: Bool = false
     private(set) var errorMessage: String? = nil
     private(set) var hasSearched: Bool = false
+
+    private var currentQuery: String = ""
+    private var currentPage: Int = 1
 
     private let searchImageUseCase: SearchImageUseCase
     private let bookmarkStore: BookmarkStore
@@ -44,11 +49,16 @@ final class SearchViewModel {
         isLoading = true
         errorMessage = nil
         hasSearched = true
+        currentQuery = query
+        currentPage = 1
+        isEnd = false
         Logger.presentation.debugPrint("Search started: \"\(query)\"")
 
         do {
-            rawItems = try await searchImageUseCase.execute(query: query)
-            Logger.presentation.debugPrint("Search completed: \(items.count) results")
+            let result = try await searchImageUseCase.execute(query: query, page: 1)
+            rawItems = result.items
+            isEnd = result.isEnd
+            Logger.presentation.debugPrint("Search completed: \(items.count) results, isEnd: \(isEnd)")
             if items.isEmpty {
                 errorMessage = L10n.Search.emptyNoResults
             }
@@ -59,6 +69,25 @@ final class SearchViewModel {
         }
 
         isLoading = false
+    }
+
+    func loadMore() async {
+        guard !isEnd, !isLoading, !isLoadingMore else { return }
+        isLoadingMore = true
+        let nextPage = currentPage + 1
+        Logger.presentation.debugPrint("Loading more: page \(nextPage)")
+
+        do {
+            let result = try await searchImageUseCase.execute(query: currentQuery, page: nextPage)
+            rawItems += result.items
+            isEnd = result.isEnd
+            currentPage = nextPage
+            Logger.presentation.debugPrint("Loaded \(result.items.count) more, isEnd: \(isEnd)")
+        } catch {
+            Logger.presentation.errorPrint("Load more failed: \(error)")
+        }
+
+        isLoadingMore = false
     }
 
     func toggleBookmark(for item: ImageItem) async {
