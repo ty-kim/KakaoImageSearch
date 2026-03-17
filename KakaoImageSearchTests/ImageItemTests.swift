@@ -91,18 +91,27 @@ struct ImageItemTests {
 
     // MARK: - Hashable / Equatable
 
-    @Test("동일 id이면 같은 해시값")
-    func hashable_sameID() {
+    @Test("모든 프로퍼티가 동일한 아이템은 같은 해시값")
+    func hashable_sameProperties() {
         let a = ImageItem.fixture(id: "same")
         let b = ImageItem.fixture(id: "same")
         #expect(a.hashValue == b.hashValue)
     }
 
-    @Test("Set에 동일 id 아이템 중복 추가 불가")
+    @Test("모든 프로퍼티가 동일한 아이템은 Set에 중복 추가 불가")
     func hashable_setDedup() {
         let a = ImageItem.fixture(id: "dup")
         let b = ImageItem.fixture(id: "dup")
         let set: Set<ImageItem> = [a, b]
         #expect(set.count == 1)
+    }
+
+    @Test("isBookmarked가 다르면 동일 id라도 다른 아이템으로 취급")
+    func hashable_differentBookmarkState() {
+        let a = ImageItem.fixture(id: "same", isBookmarked: false)
+        let b = ImageItem.fixture(id: "same", isBookmarked: true)
+        #expect(a != b)
+        let set: Set<ImageItem> = [a, b]
+        #expect(set.count == 2)
     }
 }
