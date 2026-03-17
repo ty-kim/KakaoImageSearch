@@ -13,10 +13,15 @@ enum ImageDownloadError: Error {
     case invalidData
 }
 
+/// 이미지 선수 다운로드 추상화. 테스트에서 Mock으로 교체 가능합니다.
+protocol ImagePrefetcher: Sendable {
+    func prefetch(urls: [URL]) async
+}
+
 /// actor 기반 자체 이미지 다운로더.
 /// - 메모리/디스크 캐시 우선 조회
 /// - 동일 URL 중복 요청 dedup 처리
-actor ImageDownloader {
+actor ImageDownloader: ImagePrefetcher {
 
     static let shared = ImageDownloader()
 

@@ -62,6 +62,18 @@ final class MockBookmarkRepository: BookmarkRepository, @unchecked Sendable {
     }
 }
 
+// MARK: - MockImagePrefetcher
+
+final class MockImagePrefetcher: ImagePrefetcher, @unchecked Sendable {
+    private(set) var prefetchedURLs: [URL] = []
+    private(set) var prefetchCallCount = 0
+
+    func prefetch(urls: [URL]) async {
+        prefetchCallCount += 1
+        prefetchedURLs.append(contentsOf: urls)
+    }
+}
+
 // MARK: - TestError
 
 enum TestError: Error {

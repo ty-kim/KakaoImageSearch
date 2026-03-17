@@ -29,6 +29,7 @@ final class SearchViewModel {
 
     private let searchImageUseCase: SearchImageUseCase
     private let bookmarkStore: BookmarkStore
+    private let imagePrefetcher: any ImagePrefetcher
 
     var items: [ImageItem] {
         let bookmarkedIDs = bookmarkStore.bookmarkedIDs
@@ -42,10 +43,12 @@ final class SearchViewModel {
     
     init(
         searchImageUseCase: SearchImageUseCase,
-        bookmarkStore: BookmarkStore
+        bookmarkStore: BookmarkStore,
+        imagePrefetcher: any ImagePrefetcher = ImageDownloader.shared
     ) {
         self.searchImageUseCase = searchImageUseCase
         self.bookmarkStore = bookmarkStore
+        self.imagePrefetcher = imagePrefetcher
     }
 
     func search(query: String) async {
@@ -122,7 +125,7 @@ final class SearchViewModel {
     private func prefetch(_ items: [ImageItem]) {
         let urls = items.compactMap(\.thumbnailURL)
         Task(priority: .background) {
-            await ImageDownloader.shared.prefetch(urls: urls)
+            await imagePrefetcher.prefetch(urls: urls)
         }
     }
 
