@@ -59,7 +59,7 @@ actor ImageDownloader {
 
             guard let http = response as? HTTPURLResponse,
                   (200..<300).contains(http.statusCode) else {
-                Logger.imageLoader.errorPrint("Invalid response for: \(secureURL.lastPathComponent)")
+                Logger.imageLoader.errorPrint("Invalid response for: \(secureURL.absoluteString)")
                 throw ImageDownloadError.invalidResponse
             }
 
