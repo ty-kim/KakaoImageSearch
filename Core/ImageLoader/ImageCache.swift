@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import OSLog
 
 /// 메모리(NSCache) + 디스크 2단계 이미지 캐시.
 /// actor로 선언해 Swift 6 기본 MainActor 격리 충돌을 방지하고 스레드 안전성을 보장합니다.
@@ -22,6 +23,19 @@ actor ImageCache {
 
         memoryCache.countLimit = 100
         memoryCache.totalCostLimit = 50 * 1024 * 1024 // 50 MB
+
+        Task {
+            for await _ in NotificationCenter.default.notifications(named: UIApplication.didReceiveMemoryWarningNotification) {
+                await clearMemoryCache()
+            }
+        }
+    }
+
+    /// 메모리 경고 수신 시 NSCache를 비워 RAM을 즉시 확보합니다.
+    /// 디스크 캐시는 유지해 재접근 시 네트워크 없이 복구할 수 있도록 합니다.
+    private func clearMemoryCache() {
+        memoryCache.removeAllObjects()
+        Logger.imageLoader.debugPrint("Memory cache cleared (memory warning)")
     }
 
     func get(for url: URL) -> UIImage? {

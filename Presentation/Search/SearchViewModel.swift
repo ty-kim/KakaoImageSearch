@@ -67,6 +67,8 @@ final class SearchViewModel {
             Logger.presentation.debugPrint("Search completed: \(items.count) results, isEnd: \(isEnd)")
             if items.isEmpty {
                 errorMessage = L10n.Search.emptyNoResults
+            } else {
+                prefetch(result.items)
             }
         } catch {
             rawItems = []
@@ -94,6 +96,7 @@ final class SearchViewModel {
             isEnd = result.isEnd
             currentPage = nextPage
             Logger.presentation.debugPrint("Loaded \(result.items.count) more, isEnd: \(isEnd)")
+            prefetch(result.items)
         } catch {
             hasLoadMoreError = true
             Logger.presentation.errorPrint("Load more failed: \(error)")
@@ -113,6 +116,13 @@ final class SearchViewModel {
         } catch {
             showToast(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(error)")
+        }
+    }
+
+    private func prefetch(_ items: [ImageItem]) {
+        let urls = items.compactMap(\.thumbnailURL)
+        Task(priority: .background) {
+            await ImageDownloader.shared.prefetch(urls: urls)
         }
     }
 

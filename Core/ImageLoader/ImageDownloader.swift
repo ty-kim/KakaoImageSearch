@@ -25,7 +25,19 @@ actor ImageDownloader {
 
     private init() {}
 
-    func download(from url: URL) async throws -> UIImage {
+    /// 다음 페이지 썸네일을 백그라운드에서 병렬 선수 다운로드합니다.
+    /// 캐시에 이미 있는 URL은 건너뜁니다.
+    func prefetch(urls: [URL]) async {
+        await withTaskGroup(of: Void.self) { group in
+            for url in urls {
+                group.addTask(priority: .background) {
+                    _ = try? await self.download(from: url, priority: .background)
+                }
+            }
+        }
+    }
+
+    func download(from url: URL, priority: TaskPriority = .userInitiated) async throws -> UIImage {
         // http → https 변환 (daum.net / naver.net 은 ATS 예외로 처리하므로 제외)
         let secureURL: URL
         let httpExemptHosts = ["daum.net", "naver.net"]
@@ -54,7 +66,7 @@ actor ImageDownloader {
         // 3. 신규 요청
         Logger.imageLoader.debugPrint("Downloading: \(secureURL.lastPathComponent)")
 
-        let task = Task<UIImage, Error> {
+        let task = Task<UIImage, Error>(priority: priority) {
             let (data, response) = try await URLSession.shared.data(from: secureURL)
 
             guard let http = response as? HTTPURLResponse,
