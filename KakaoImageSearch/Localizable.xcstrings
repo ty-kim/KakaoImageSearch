@@ -185,6 +185,52 @@
         }
       }
     },
+    "search.error.retry" : {
+      "comment" : "Retry button label after a search error",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再試行"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "다시 시도"
+          }
+        }
+      }
+    },
+    "search.error.load_more_retry" : {
+      "comment" : "Retry button label after a load more failure",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retry loading more"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "さらに読み込む（再試行）"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "추가 로드 재시도"
+          }
+        }
+      }
+    },
     "search.error.generic %@" : {
       "comment" : "Generic search error with description",
       "localizations" : {

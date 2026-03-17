@@ -20,7 +20,11 @@ struct SearchView: View {
                         .accessibilityIdentifier("searchView.loadingIndicator")
 
                 } else if let message = viewModel.errorMessage {
-                    EmptyStateView(message: message, accessibilityID: "searchView.emptyState")
+                    EmptyStateView(
+                        message: message,
+                        accessibilityID: "searchView.emptyState",
+                        retryAction: viewModel.hasError ? { Task { await viewModel.retry() } } : nil
+                    )
 
                 } else if !viewModel.hasSearched {
                     EmptyStateView(message: L10n.Search.emptyInitial, accessibilityID: "searchView.emptyState")
@@ -48,6 +52,21 @@ struct SearchView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 20)
                                     .accessibilityIdentifier("searchView.loadingMore")
+                            } else if viewModel.hasLoadMoreError {
+                                Button {
+                                    Task { await viewModel.retryLoadMore() }
+                                } label: {
+                                    Text(L10n.Search.loadMoreRetry)
+                                        .font(.callout.weight(.medium))
+                                        .padding(.horizontal, 24)
+                                        .padding(.vertical, 10)
+                                        .background(.tint.opacity(0.12))
+                                        .foregroundStyle(.tint)
+                                        .clipShape(Capsule())
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .accessibilityIdentifier("searchView.loadMoreRetryButton")
                             }
                         }
                     }

@@ -41,6 +41,12 @@ enum L10n {
         static func error(_ description: String) -> String {
             String(localized: "search.error.generic \(description)")
         }
+        static var retry: String {
+            String(localized: "search.error.retry")
+        }
+        static var loadMoreRetry: String {
+            String(localized: "search.error.load_more_retry")
+        }
     }
 
     enum Tab {

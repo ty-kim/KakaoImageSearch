@@ -133,3 +133,88 @@ final class KakaoImageSearchUITests: XCTestCase {
         }
     }
 }
+
+// MARK: - 에러 / 재시도 UX (네트워크 에러 시뮬레이션)
+
+@MainActor
+final class KakaoImageSearchRetryUITests: XCTestCase {
+
+    nonisolated(unsafe) private var app: XCUIApplication!
+
+    override func setUp() {
+        super.setUp()
+        continueAfterFailure = false
+        app = XCUIApplication()
+        app.launchArguments += ["--resetBookmarks", "--simulateNetworkError"]
+        app.launch()
+    }
+
+    override func tearDown() {
+        app = nil
+        super.tearDown()
+    }
+
+    // MARK: - 재시도 버튼 노출
+
+    func test_searchError_retryButtonVisible() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+
+        searchField.tap()
+        searchField.typeText("cat")
+
+        let retryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+    }
+
+    // MARK: - 초기 상태에서는 재시도 버튼 없음
+
+    func test_initialState_noRetryButton() {
+        let retryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
+        XCTAssertFalse(retryButton.waitForExistence(timeout: 2))
+    }
+
+    // MARK: - 재시도 버튼 탭 → 에러 재발생
+
+    func test_retryButton_tap_triggersReSearch() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+
+        searchField.tap()
+        searchField.typeText("cat")
+
+        let retryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+
+        retryButton.tap()
+
+        // --simulateNetworkError 이므로 재시도 후에도 에러 → 버튼 다시 노출
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+    }
+
+    // MARK: - 에러 상태에서도 탭 전환 정상 동작
+
+    func test_errorState_tabSwitch_toBookmark_works() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+        searchField.tap()
+        searchField.typeText("cat")
+
+        let retryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+
+        // Search 키로 키보드 닫기 (탭바가 키보드 뒤에 가려지므로)
+        searchField.typeText("\n")
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
+
+        app.tabBars.firstMatch.buttons.element(boundBy: 1).tap()
+
+        let bookmarkEmpty = app.descendants(matching: .any)
+            .matching(identifier: "bookmarkView.emptyState").firstMatch
+        XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
+    }
+}

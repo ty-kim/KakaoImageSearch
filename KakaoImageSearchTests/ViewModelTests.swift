@@ -73,6 +73,97 @@ struct SearchViewModelTests {
         #expect(sut.isLoading == false)
     }
 
+    @Test("검색 실패 시 hasError = true")
+    func search_failure_setsHasError() async {
+        let (sut, _, _) = makeSUT(searchError: TestError.stub)
+
+        await sut.search(query: "cat")
+
+        #expect(sut.hasError == true)
+    }
+
+    @Test("검색 성공 시 hasError 초기화")
+    func search_success_clearsHasError() async {
+        let (sut, searchRepo, _) = makeSUT(searchError: TestError.stub)
+        await sut.search(query: "cat")
+
+        searchRepo.stubbedError = nil
+        searchRepo.stubbedResult = [ImageItem.fixture()]
+        await sut.search(query: "cat")
+
+        #expect(sut.hasError == false)
+    }
+
+    @Test("결과 없음은 hasError = false 유지")
+    func search_emptyResult_doesNotSetHasError() async {
+        let (sut, _, _) = makeSUT(searchItems: [])
+
+        await sut.search(query: "zzz")
+
+        #expect(sut.hasError == false)
+        #expect(sut.errorMessage != nil)
+    }
+
+    @Test("retry 호출 시 동일 쿼리로 재검색")
+    func retry_searchesWithSameQuery() async {
+        let (sut, searchRepo, _) = makeSUT(searchError: TestError.stub)
+        await sut.search(query: "고양이")
+
+        searchRepo.stubbedError = nil
+        searchRepo.stubbedResult = [ImageItem.fixture()]
+        await sut.retry()
+
+        #expect(searchRepo.lastQuery == "고양이")
+        #expect(searchRepo.searchCallCount == 2)
+        #expect(sut.hasError == false)
+    }
+
+    @Test("loadMore 실패 시 hasLoadMoreError = true, 기존 결과 유지")
+    func loadMore_failure_setsHasLoadMoreError() async {
+        let (sut, searchRepo, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.search(query: "cat")
+
+        searchRepo.stubbedError = TestError.stub
+        await sut.loadMore()
+
+        #expect(sut.hasLoadMoreError == true)
+        #expect(sut.rawItems.count == 1)
+    }
+
+    @Test("retryLoadMore 호출 시 hasLoadMoreError 초기화 후 추가 로드")
+    func retryLoadMore_resetsErrorAndAppendsItems() async {
+        let (sut, searchRepo, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.search(query: "cat")
+
+        searchRepo.stubbedError = TestError.stub
+        await sut.loadMore()
+        #expect(sut.hasLoadMoreError == true)
+
+        searchRepo.stubbedError = nil
+        searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
+        await sut.retryLoadMore()
+
+        #expect(sut.hasLoadMoreError == false)
+        #expect(sut.rawItems.count == 2)
+    }
+
+    @Test("재검색 시 hasLoadMoreError 초기화")
+    func search_clearsHasLoadMoreError() async {
+        let (sut, searchRepo, _) = makeSUT(searchItems: [ImageItem.fixture()])
+        searchRepo.stubbedIsEnd = false
+        await sut.search(query: "cat")
+        searchRepo.stubbedError = TestError.stub
+        await sut.loadMore()
+        #expect(sut.hasLoadMoreError == true)
+
+        searchRepo.stubbedError = nil
+        await sut.search(query: "cat")
+
+        #expect(sut.hasLoadMoreError == false)
+    }
+
     @Test("isLoading 중 재검색 무시")
     func search_whileLoading_ignored() async throws {
         let (sut, searchRepo, _) = makeSUT()

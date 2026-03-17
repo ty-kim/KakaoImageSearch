@@ -11,21 +11,37 @@ struct EmptyStateView: View {
 
     let message: String
     var accessibilityID: String = ""
+    var retryAction: (() -> Void)? = nil
 
     var body: some View {
         VStack(spacing: 16) {
-            Image(systemName: "photo.stack")
-                .font(.system(size: 52))
-                .foregroundStyle(.secondary)
+            VStack(spacing: 16) {
+                Image(systemName: "photo.stack")
+                    .font(.system(size: 52))
+                    .foregroundStyle(.secondary)
 
-            Text(message)
-                .font(.callout)
-                .foregroundStyle(.secondary)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal, 32)
+                Text(message)
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+            }
+            .accessibilityElement(children: .combine)
+            .accessibilityIdentifier(accessibilityID)
+
+            if let retryAction {
+                Button(action: retryAction) {
+                    Text(L10n.Search.retry)
+                        .font(.callout.weight(.medium))
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 10)
+                        .background(.tint.opacity(0.12))
+                        .foregroundStyle(.tint)
+                        .clipShape(Capsule())
+                }
+                .accessibilityIdentifier("emptyStateView.retryButton")
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .accessibilityElement(children: .combine)
-        .accessibilityIdentifier(accessibilityID)
     }
 }

@@ -17,6 +17,8 @@ final class SearchViewModel {
     private(set) var isLoading: Bool = false
     private(set) var isLoadingMore: Bool = false
     private(set) var isEnd: Bool = false
+    private(set) var hasError: Bool = false
+    private(set) var hasLoadMoreError: Bool = false
     private(set) var errorMessage: String? = nil
     private(set) var hasSearched: Bool = false
 
@@ -48,6 +50,8 @@ final class SearchViewModel {
         guard !isLoading else { return }
         isLoading = true
         errorMessage = nil
+        hasError = false
+        hasLoadMoreError = false
         hasSearched = true
         currentQuery = query
         currentPage = 1
@@ -65,10 +69,15 @@ final class SearchViewModel {
         } catch {
             rawItems = []
             errorMessage = L10n.Search.error(error.localizedDescription)
+            hasError = true
             Logger.presentation.errorPrint("Search failed: \(error)")
         }
 
         isLoading = false
+    }
+
+    func retry() async {
+        await search(query: currentQuery)
     }
 
     func loadMore() async {
@@ -84,10 +93,16 @@ final class SearchViewModel {
             currentPage = nextPage
             Logger.presentation.debugPrint("Loaded \(result.items.count) more, isEnd: \(isEnd)")
         } catch {
+            hasLoadMoreError = true
             Logger.presentation.errorPrint("Load more failed: \(error)")
         }
 
         isLoadingMore = false
+    }
+
+    func retryLoadMore() async {
+        hasLoadMoreError = false
+        await loadMore()
     }
 
     func toggleBookmark(for item: ImageItem) async {
