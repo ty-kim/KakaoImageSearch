@@ -314,13 +314,6 @@
 			path = DI;
 			sourceTree = "<group>";
 		};
-		FCCD76F22F680D860081FC81 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Extensions;
-			sourceTree = "<group>";
-		};
 		FCCD76F62F680D860081FC81 /* ImageLoader */ = {
 			isa = PBXGroup;
 			children = (
@@ -347,7 +340,6 @@
 				FC1E89F42F681C9F008CAC25 /* L10n.swift */,
 				FC5B19DB2F682D6B0030ACAE /* Logger */,
 				FCCD76F12F680D860081FC81 /* DI */,
-				FCCD76F22F680D860081FC81 /* Extensions */,
 				FCCD76F62F680D860081FC81 /* ImageLoader */,
 				FCCD76FA2F680D860081FC81 /* Network */,
 			);
