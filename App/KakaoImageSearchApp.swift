@@ -30,12 +30,9 @@ enum AppDependencies {
         )
         let bookmarkUseCase = ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
 
-        let searchVM = SearchViewModel(
+        return MainViewModel(
             searchImageUseCase: searchUseCase,
             manageBookmarkUseCase: bookmarkUseCase
         )
-        let bookmarkVM = BookmarkViewModel(manageBookmarkUseCase: bookmarkUseCase)
-
-        return MainViewModel(searchViewModel: searchVM, bookmarkViewModel: bookmarkVM)
     }
 }

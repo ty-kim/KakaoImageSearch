@@ -26,12 +26,15 @@ struct SearchViewModelTests {
         let bookmarkRepo = MockBookmarkRepository()
         bookmarkRepo.items = bookmarkedItems
 
+        let bookmarkStore = BookmarkStore(
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
+        )
         let sut = SearchViewModel(
             searchImageUseCase: SearchImageUseCase(
                 imageSearchRepository: searchRepo,
                 bookmarkRepository: bookmarkRepo
             ),
-            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
+            bookmarkStore: bookmarkStore
         )
         return (sut, searchRepo, bookmarkRepo)
     }
@@ -132,7 +135,9 @@ struct BookmarkViewModelTests {
         repo.items = initialItems
         repo.stubbedFetchError = fetchError
         let sut = BookmarkViewModel(
-            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: repo)
+            bookmarkStore: BookmarkStore(
+                manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: repo)
+            )
         )
         return (sut, repo)
     }
@@ -183,17 +188,13 @@ struct MainViewModelTests {
     private func makeSUT() -> MainViewModel {
         let bookmarkRepo = MockBookmarkRepository()
         let searchRepo = MockImageSearchRepository()
-        let searchVM = SearchViewModel(
+        return MainViewModel(
             searchImageUseCase: SearchImageUseCase(
                 imageSearchRepository: searchRepo,
                 bookmarkRepository: bookmarkRepo
             ),
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
         )
-        let bookmarkVM = BookmarkViewModel(
-            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
-        )
-        return MainViewModel(searchViewModel: searchVM, bookmarkViewModel: bookmarkVM)
     }
 
     @Test("빈 문자열 입력 시 검색 결과 초기화")
@@ -229,17 +230,13 @@ struct MainViewModelTests {
     func onSearchTextChanged_rapidInput_onlyLastQuerySearched() async throws {
         let searchRepo = MockImageSearchRepository()
         let bookmarkRepo = MockBookmarkRepository()
-        let searchVM = SearchViewModel(
+        let sut = MainViewModel(
             searchImageUseCase: SearchImageUseCase(
                 imageSearchRepository: searchRepo,
                 bookmarkRepository: bookmarkRepo
             ),
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
         )
-        let bookmarkVM = BookmarkViewModel(
-            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
-        )
-        let sut = MainViewModel(searchViewModel: searchVM, bookmarkViewModel: bookmarkVM)
 
         sut.onSearchTextChanged("a")
         sut.onSearchTextChanged("ab")

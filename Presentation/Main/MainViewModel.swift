@@ -19,15 +19,31 @@ final class MainViewModel {
     private(set) var searchViewModel: SearchViewModel
     private(set) var bookmarkViewModel: BookmarkViewModel
 
+    private let bookmarkStore: BookmarkStore
     private var debounceTask: Task<Void, Never>?
 
     enum Tab {
         case search, bookmark
     }
 
-    init(searchViewModel: SearchViewModel, bookmarkViewModel: BookmarkViewModel) {
-        self.searchViewModel = searchViewModel
-        self.bookmarkViewModel = bookmarkViewModel
+    init(
+        searchImageUseCase: SearchImageUseCase,
+        manageBookmarkUseCase: ManageBookmarkUseCase
+    ) {
+        let bookmarkStore = BookmarkStore(manageBookmarkUseCase: manageBookmarkUseCase)
+
+        self.bookmarkStore = bookmarkStore
+        self.searchViewModel = SearchViewModel(
+            searchImageUseCase: searchImageUseCase,
+            bookmarkStore: bookmarkStore
+        )
+        self.bookmarkViewModel = BookmarkViewModel(
+            bookmarkStore: bookmarkStore
+        )
+    }
+
+    func loadInitialData() async {
+        await bookmarkStore.load()
     }
 
     func onSearchTextChanged(_ newValue: String) {

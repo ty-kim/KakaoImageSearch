@@ -32,5 +32,8 @@ struct MainView: View {
                     .tag(MainViewModel.Tab.bookmark)
             }
         }
+        .task {
+            await viewModel.loadInitialData()
+        }
     }
 }
