@@ -327,15 +327,14 @@ struct BookmarkViewModelTests {
         #expect(sut.isLoading == false)
     }
 
-    @Test("loadBookmarks 실패 시 items 비움")
-    func loadBookmarks_failure_clearsItems() async throws {
-        let items = [ImageItem.fixture(id: "a")]
-        let (sut, repo) = makeSUT(initialItems: items)
+    @Test("loadBookmarks 실패 시 toastMessage 설정")
+    func loadBookmarks_failure_setsToastMessage() async throws {
+        let (sut, repo) = makeSUT()
         repo.stubbedFetchError = TestError.stub
 
         await sut.loadBookmarks()
 
-        #expect(sut.items.isEmpty)
+        #expect(sut.toastMessage != nil)
         #expect(sut.isLoading == false)
     }
 
@@ -385,25 +384,24 @@ struct BookmarkStoreTests {
     }
 
     @Test("load 성공 시 bookmarkedItems, bookmarkedIDs 설정")
-    func load_success_setsItemsAndIDs() async {
+    func load_success_setsItemsAndIDs() async throws {
         let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
         let (sut, _) = makeSUT(initialItems: items)
 
-        await sut.load()
+        try await sut.load()
 
         #expect(sut.bookmarkedItems.count == 2)
         #expect(sut.bookmarkedIDs == ["a", "b"])
         #expect(sut.isLoading == false)
     }
 
-    @Test("load 실패 시 bookmarkedItems, bookmarkedIDs 비움")
-    func load_failure_clearsItemsAndIDs() async {
+    @Test("load 실패 시 에러 throw")
+    func load_failure_throws() async {
         let (sut, _) = makeSUT(fetchError: TestError.stub)
 
-        await sut.load()
-
-        #expect(sut.bookmarkedItems.isEmpty)
-        #expect(sut.bookmarkedIDs.isEmpty)
+        await #expect(throws: TestError.stub) {
+            try await sut.load()
+        }
         #expect(sut.isLoading == false)
     }
 
@@ -422,7 +420,7 @@ struct BookmarkStoreTests {
     func toggle_remove_updatesItemsAndIDs() async throws {
         let item = ImageItem.fixture(id: "a", isBookmarked: true)
         let (sut, _) = makeSUT(initialItems: [item])
-        await sut.load()
+        try await sut.load()
 
         _ = try await sut.toggle(item)
 
@@ -431,10 +429,10 @@ struct BookmarkStoreTests {
     }
 
     @Test("isBookmarked: bookmarkedIDs 기반으로 판별")
-    func isBookmarked_returnsCorrectState() async {
+    func isBookmarked_returnsCorrectState() async throws {
         let item = ImageItem.fixture(id: "a", isBookmarked: true)
         let (sut, _) = makeSUT(initialItems: [item])
-        await sut.load()
+        try await sut.load()
 
         #expect(sut.isBookmarked("a") == true)
         #expect(sut.isBookmarked("z") == false)

@@ -26,20 +26,14 @@ final class BookmarkStore {
         self.manageBookmarkUseCase = manageBookmarkUseCase
     }
 
-    func load() async {
+    func load() async throws {
         isLoading = true
         defer { isLoading = false }
 
-        do {
-            let fetched = try await manageBookmarkUseCase.fetchAll()
-            bookmarkedItems = fetched
-            bookmarkedIDs = Set(fetched.map(\.id))
-            Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
-        } catch {
-            bookmarkedItems = []
-            bookmarkedIDs = []
-            Logger.presentation.errorPrint("Load bookmarks failed: \(error)")
-        }
+        let fetched = try await manageBookmarkUseCase.fetchAll()
+        bookmarkedItems = fetched
+        bookmarkedIDs = Set(fetched.map(\.id))
+        Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
     }
 
     func isBookmarked(_ id: String) -> Bool {

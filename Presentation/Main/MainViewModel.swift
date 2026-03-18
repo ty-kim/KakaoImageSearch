@@ -43,7 +43,7 @@ final class MainViewModel {
     }
 
     func loadInitialData() async {
-        await bookmarkStore.load()
+        try? await bookmarkStore.load()
     }
 
     func onSearchTextChanged(_ newValue: String) {

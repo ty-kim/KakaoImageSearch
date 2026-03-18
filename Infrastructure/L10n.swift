@@ -65,5 +65,8 @@ nonisolated enum L10n {
         static var toggleError: String {
             String(localized: "bookmark.error.toggle")
         }
+        static var loadError: String {
+            String(localized: "bookmark.error.load")
+        }
     }
 }

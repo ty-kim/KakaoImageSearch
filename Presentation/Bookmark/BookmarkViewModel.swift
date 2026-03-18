@@ -32,7 +32,12 @@ final class BookmarkViewModel {
     }
 
     func loadBookmarks() async {
-        await bookmarkStore.load()
+        do {
+            try await bookmarkStore.load()
+        } catch {
+            showToast(L10n.Bookmark.loadError)
+            Logger.presentation.errorPrint("Load bookmarks failed: \(error)")
+        }
     }
 
     func removeBookmark(for item: ImageItem) async {
