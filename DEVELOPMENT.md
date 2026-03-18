@@ -77,7 +77,7 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
 #### View 수명 관리 — `.task(id:)` 바인딩
 
-`CachedAsyncImage`는 `.task(id: url)`을 사용해 이미지 로드 Task를 뷰 수명에 바인딩합니다.
+`CachedAsyncImage`는 `.task(id:)`를 사용해 이미지 로드 Task를 뷰 수명에 바인딩합니다.
 URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `LazyVGrid` 셀 재사용 시 이전 URL의 이미지가 깜빡이거나 덮어쓰이는 문제를 방지합니다.
 
 #### 외부 상태 변화 반영 — `withObservationTracking`
@@ -130,5 +130,4 @@ AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
 
 - **검색 히스토리**: 최근 검색어 저장 기능도 추가 후보로 생각했습니다. 현재 북마크 저장 구조와 유사한 방식으로 확장할 수 있다고 봤습니다.
 - **이미지 상세 뷰어**: 이미지 상세 뷰어도 고려했지만, 이번 제출에서는 범위를 넓히지 않기 위해 제외했습니다. 필요하다면 현재 모델 구조를 바탕으로 비교적 무리 없이 확장할 수 있습니다.
-- **이미지 로드 실패 UX**: 현재 로드 실패 시 `exclamationmark.triangle` placeholder만 표시되며 사용자가 즉시 다시 시도할 수 있는 흐름은 아직 포함하지 않았습니다. 셀 탭 또는 별도 재시도 버튼으로 `ImageDownloader.download(from:)`를 재호출하는 흐름을 추가하면 검색 결과 재시도 UX와 비슷한 방식으로 정리할 수 있을 것 같습니다.
 - **Certificate Pinning**: 현재 API 통신(`dapi.kakao.com`)은 HTTPS로 보호되지만, 인증서 검증을 시스템 기본 동작에 위임하고 있습니다. 프로덕션 환경에서는 MITM 방어를 위해 `URLSessionDelegate`에서 서버 공개키를 직접 검증하는 방식을 고려할 수 있습니다. 이미지 CDN(`daum.net`, `naver.net`)은 HTTP 통신이라 pinning 대상이 아니며, CDN이 HTTPS를 지원하게 되면 ATS 예외 제거와 함께 pinning을 고려할 수 있습니다.

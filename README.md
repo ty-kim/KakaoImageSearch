@@ -61,7 +61,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 |----------|-----------|
 | **NetworkService** | `actor` 기반 Generic URLSession 래퍼, snake_case 자동 변환 |
 | **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시, in-flight 중복 요청 dedup(호출자 취소 내성), Content-Type·크기 검증(Content-Length 사전 검사 + 스트리밍 중 조기 중단), prefetch 병렬도 제한(최대 6), URLSession 주입 가능 |
-| **CachedAsyncImage** | `.task(id: url)` 기반 이미지 로더 — 뷰 수명과 Task 수명 일치, URL 변경 시 이전 상태를 정리하고 새 이미지를 로드하도록 구성 |
+| **CachedAsyncImage** | `.task(id:)` 기반 이미지 로더 — 뷰 수명과 Task 수명 일치, URL 변경 시 이전 상태를 정리하고 새 이미지를 로드, 로드 실패 시 셀 탭으로 재시도(최대 3회, 초과 시 영구 실패 표시) |
 | **AppAssembler** | Composition Root 패턴, 주요 의존성은 AppAssembler에서 조립하도록 구성했습니다. |
 | **BookmarkStorage** | FileManager + JSON 파일 기반 영속성, `.atomic` 쓰기 |
 
