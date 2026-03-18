@@ -355,6 +355,37 @@ struct SearchViewModelTests {
         // cancelled stream에서 yield됐으면 취소 전파 확인
     }
 
+    @Test("isEnd = true이면 loadMore가 실행되지 않는다")
+    func loadMore_whenIsEnd_doesNotExecute() async {
+        let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = true
+        await sut.submitSearch(query: "cat").value
+
+        let task = sut.loadMore()
+
+        #expect(task == nil)
+        #expect(searchRepo.searchCallCount == 1)
+    }
+
+    @Test("page 50 도달 후 isEnd = false여도 클램핑되어 정상 동작")
+    func loadMore_page50_clampedByEndpoint() async {
+        let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.submitSearch(query: "cat").value
+
+        // 49번 loadMore로 page 50까지 진행
+        for i in 2...50 {
+            searchRepo.stubbedResult = [ImageItem.fixture(id: "p\(i)")]
+            await sut.loadMore()?.value
+        }
+
+        // page 51 요청 — Endpoint에서 50으로 클램핑됨
+        searchRepo.stubbedResult = [ImageItem.fixture(id: "p51")]
+        await sut.loadMore()?.value
+
+        #expect(searchRepo.lastPage == 51) // ViewModel은 51을 전달, Endpoint에서 50으로 클램핑
+    }
+
     @Test("cancelSearchAndClear 시 진행 중인 prefetch Task가 취소된다")
     func cancelSearchAndClear_cancelsPrefetchTask() async {
         let blockingPrefetcher = BlockingMockImagePrefetcher()

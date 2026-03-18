@@ -186,6 +186,25 @@ struct NetworkServiceIntegrationTests {
         #expect(capturedRequest?.value(forHTTPHeaderField: "Authorization")?.hasPrefix("KakaoAK") == true)
     }
 
+    @Test("타임아웃 시 NetworkError.unknown을 던진다")
+    func request_timeout_throwsUnknownError() async throws {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        config.timeoutIntervalForRequest = 1
+        let sut = NetworkService(session: URLSession(configuration: config))
+        defer { MockURLProtocol.requestHandler = nil }
+
+        MockURLProtocol.requestHandler = { req in
+            Thread.sleep(forTimeInterval: 3) // 타임아웃 초과
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, self.validResponseJSON)
+        }
+
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 1)
+        await #expect(throws: Error.self) {
+            let _: KakaoSearchResponseDTO = try await sut.request(endpoint)
+        }
+    }
+
     @Test("요청 URL에 query 파라미터가 포함된다")
     func request_urlContainsQueryParam() async throws {
         let sut = makeService()

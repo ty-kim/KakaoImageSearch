@@ -159,6 +159,45 @@ struct BookmarkStorageIntegrationTests {
         #expect(result.first?.id == "persist-id")
     }
 
+    @Test("읽기 전용 경로에 save 시 에러를 throw한다")
+    func save_readOnlyPath_throwsError() async throws {
+        let readOnlyDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: readOnlyDir, withIntermediateDirectories: true)
+        try FileManager.default.setAttributes(
+            [.posixPermissions: 0o444],
+            ofItemAtPath: readOnlyDir.path
+        )
+
+        let sut = BookmarkStorage(fileURL: readOnlyDir.appendingPathComponent("bookmarks.json"))
+        let item = ImageItem.fixture(id: "fail-write")
+
+        await #expect(throws: Error.self) {
+            try await sut.save(item)
+        }
+
+        // cleanup
+        try? FileManager.default.setAttributes(
+            [.posixPermissions: 0o755],
+            ofItemAtPath: readOnlyDir.path
+        )
+    }
+
+    @Test("손상된 JSON 파일이 있으면 fetchAll이 에러를 throw한다")
+    func fetchAll_corruptedFile_throwsError() async throws {
+        let dir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+        let fileURL = dir.appendingPathComponent("bookmarks.json")
+        try "not valid json{{{".data(using: .utf8)!.write(to: fileURL)
+
+        let sut = BookmarkStorage(fileURL: fileURL)
+
+        await #expect(throws: Error.self) {
+            try await sut.fetchAll()
+        }
+    }
+
     @Test("저장된 JSON 파일은 모든 ImageItem 필드를 보존한다")
     func persistence_roundTrip_preservesAllFields() async throws {
         let sut = makeStorage()
