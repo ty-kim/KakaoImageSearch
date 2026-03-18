@@ -44,7 +44,7 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
   - `itemWidth = (전체 너비 - 패딩 × 2 - 컬럼 간격) / 열 수` 로 정확히 계산
 - **iPad UI 테스트**: `setUpWithError` + `XCTSkipIf(!isIPad)`로 클래스 단위에서 iPad 시뮬레이터 전용 실행
 
-### 6. 페이지네이션 & 에러 핸들링 UX
+### 5. 페이지네이션 & 에러 핸들링 UX
 
 API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 제공하는 데 집중했습니다.
 
@@ -55,7 +55,7 @@ API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 
 
 이 패턴은 웹툰/콘텐츠 앱의 핵심 흐름(작품 목록 무한 스크롤 → 북마크/찜 → 에러 복구)과 구조적으로 동일합니다.
 
-### 5. RxSwift 대신 Swift Concurrency
+### 6. RxSwift 대신 Swift Concurrency
 
 과제 조건(Zero External Dependency)으로 RxSwift/RxCocoa를 사용하지 않았습니다.
 대신 Swift Concurrency로 동일한 반응형 데이터 흐름을 구현했습니다.

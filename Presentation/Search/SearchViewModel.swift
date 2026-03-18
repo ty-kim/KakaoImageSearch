@@ -27,7 +27,6 @@ final class SearchViewModel {
     private var currentPage: Int = 1
     private var toastTask: Task<Void, Never>? = nil
 
-    // 추가
     private var searchTask: Task<Void, Never>? = nil
     private var activeSearchID: UUID? = nil
 
