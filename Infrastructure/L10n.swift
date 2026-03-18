@@ -65,6 +65,12 @@ nonisolated enum L10n {
         static var invalidData: String {
             String(localized: "image_download.error.invalid_data")
         }
+        static var notImageContentType: String {
+            String(localized: "image_download.error.not_image_content_type")
+        }
+        static var contentLengthExceeded: String {
+            String(localized: "image_download.error.content_length_exceeded")
+        }
     }
 
     enum Accessibility {

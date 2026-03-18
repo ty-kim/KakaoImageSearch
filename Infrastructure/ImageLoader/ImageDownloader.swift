@@ -11,11 +11,15 @@ import OSLog
 enum ImageDownloadError: Error, LocalizedError {
     case invalidResponse
     case invalidData
+    case notImageContentType
+    case contentLengthExceeded
 
     var errorDescription: String? {
         switch self {
-        case .invalidResponse: return L10n.ImageDownload.invalidResponse
-        case .invalidData:     return L10n.ImageDownload.invalidData
+        case .invalidResponse:       return L10n.ImageDownload.invalidResponse
+        case .invalidData:           return L10n.ImageDownload.invalidData
+        case .notImageContentType:   return L10n.ImageDownload.notImageContentType
+        case .contentLengthExceeded: return L10n.ImageDownload.contentLengthExceeded
         }
     }
 }
@@ -33,9 +37,13 @@ protocol ImageDownloading: Sendable {
 /// actor 기반 자체 이미지 다운로더.
 /// - 메모리/디스크 캐시 우선 조회
 /// - 동일 URL 중복 요청 dedup 처리
+/// - Content-Type image/* 검증, 최대 10 MB 제한
 actor ImageDownloader: ImagePrefetcher, ImageDownloading {
 
     static let shared = ImageDownloader()
+
+    /// 썸네일 이미지 최대 허용 크기 (10 MB)
+    nonisolated static let maxContentLength: Int64 = 10 * 1024 * 1024
 
     private let cache = ImageCache()
     private var inFlight: [URL: Task<UIImage, Error>] = [:]
@@ -100,6 +108,19 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
                   (200..<300).contains(http.statusCode) else {
                 Logger.imageLoader.errorPrint("Invalid response for: \(secureURL.absoluteString)")
                 throw ImageDownloadError.invalidResponse
+            }
+
+            // Content-Type이 image/* 인지 검증
+            if let mimeType = http.mimeType,
+               !mimeType.hasPrefix("image/") {
+                Logger.imageLoader.errorPrint("Non-image Content-Type '\(mimeType)' for: \(secureURL.lastPathComponent)")
+                throw ImageDownloadError.notImageContentType
+            }
+
+            // 다운로드된 데이터 크기가 상한을 초과하면 거부
+            if data.count > ImageDownloader.maxContentLength {
+                Logger.imageLoader.errorPrint("Content length \(data.count) exceeds limit for: \(secureURL.lastPathComponent)")
+                throw ImageDownloadError.contentLengthExceeded
             }
 
             guard let image = UIImage(data: data) else {

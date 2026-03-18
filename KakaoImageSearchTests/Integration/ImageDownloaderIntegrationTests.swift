@@ -86,7 +86,10 @@ struct ImageDownloaderIntegrationTests {
         let sut = makeDownloader()
         defer { MockImageURLProtocol.requestHandler = nil }
         MockImageURLProtocol.requestHandler = { req in
-            (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, Data("not an image".utf8))
+            let response = HTTPURLResponse(
+                url: req.url!, statusCode: 200, httpVersion: nil,
+                headerFields: ["Content-Type": "image/png"])!
+            return (response, Data("not an image".utf8))
         }
 
         await #expect(throws: ImageDownloadError.invalidData) {
@@ -193,6 +196,72 @@ struct ImageDownloaderIntegrationTests {
         #expect(requestCount == 1)
         #expect(result1.size.width > 0)
         #expect(result2.size.width > 0)
+    }
+
+    // MARK: - Content-Type 검증
+
+    @Test("200 OK인데 Content-Type이 text/html이면 notImageContentType을 던진다")
+    func download_200_textHtml_throwsNotImageContentType() async throws {
+        let sut = makeDownloader()
+        defer { MockImageURLProtocol.requestHandler = nil }
+        MockImageURLProtocol.requestHandler = { req in
+            let response = HTTPURLResponse(
+                url: req.url!, statusCode: 200, httpVersion: nil,
+                headerFields: ["Content-Type": "text/html"])!
+            return (response, Data("<html></html>".utf8))
+        }
+
+        await #expect(throws: ImageDownloadError.notImageContentType) {
+            _ = try await sut.download(from: imageURL)
+        }
+    }
+
+    @Test("Content-Type이 image/jpeg이면 정상 다운로드된다")
+    func download_200_imageJpeg_succeeds() async throws {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        defer { MockImageURLProtocol.requestHandler = nil }
+        MockImageURLProtocol.requestHandler = { req in
+            let response = HTTPURLResponse(
+                url: req.url!, statusCode: 200, httpVersion: nil,
+                headerFields: ["Content-Type": "image/jpeg"])!
+            return (response, png)
+        }
+
+        let image = try await sut.download(from: imageURL)
+        #expect(image.size.width > 0)
+    }
+
+    @Test("Content-Type 헤더가 없으면 Content-Type 검증을 건너뛴다")
+    func download_200_noContentType_fallsThrough() async throws {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        defer { MockImageURLProtocol.requestHandler = nil }
+        MockImageURLProtocol.requestHandler = { req in
+            (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+        }
+
+        let image = try await sut.download(from: imageURL)
+        #expect(image.size.width > 0)
+    }
+
+    // MARK: - Content-Length 제한
+
+    @Test("다운로드 데이터가 maxContentLength를 초과하면 contentLengthExceeded를 던진다")
+    func download_oversizedData_throwsContentLengthExceeded() async throws {
+        let sut = makeDownloader()
+        let oversizedData = Data(repeating: 0xFF, count: Int(ImageDownloader.maxContentLength) + 1)
+        defer { MockImageURLProtocol.requestHandler = nil }
+        MockImageURLProtocol.requestHandler = { req in
+            let response = HTTPURLResponse(
+                url: req.url!, statusCode: 200, httpVersion: nil,
+                headerFields: ["Content-Type": "image/png"])!
+            return (response, oversizedData)
+        }
+
+        await #expect(throws: ImageDownloadError.contentLengthExceeded) {
+            _ = try await sut.download(from: imageURL)
+        }
     }
 
     // MARK: - http → https 변환

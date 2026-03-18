@@ -369,6 +369,52 @@
         }
       }
     },
+    "image_download.error.not_image_content_type" : {
+      "comment" : "Error when server responds with non-image Content-Type",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The server returned a non-image response."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバーが画像以外のレスポンスを返しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "서버가 이미지가 아닌 응답을 반환했습니다."
+          }
+        }
+      }
+    },
+    "image_download.error.content_length_exceeded" : {
+      "comment" : "Error when image data exceeds maximum allowed size",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The image is too large to download."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像が大きすぎてダウンロードできません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 크기가 너무 커서 다운로드할 수 없습니다."
+          }
+        }
+      }
+    },
     "bookmark.error.load" : {
       "comment" : "Toast message shown when loading bookmarks fails",
       "localizations" : {
