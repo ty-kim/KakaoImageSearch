@@ -292,6 +292,29 @@ struct SearchViewModelTests {
 
         #expect(prefetcher.prefetchCallCount == 0)
     }
+
+    @Test("동일 아이템 연속 토글 시 한 번만 처리")
+    func toggleBookmark_concurrent_deduplicates() async {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, _, repo, _) = makeSUT()
+
+        async let t1: Void = sut.toggleBookmark(for: item)
+        async let t2: Void = sut.toggleBookmark(for: item)
+        _ = await (t1, t2)
+
+        #expect(repo.saveCallCount == 1)
+    }
+
+    @Test("toggleBookmark 실패 후 inFlightBookmarkIDs 복구")
+    func toggleBookmark_failure_restoresInFlightState() async {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, _, repo, _) = makeSUT()
+        repo.stubbedSaveError = TestError.stub
+
+        await sut.toggleBookmark(for: item)
+
+        #expect(!sut.inFlightBookmarkIDs.contains(item.id))
+    }
 }
 
 // MARK: - BookmarkViewModel
@@ -361,6 +384,31 @@ struct BookmarkViewModelTests {
 
         #expect(sut.items.count == 1)
         #expect(sut.items.first?.id == "b")
+    }
+
+    @Test("동일 아이템 연속 removeBookmark 시 한 번만 처리")
+    func removeBookmark_concurrent_deduplicates() async {
+        let item = ImageItem.fixture(id: "a", isBookmarked: true)
+        let (sut, repo) = makeSUT(initialItems: [item])
+        await sut.loadBookmarks()
+
+        async let t1: Void = sut.removeBookmark(for: item)
+        async let t2: Void = sut.removeBookmark(for: item)
+        _ = await (t1, t2)
+
+        #expect(repo.deleteCallCount == 1)
+    }
+
+    @Test("removeBookmark 실패 후 inFlightBookmarkIDs 복구")
+    func removeBookmark_failure_restoresInFlightState() async {
+        let item = ImageItem.fixture(id: "a", isBookmarked: true)
+        let (sut, repo) = makeSUT(initialItems: [item])
+        await sut.loadBookmarks()
+        repo.stubbedDeleteError = TestError.stub
+
+        await sut.removeBookmark(for: item)
+
+        #expect(!sut.inFlightBookmarkIDs.contains(item.id))
     }
 }
 

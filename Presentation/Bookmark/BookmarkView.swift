@@ -34,7 +34,8 @@ struct BookmarkView: View {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
-                                    screenWidth: itemWidth
+                                    screenWidth: itemWidth,
+                                    isBookmarkInFlight: viewModel.inFlightBookmarkIDs.contains(item.id)
                                 ) {
                                     Task { await viewModel.removeBookmark(for: item) }
                                 }

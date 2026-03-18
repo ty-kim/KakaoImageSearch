@@ -16,6 +16,7 @@ final class BookmarkViewModel {
     private let bookmarkStore: BookmarkStore
     private let toastDuration: Duration
     private(set) var toastMessage: String? = nil
+    private(set) var inFlightBookmarkIDs: Set<String> = []
     private var toastTask: Task<Void, Never>? = nil
 
     var items: [ImageItem] {
@@ -41,6 +42,10 @@ final class BookmarkViewModel {
     }
 
     func removeBookmark(for item: ImageItem) async {
+        guard !inFlightBookmarkIDs.contains(item.id) else { return }
+        inFlightBookmarkIDs.insert(item.id)
+        defer { inFlightBookmarkIDs.remove(item.id) }
+
         do {
             _ = try await bookmarkStore.toggle(item)
             Logger.presentation.debugPrint("Removed bookmark: \(item.id)")

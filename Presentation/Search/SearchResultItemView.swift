@@ -11,6 +11,7 @@ struct SearchResultItemView: View {
 
     let item: ImageItem
     let screenWidth: CGFloat
+    var isBookmarkInFlight: Bool = false
     let onBookmarkToggle: () -> Void
 
     var body: some View {
@@ -23,6 +24,7 @@ struct SearchResultItemView: View {
                 .clipShape(RoundedRectangle(cornerRadius: 15))
 
             BookmarkButton(isBookmarked: item.isBookmarked, action: onBookmarkToggle)
+                .disabled(isBookmarkInFlight)
                 .padding(12)
         }
     }

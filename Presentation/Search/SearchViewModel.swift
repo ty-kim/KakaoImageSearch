@@ -23,6 +23,7 @@ final class SearchViewModel {
     private(set) var errorMessage: String? = nil
     private(set) var hasSearched: Bool = false
     private(set) var toastMessage: String? = nil
+    private(set) var inFlightBookmarkIDs: Set<String> = []
 
     private var currentQuery: String = ""
     private var currentPage: Int = 1
@@ -207,6 +208,10 @@ final class SearchViewModel {
     }
 
     func toggleBookmark(for item: ImageItem) async {
+        guard !inFlightBookmarkIDs.contains(item.id) else { return }
+        inFlightBookmarkIDs.insert(item.id)
+        defer { inFlightBookmarkIDs.remove(item.id) }
+
         do {
             _ = try await bookmarkStore.toggle(item)
             rebuildItems()

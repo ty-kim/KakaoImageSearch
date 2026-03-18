@@ -41,7 +41,8 @@ struct SearchView: View {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
-                                    screenWidth: itemWidth
+                                    screenWidth: itemWidth,
+                                    isBookmarkInFlight: viewModel.inFlightBookmarkIDs.contains(item.id)
                                 ) {
                                     Task { await viewModel.toggleBookmark(for: item) }
                                 }
