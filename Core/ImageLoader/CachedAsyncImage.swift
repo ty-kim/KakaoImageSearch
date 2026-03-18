@@ -26,7 +26,6 @@ struct CachedAsyncImage: View {
             switch phase {
             case .idle, .loading:
                 placeholder(systemName: "photo")
-                    .onAppear(perform: load)
 
             case .success(let image):
                 Image(uiImage: image)
@@ -36,6 +35,9 @@ struct CachedAsyncImage: View {
             case .failure:
                 placeholder(systemName: "exclamationmark.triangle")
             }
+        }
+        .task(id: url) {
+            await load()
         }
     }
 
@@ -49,17 +51,17 @@ struct CachedAsyncImage: View {
             )
     }
 
-    private func load() {
-        guard let url, case .idle = phase else { return }
+    private func load() async {
+        guard let url else { return }
         phase = .loading
 
-        Task {
-            do {
-                let image = try await ImageDownloader.shared.download(from: url)
-                phase = .success(image)
-            } catch {
-                phase = .failure
-            }
+        do {
+            let image = try await ImageDownloader.shared.download(from: url)
+            phase = .success(image)
+        } catch is CancellationError {
+            phase = .idle
+        } catch {
+            phase = .failure
         }
     }
 }
