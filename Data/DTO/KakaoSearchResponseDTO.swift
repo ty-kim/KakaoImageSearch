@@ -27,18 +27,16 @@ struct KakaoSearchResponseDTO: Sendable {
 
     struct Meta: Sendable {
         let totalCount: Int
-        let pageableCount: Int
         let isEnd: Bool
 
         nonisolated init(from decoder: any Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
-            totalCount    = try c.decode(Int.self,  forKey: .totalCount)
-            pageableCount = try c.decode(Int.self,  forKey: .pageableCount)
-            isEnd         = try c.decode(Bool.self, forKey: .isEnd)
+            totalCount = try c.decode(Int.self,  forKey: .totalCount)
+            isEnd      = try c.decode(Bool.self, forKey: .isEnd)
         }
 
         private enum CodingKeys: String, CodingKey {
-            case totalCount, pageableCount, isEnd
+            case totalCount, isEnd
         }
     }
 

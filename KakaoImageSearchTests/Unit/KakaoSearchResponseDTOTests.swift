@@ -44,7 +44,6 @@ struct KakaoSearchResponseDTOTests {
         let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
 
         #expect(dto.meta.totalCount == 422)
-        #expect(dto.meta.pageableCount == 100)
         #expect(dto.meta.isEnd == false)
         #expect(dto.documents.count == 1)
 
