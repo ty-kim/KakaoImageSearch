@@ -63,6 +63,8 @@ struct ImageDownloaderIntegrationTests {
 
     private let imageURL = URL(string: "https://example.com/image.png")!
 
+    private let imageHeaders = ["Content-Type": "image/png"]
+
     // MARK: - 성공
 
     @Test("200 응답과 유효한 이미지 데이터는 UIImage를 반환한다")
@@ -71,7 +73,7 @@ struct ImageDownloaderIntegrationTests {
         let png = makePNGData()
         defer { MockImageURLProtocol.requestHandler = nil }
         MockImageURLProtocol.requestHandler = { req in
-            (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
         let image = try await sut.download(from: imageURL)
@@ -134,7 +136,7 @@ struct ImageDownloaderIntegrationTests {
         var requestCount = 0
         MockImageURLProtocol.requestHandler = { req in
             requestCount += 1
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
         _ = try await sut.download(from: imageURL)
@@ -155,7 +157,7 @@ struct ImageDownloaderIntegrationTests {
 
         MockImageURLProtocol.requestHandler = { req in
             if req.url == successURL {
-                return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+                return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
             } else {
                 return (HTTPURLResponse(url: req.url!, statusCode: 500, httpVersion: nil, headerFields: nil)!, Data())
             }
@@ -167,7 +169,7 @@ struct ImageDownloaderIntegrationTests {
         var requestCount = 0
         MockImageURLProtocol.requestHandler = { req in
             requestCount += 1
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
         _ = try await sut.download(from: successURL)
 
@@ -185,7 +187,7 @@ struct ImageDownloaderIntegrationTests {
         var requestCount = 0
         MockImageURLProtocol.requestHandler = { req in
             requestCount += 1
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
         async let image1 = sut.download(from: imageURL)
@@ -214,7 +216,7 @@ struct ImageDownloaderIntegrationTests {
             // 약간의 지연으로 동시성 측정
             Thread.sleep(forTimeInterval: 0.05)
             counter.decrement()
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
         await sut.prefetch(urls: urls)
@@ -237,7 +239,7 @@ struct ImageDownloaderIntegrationTests {
                 return (HTTPURLResponse(url: req.url!, statusCode: 500, httpVersion: nil, headerFields: nil)!, Data())
             }
             downloadedCount += 1
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
         await sut.prefetch(urls: urls)
@@ -279,8 +281,8 @@ struct ImageDownloaderIntegrationTests {
         #expect(image.size.width > 0)
     }
 
-    @Test("Content-Type 헤더가 없으면 Content-Type 검증을 건너뛴다")
-    func download_200_noContentType_fallsThrough() async throws {
+    @Test("Content-Type 헤더가 없으면 notImageContentType을 던진다")
+    func download_200_noContentType_throwsNotImageContentType() async throws {
         let sut = makeDownloader()
         let png = makePNGData()
         defer { MockImageURLProtocol.requestHandler = nil }
@@ -288,8 +290,9 @@ struct ImageDownloaderIntegrationTests {
             (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
         }
 
-        let image = try await sut.download(from: imageURL)
-        #expect(image.size.width > 0)
+        await #expect(throws: ImageDownloadError.notImageContentType) {
+            _ = try await sut.download(from: imageURL)
+        }
     }
 
     // MARK: - Content-Length 제한
@@ -322,7 +325,7 @@ struct ImageDownloaderIntegrationTests {
         var capturedURL: URL?
         MockImageURLProtocol.requestHandler = { req in
             capturedURL = req.url
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
         let httpURL = URL(string: "http://example.com/image.png")!

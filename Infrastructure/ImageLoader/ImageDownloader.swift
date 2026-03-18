@@ -130,10 +130,11 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
                 throw ImageDownloadError.invalidResponse
             }
 
-            // Content-Type이 image/* 인지 검증
-            if let mimeType = http.mimeType,
-               !mimeType.hasPrefix("image/") {
-                Logger.imageLoader.errorPrint("Non-image Content-Type '\(mimeType)' for: \(secureURL.lastPathComponent)")
+            // Content-Type이 image/* 인지 검증 — nil이면 거부
+            guard let mimeType = http.mimeType,
+                  mimeType.hasPrefix("image/") else {
+                let actual = http.mimeType ?? "nil"
+                Logger.imageLoader.errorPrint("Non-image Content-Type '\(actual)' for: \(secureURL.lastPathComponent)")
                 throw ImageDownloadError.notImageContentType
             }
 
