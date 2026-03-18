@@ -24,7 +24,7 @@
 		FC1E8A112F68276E008CAC25 /* SearchResultItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A102F68276E008CAC25 /* SearchResultItemView.swift */; };
 		FC1E8A132F6827B0008CAC25 /* BookmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A122F6827B0008CAC25 /* BookmarkView.swift */; };
 		FC5B19DC2F682D6B0030ACAE /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5B19DA2F682D6B0030ACAE /* AppLogger.swift */; };
-		FC6EA6E12F69036A00D51FD9 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC6EA6E02F69036A00D51FD9 /* BookmarkStore.swift */; };
+		FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */; };
 		FCCC21242F698EAC00363054 /* KakaoAPIKey.swift.example in Resources */ = {isa = PBXBuildFile; fileRef = FCCC21232F698EAC00363054 /* KakaoAPIKey.swift.example */; };
 		FCCC21252F699A0000363054 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCC21262F699A0000363054 /* ToastView.swift */; };
 		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
@@ -84,7 +84,7 @@
 		FC1E8A102F68276E008CAC25 /* SearchResultItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultItemView.swift; sourceTree = "<group>"; };
 		FC1E8A122F6827B0008CAC25 /* BookmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkView.swift; sourceTree = "<group>"; };
 		FC5B19DA2F682D6B0030ACAE /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
-		FC6EA6E02F69036A00D51FD9 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
+		FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
 		FCCC21232F698EAC00363054 /* KakaoAPIKey.swift.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = KakaoAPIKey.swift.example; sourceTree = "<group>"; };
 		FCCC21262F699A0000363054 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakaoImageSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -197,6 +197,14 @@
 			path = Logger;
 			sourceTree = "<group>";
 		};
+		FC75FCDE2F6A9BA400A90DC0 /* Store */ = {
+			isa = PBXGroup;
+			children = (
+				FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */,
+			);
+			path = Store;
+			sourceTree = "<group>";
+		};
 		FCCD76632F680A840081FC81 = {
 			isa = PBXGroup;
 			children = (
@@ -266,6 +274,7 @@
 			isa = PBXGroup;
 			children = (
 				FCCD76DF2F680D000081FC81 /* Main */,
+				FC75FCDE2F6A9BA400A90DC0 /* Store */,
 				FC1E8A0A2F6826C5008CAC25 /* Search */,
 				FC1E8A072F6826B8008CAC25 /* Bookmark */,
 				FC1E8A022F6826B2008CAC25 /* Components */,
@@ -276,7 +285,6 @@
 		FCCD76DF2F680D000081FC81 /* Main */ = {
 			isa = PBXGroup;
 			children = (
-				FC6EA6E02F69036A00D51FD9 /* BookmarkStore.swift */,
 				FC1E8A0C2F682759008CAC25 /* MainView.swift */,
 				FC1E89FD2F6826AC008CAC25 /* MainViewModel.swift */,
 			);
@@ -524,8 +532,8 @@
 				FCCD76FE2F680D860081FC81 /* ImageCache.swift in Sources */,
 				FCCD76FF2F680D860081FC81 /* ImageDownloader.swift in Sources */,
 				FC1E89FC2F6823DE008CAC25 /* KakaoAPIKey.swift in Sources */,
-				FC6EA6E12F69036A00D51FD9 /* BookmarkStore.swift in Sources */,
 				FC1E8A032F6826B2008CAC25 /* EmptyStateView.swift in Sources */,
+				FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */,
 				FC1E8A042F6826B2008CAC25 /* BookmarkButton.swift in Sources */,
 				FCCC21252F699A0000363054 /* ToastView.swift in Sources */,
 				FC5B19DC2F682D6B0030ACAE /* AppLogger.swift in Sources */,
