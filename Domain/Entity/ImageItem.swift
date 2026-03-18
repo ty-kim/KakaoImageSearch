@@ -25,7 +25,6 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         thumbnailURL ?? imageURL
     }
 
-    // 이미지 상세 뷰어가 생기면 사용
     var detailDisplayURL: URL? {
         imageURL ?? thumbnailURL
     }

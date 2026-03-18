@@ -55,17 +55,16 @@ final class SearchViewModel {
     }
 
     // MainViewModel에서 debounce 후 호출. retry()도 이 경로를 사용
-    func submitSearch(query: String) {
+    // @discardableResult로 반환된 Task를 무시하거나, 테스트에서 .value로 await 가능
+    @discardableResult
+    func submitSearch(query: String) -> Task<Void, Never> {
         let searchID = beginSearch(query: query)
-        searchTask = Task { [weak self] in
-            await self?.performSearch(query: query, searchID: searchID)
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await self.performSearch(query: query, searchID: searchID)
         }
-    }
-
-    // 테스트에서 직접 await 가능하도록 internal 유지
-    func search(query: String) async {
-        let searchID = beginSearch(query: query)
-        await performSearch(query: query, searchID: searchID)
+        searchTask = task
+        return task
     }
 
     private func beginSearch(query: String) -> UUID {
@@ -125,9 +124,10 @@ final class SearchViewModel {
         }
     }
 
-    func retry() {
-        guard !currentQuery.isEmpty else { return }
-        submitSearch(query: currentQuery)
+    @discardableResult
+    func retry() -> Task<Void, Never>? {
+        guard !currentQuery.isEmpty else { return nil }
+        return submitSearch(query: currentQuery)
     }
 
     func loadMore() async {

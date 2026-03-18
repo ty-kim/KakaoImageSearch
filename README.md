@@ -26,7 +26,7 @@ Clean Architecture + MVVM 을 기반으로 4개 레이어로 구성했습니다.
 KakaoImageSearch
 ├── Domain          # 비즈니스 규칙 (Entity, UseCase, Repository Protocol)
 ├── Data            # 외부 데이터 (DTO, Repository 구현체, Storage)
-├── Core            # 공통 인프라 (Network, ImageLoader, DI, L10n, Logger)
+├── Core            # 공통 인프라 (Network, ImageLoader, L10n, Logger)
 └── Presentation    # UI (View, ViewModel)
 ```
 

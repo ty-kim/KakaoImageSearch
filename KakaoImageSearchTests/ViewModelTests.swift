@@ -47,7 +47,7 @@ struct SearchViewModelTests {
         let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
         let (sut, _, _, _) = makeSUT(searchItems: items)
 
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         #expect(sut.items.count == 2)
         #expect(sut.isLoading == false)
@@ -59,7 +59,7 @@ struct SearchViewModelTests {
     func search_emptyResult_setsErrorMessage() async throws {
         let (sut, _, _, _) = makeSUT(searchItems: [])
 
-        await sut.search(query: "zzz")
+        await sut.submitSearch(query: "zzz").value
 
         #expect(sut.items.isEmpty)
         #expect(sut.errorMessage != nil)
@@ -69,7 +69,7 @@ struct SearchViewModelTests {
     func search_failure_clearsItemsAndSetsErrorMessage() async throws {
         let (sut, _, _, _) = makeSUT(searchError: TestError.stub)
 
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         #expect(sut.items.isEmpty)
         #expect(sut.errorMessage != nil)
@@ -80,7 +80,7 @@ struct SearchViewModelTests {
     func search_failure_setsHasError() async {
         let (sut, _, _, _) = makeSUT(searchError: TestError.stub)
 
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         #expect(sut.hasError == true)
     }
@@ -88,11 +88,11 @@ struct SearchViewModelTests {
     @Test("검색 성공 시 hasError 초기화")
     func search_success_clearsHasError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchError: TestError.stub)
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         searchRepo.stubbedError = nil
         searchRepo.stubbedResult = [ImageItem.fixture()]
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         #expect(sut.hasError == false)
     }
@@ -101,21 +101,20 @@ struct SearchViewModelTests {
     func search_emptyResult_doesNotSetHasError() async {
         let (sut, _, _, _) = makeSUT(searchItems: [])
 
-        await sut.search(query: "zzz")
+        await sut.submitSearch(query: "zzz").value
 
         #expect(sut.hasError == false)
         #expect(sut.errorMessage != nil)
     }
 
     @Test("retry 호출 시 동일 쿼리로 재검색")
-    func retry_searchesWithSameQuery() async throws {
+    func retry_searchesWithSameQuery() async {
         let (sut, searchRepo, _, _) = makeSUT(searchError: TestError.stub)
-        await sut.search(query: "고양이")
+        await sut.submitSearch(query: "고양이").value
 
         searchRepo.stubbedError = nil
         searchRepo.stubbedResult = [ImageItem.fixture()]
-        sut.retry()
-        try await Task.sleep(for: .milliseconds(50))
+        await sut.retry()?.value
 
         #expect(searchRepo.lastQuery == "고양이")
         #expect(searchRepo.searchCallCount == 2)
@@ -126,7 +125,7 @@ struct SearchViewModelTests {
     func loadMore_failure_setsHasLoadMoreError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         searchRepo.stubbedError = TestError.stub
         await sut.loadMore()
@@ -139,7 +138,7 @@ struct SearchViewModelTests {
     func retryLoadMore_resetsErrorAndAppendsItems() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         searchRepo.stubbedError = TestError.stub
         await sut.loadMore()
@@ -157,13 +156,13 @@ struct SearchViewModelTests {
     func search_clearsHasLoadMoreError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture()])
         searchRepo.stubbedIsEnd = false
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         searchRepo.stubbedError = TestError.stub
         await sut.loadMore()
         #expect(sut.hasLoadMoreError == true)
 
         searchRepo.stubbedError = nil
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         #expect(sut.hasLoadMoreError == false)
     }
@@ -181,7 +180,7 @@ struct SearchViewModelTests {
     func cancelSearchAndClear_resetsState() async throws {
         let items = [ImageItem.fixture(id: "a")]
         let (sut, _, _, _) = makeSUT(searchItems: items)
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         sut.cancelSearchAndClear()
 
@@ -194,7 +193,7 @@ struct SearchViewModelTests {
     func toggleBookmark_updatesItemBookmarkState() async throws {
         let item = ImageItem.fixture(id: "a", isBookmarked: false)
         let (sut, _, _, _) = makeSUT(searchItems: [item])
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
 
         await sut.toggleBookmark(for: sut.items[0])
 
@@ -205,7 +204,7 @@ struct SearchViewModelTests {
     func toggleBookmark_failure_setsToastMessage() async throws {
         let item = ImageItem.fixture(id: "a")
         let (sut, _, bookmarkRepo, _) = makeSUT(searchItems: [item])
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         bookmarkRepo.stubbedSaveError = TestError.stub
 
         await sut.toggleBookmark(for: sut.items[0])
@@ -217,7 +216,7 @@ struct SearchViewModelTests {
     func toggleBookmark_failure_doesNotSetErrorMessage() async throws {
         let item = ImageItem.fixture(id: "a")
         let (sut, _, bookmarkRepo, _) = makeSUT(searchItems: [item])
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         bookmarkRepo.stubbedSaveError = TestError.stub
 
         await sut.toggleBookmark(for: sut.items[0])
@@ -229,7 +228,7 @@ struct SearchViewModelTests {
     func toggleBookmark_failure_doesNotClearSearchResults() async throws {
         let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
         let (sut, _, bookmarkRepo, _) = makeSUT(searchItems: items)
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         bookmarkRepo.stubbedSaveError = TestError.stub
 
         await sut.toggleBookmark(for: sut.items[0])
@@ -243,7 +242,7 @@ struct SearchViewModelTests {
         let prefetcher = MockImagePrefetcher()
         let (sut, _, _, _) = makeSUT(searchItems: items, imagePrefetcher: prefetcher)
 
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         try await Task.sleep(for: .milliseconds(100))
 
         #expect(prefetcher.prefetchCallCount == 1)
@@ -258,7 +257,7 @@ struct SearchViewModelTests {
             imagePrefetcher: prefetcher
         )
         searchRepo.stubbedIsEnd = false
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         try await Task.sleep(for: .milliseconds(100))
 
         searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
@@ -277,7 +276,7 @@ struct SearchViewModelTests {
         let prefetcher = MockImagePrefetcher()
         let (sut, _, _, _) = makeSUT(searchItems: items, imagePrefetcher: prefetcher)
 
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         try await Task.sleep(for: .milliseconds(100))
 
         #expect(prefetcher.prefetchedURLs.count == 1)
@@ -288,7 +287,7 @@ struct SearchViewModelTests {
         let prefetcher = MockImagePrefetcher()
         let (sut, _, _, _) = makeSUT(searchError: TestError.stub, imagePrefetcher: prefetcher)
 
-        await sut.search(query: "cat")
+        await sut.submitSearch(query: "cat").value
         try await Task.sleep(for: .milliseconds(100))
 
         #expect(prefetcher.prefetchCallCount == 0)
