@@ -26,7 +26,7 @@ Clean Architecture + MVVM 을 기반으로 4개 레이어로 구성했습니다.
 KakaoImageSearch
 ├── Domain          # 비즈니스 규칙 (Entity, UseCase, Repository Protocol)
 ├── Data            # 외부 데이터 (DTO, Repository 구현체, Storage)
-├── Core            # 공통 인프라 (Network, ImageLoader, L10n, Logger)
+├── Infrastructure  # 인프라 (Network, ImageLoader, L10n, Logger)
 └── Presentation    # UI (View, ViewModel)
 ```
 
@@ -36,11 +36,11 @@ KakaoImageSearch
 graph TD
     Presentation --> Domain
     Data --> Domain
-    Presentation --> Core
-    Data --> Core
+    Presentation --> Infrastructure
+    Data --> Infrastructure
 ```
 
-Domain과 Core는 외부에 의존하지 않으며, Data와 Presentation이 두 레이어의 인터페이스에 의존합니다.
+Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 Infrastructure의 인터페이스에 의존합니다.
 
 ---
 
@@ -170,7 +170,7 @@ enum KakaoAPIKey {
 ```
 KakaoImageSearch/
 ├── App/                        # AppAssembler (Composition Root)
-├── Core/
+├── Infrastructure/
 │   ├── ImageLoader/            # ImageDownloader, ImageCache, CachedAsyncImage
 │   ├── Logger/                 # AppLogger (OSLog extension)
 │   ├── Network/                # NetworkService, NetworkError, APIEndpoint

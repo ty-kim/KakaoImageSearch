@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		FC116B732F69131000111870 /* DEVELOPMENT.md in Resources */ = {isa = PBXBuildFile; fileRef = FC116B722F69131000111870 /* DEVELOPMENT.md */; };
 		FC116B752F69131700111870 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FC116B742F69131700111870 /* README.md */; };
-		FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F42F681C9F008CAC25 /* L10n.swift */; };
 		FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */; };
 		FC1E89FA2F68236A008CAC25 /* KakaoImageSearchEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */; };
 		FC1E89FC2F6823DE008CAC25 /* KakaoAPIKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */; };
@@ -23,8 +22,15 @@
 		FC1E8A0F2F682768008CAC25 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A0E2F682768008CAC25 /* SearchView.swift */; };
 		FC1E8A112F68276E008CAC25 /* SearchResultItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A102F68276E008CAC25 /* SearchResultItemView.swift */; };
 		FC1E8A132F6827B0008CAC25 /* BookmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A122F6827B0008CAC25 /* BookmarkView.swift */; };
-		FC5B19DC2F682D6B0030ACAE /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5B19DA2F682D6B0030ACAE /* AppLogger.swift */; };
 		FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */; };
+		FC75FD002F6A9C4E00A90DC0 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */; };
+		FC75FD012F6A9C4E00A90DC0 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF82F6A9C4E00A90DC0 /* AppLogger.swift */; };
+		FC75FD022F6A9C4E00A90DC0 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCFB2F6A9C4E00A90DC0 /* NetworkError.swift */; };
+		FC75FD032F6A9C4E00A90DC0 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF52F6A9C4E00A90DC0 /* ImageCache.swift */; };
+		FC75FD042F6A9C4E00A90DC0 /* L10n.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCFE2F6A9C4E00A90DC0 /* L10n.swift */; };
+		FC75FD052F6A9C4E00A90DC0 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCFC2F6A9C4E00A90DC0 /* NetworkService.swift */; };
+		FC75FD062F6A9C4E00A90DC0 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF62F6A9C4E00A90DC0 /* ImageDownloader.swift */; };
+		FC75FD072F6A9C4E00A90DC0 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCFA2F6A9C4E00A90DC0 /* APIEndpoint.swift */; };
 		FCCC21242F698EAC00363054 /* KakaoAPIKey.swift.example in Resources */ = {isa = PBXBuildFile; fileRef = FCCC21232F698EAC00363054 /* KakaoAPIKey.swift.example */; };
 		FCCC21252F699A0000363054 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCC21262F699A0000363054 /* ToastView.swift */; };
 		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
@@ -36,12 +42,6 @@
 		FCCD76ED2F680D710081FC81 /* SearchImageUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */; };
 		FCCD76EE2F680D710081FC81 /* ManageBookmarkUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */; };
 		FCCD76EF2F680D710081FC81 /* ImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E52F680D710081FC81 /* ImageSearchRepository.swift */; };
-		FCCD76FC2F680D860081FC81 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F92F680D860081FC81 /* NetworkService.swift */; };
-		FCCD76FE2F680D860081FC81 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F42F680D860081FC81 /* ImageCache.swift */; };
-		FCCD76FF2F680D860081FC81 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F52F680D860081FC81 /* ImageDownloader.swift */; };
-		FCCD77002F680D860081FC81 /* NetworkError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F82F680D860081FC81 /* NetworkError.swift */; };
-		FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */; };
-		FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76F72F680D860081FC81 /* APIEndpoint.swift */; };
 		FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */; };
 		FCCD77262F68183F0081FC81 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD770D2F680E070081FC81 /* SceneDelegate.swift */; };
 		FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
@@ -69,7 +69,6 @@
 /* Begin PBXFileReference section */
 		FC116B722F69131000111870 /* DEVELOPMENT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DEVELOPMENT.md; sourceTree = "<group>"; };
 		FC116B742F69131700111870 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
-		FC1E89F42F681C9F008CAC25 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		FC1E89F82F68236A008CAC25 /* KakaoImageSearchEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoImageSearchEndpoint.swift; sourceTree = "<group>"; };
 		FC1E89FB2F6823DE008CAC25 /* KakaoAPIKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoAPIKey.swift; sourceTree = "<group>"; };
@@ -83,8 +82,15 @@
 		FC1E8A0E2F682768008CAC25 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		FC1E8A102F68276E008CAC25 /* SearchResultItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultItemView.swift; sourceTree = "<group>"; };
 		FC1E8A122F6827B0008CAC25 /* BookmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkView.swift; sourceTree = "<group>"; };
-		FC5B19DA2F682D6B0030ACAE /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 		FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
+		FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
+		FC75FCF52F6A9C4E00A90DC0 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
+		FC75FCF62F6A9C4E00A90DC0 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
+		FC75FCF82F6A9C4E00A90DC0 /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		FC75FCFA2F6A9C4E00A90DC0 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
+		FC75FCFB2F6A9C4E00A90DC0 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
+		FC75FCFC2F6A9C4E00A90DC0 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		FC75FCFE2F6A9C4E00A90DC0 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		FCCC21232F698EAC00363054 /* KakaoAPIKey.swift.example */ = {isa = PBXFileReference; lastKnownFileType = text; path = KakaoAPIKey.swift.example; sourceTree = "<group>"; };
 		FCCC21262F699A0000363054 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakaoImageSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,12 +105,6 @@
 		FCCD76E52F680D710081FC81 /* ImageSearchRepository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchRepository.swift; sourceTree = "<group>"; };
 		FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageBookmarkUseCase.swift; sourceTree = "<group>"; };
 		FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchImageUseCase.swift; sourceTree = "<group>"; };
-		FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
-		FCCD76F42F680D860081FC81 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
-		FCCD76F52F680D860081FC81 /* ImageDownloader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloader.swift; sourceTree = "<group>"; };
-		FCCD76F72F680D860081FC81 /* APIEndpoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIEndpoint.swift; sourceTree = "<group>"; };
-		FCCD76F82F680D860081FC81 /* NetworkError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkError.swift; sourceTree = "<group>"; };
-		FCCD76F92F680D860081FC81 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoImageSearchApp.swift; sourceTree = "<group>"; };
 		FCCD77062F680E070081FC81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FCCD77072F680E070081FC81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -189,20 +189,51 @@
 			path = Search;
 			sourceTree = "<group>";
 		};
-		FC5B19DB2F682D6B0030ACAE /* Logger */ = {
-			isa = PBXGroup;
-			children = (
-				FC5B19DA2F682D6B0030ACAE /* AppLogger.swift */,
-			);
-			path = Logger;
-			sourceTree = "<group>";
-		};
 		FC75FCDE2F6A9BA400A90DC0 /* Store */ = {
 			isa = PBXGroup;
 			children = (
 				FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */,
 			);
 			path = Store;
+			sourceTree = "<group>";
+		};
+		FC75FCF72F6A9C4E00A90DC0 /* ImageLoader */ = {
+			isa = PBXGroup;
+			children = (
+				FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */,
+				FC75FCF52F6A9C4E00A90DC0 /* ImageCache.swift */,
+				FC75FCF62F6A9C4E00A90DC0 /* ImageDownloader.swift */,
+			);
+			path = ImageLoader;
+			sourceTree = "<group>";
+		};
+		FC75FCF92F6A9C4E00A90DC0 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				FC75FCF82F6A9C4E00A90DC0 /* AppLogger.swift */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
+		FC75FCFD2F6A9C4E00A90DC0 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				FC75FCFA2F6A9C4E00A90DC0 /* APIEndpoint.swift */,
+				FC75FCFB2F6A9C4E00A90DC0 /* NetworkError.swift */,
+				FC75FCFC2F6A9C4E00A90DC0 /* NetworkService.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		FC75FCFF2F6A9C4E00A90DC0 /* Infrastructure */ = {
+			isa = PBXGroup;
+			children = (
+				FC75FCF72F6A9C4E00A90DC0 /* ImageLoader */,
+				FC75FCF92F6A9C4E00A90DC0 /* Logger */,
+				FC75FCFD2F6A9C4E00A90DC0 /* Network */,
+				FC75FCFE2F6A9C4E00A90DC0 /* L10n.swift */,
+			);
+			path = Infrastructure;
 			sourceTree = "<group>";
 		};
 		FCCD76632F680A840081FC81 = {
@@ -214,9 +245,9 @@
 				FCCC21232F698EAC00363054 /* KakaoAPIKey.swift.example */,
 				FCCD770F2F680E070081FC81 /* KakaoImageSearch */,
 				FCCD77042F680D9B0081FC81 /* App */,
-				FCCD76FB2F680D860081FC81 /* Core */,
 				FCCD76EA2F680D710081FC81 /* Domain */,
 				FCCD76A52F680ACB0081FC81 /* Data */,
+				FC75FCFF2F6A9C4E00A90DC0 /* Infrastructure */,
 				FCCD76DE2F680CE20081FC81 /* Presentation */,
 				FCCD76852F680A850081FC81 /* KakaoImageSearchTests */,
 				FCCD768F2F680A850081FC81 /* KakaoImageSearchUITests */,
@@ -325,37 +356,6 @@
 				FCCD76E92F680D710081FC81 /* UseCase */,
 			);
 			path = Domain;
-			sourceTree = "<group>";
-		};
-		FCCD76F62F680D860081FC81 /* ImageLoader */ = {
-			isa = PBXGroup;
-			children = (
-				FCCD76F32F680D860081FC81 /* CachedAsyncImage.swift */,
-				FCCD76F42F680D860081FC81 /* ImageCache.swift */,
-				FCCD76F52F680D860081FC81 /* ImageDownloader.swift */,
-			);
-			path = ImageLoader;
-			sourceTree = "<group>";
-		};
-		FCCD76FA2F680D860081FC81 /* Network */ = {
-			isa = PBXGroup;
-			children = (
-				FCCD76F72F680D860081FC81 /* APIEndpoint.swift */,
-				FCCD76F82F680D860081FC81 /* NetworkError.swift */,
-				FCCD76F92F680D860081FC81 /* NetworkService.swift */,
-			);
-			path = Network;
-			sourceTree = "<group>";
-		};
-		FCCD76FB2F680D860081FC81 /* Core */ = {
-			isa = PBXGroup;
-			children = (
-				FCCD76F62F680D860081FC81 /* ImageLoader */,
-				FC5B19DB2F682D6B0030ACAE /* Logger */,
-				FCCD76FA2F680D860081FC81 /* Network */,
-				FC1E89F42F681C9F008CAC25 /* L10n.swift */,
-			);
-			path = Core;
 			sourceTree = "<group>";
 		};
 		FCCD77042F680D9B0081FC81 /* App */ = {
@@ -528,24 +528,24 @@
 			files = (
 				FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */,
 				FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */,
-				FCCD76FC2F680D860081FC81 /* NetworkService.swift in Sources */,
-				FCCD76FE2F680D860081FC81 /* ImageCache.swift in Sources */,
-				FCCD76FF2F680D860081FC81 /* ImageDownloader.swift in Sources */,
 				FC1E89FC2F6823DE008CAC25 /* KakaoAPIKey.swift in Sources */,
 				FC1E8A032F6826B2008CAC25 /* EmptyStateView.swift in Sources */,
 				FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */,
 				FC1E8A042F6826B2008CAC25 /* BookmarkButton.swift in Sources */,
 				FCCC21252F699A0000363054 /* ToastView.swift in Sources */,
-				FC5B19DC2F682D6B0030ACAE /* AppLogger.swift in Sources */,
 				FC1E8A052F6826B2008CAC25 /* SearchBar.swift in Sources */,
-				FCCD77002F680D860081FC81 /* NetworkError.swift in Sources */,
-				FCCD77012F680D860081FC81 /* CachedAsyncImage.swift in Sources */,
 				FC1E8A0D2F682759008CAC25 /* MainView.swift in Sources */,
-				FCCD77022F680D860081FC81 /* APIEndpoint.swift in Sources */,
 				FC1E8A0F2F682768008CAC25 /* SearchView.swift in Sources */,
 				FCCD76DA2F680CA50081FC81 /* DefaultBookmarkRepository.swift in Sources */,
-				FC1E89F52F681C9F008CAC25 /* L10n.swift in Sources */,
 				FCCD76EB2F680D710081FC81 /* BookmarkRepository.swift in Sources */,
+				FC75FD002F6A9C4E00A90DC0 /* CachedAsyncImage.swift in Sources */,
+				FC75FD012F6A9C4E00A90DC0 /* AppLogger.swift in Sources */,
+				FC75FD022F6A9C4E00A90DC0 /* NetworkError.swift in Sources */,
+				FC75FD032F6A9C4E00A90DC0 /* ImageCache.swift in Sources */,
+				FC75FD042F6A9C4E00A90DC0 /* L10n.swift in Sources */,
+				FC75FD052F6A9C4E00A90DC0 /* NetworkService.swift in Sources */,
+				FC75FD062F6A9C4E00A90DC0 /* ImageDownloader.swift in Sources */,
+				FC75FD072F6A9C4E00A90DC0 /* APIEndpoint.swift in Sources */,
 				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
 				FC1E8A112F68276E008CAC25 /* SearchResultItemView.swift in Sources */,
 				FC1E8A0B2F6826C5008CAC25 /* SearchViewModel.swift in Sources */,
