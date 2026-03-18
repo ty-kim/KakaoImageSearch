@@ -20,7 +20,7 @@ final class KakaoImageSearchIPhoneUITests: XCTestCase {
         try XCTSkipIf(isIPad, "iPhone 전용 테스트입니다. iPhone 시뮬레이터에서 실행하세요.")
         continueAfterFailure = false
         app = XCUIApplication()
-        app.launchArguments += ["--resetBookmarks"]
+        app.launchArguments += ["--resetBookmarks", "--useFixtureData"]
         app.launch()
     }
 
@@ -109,9 +109,15 @@ final class KakaoImageSearchIPhoneUITests: XCTestCase {
         searchField.tap()
         searchField.typeText("cat")
 
-        // debounce 1.0초 + 네트워크 응답 대기
+        // debounce 1.0초 대기 (fixture이므로 네트워크 불필요)
         let resultsList = app.scrollViews["searchView.resultsList"]
-        XCTAssertTrue(resultsList.waitForExistence(timeout: 10))
+        XCTAssertTrue(resultsList.waitForExistence(timeout: 3))
+
+        // fixture는 항상 3개 반환 — 결과 개수까지 단언
+        let item1 = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
+        XCTAssertTrue(item1.waitForExistence(timeout: 2))
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-2").firstMatch.exists)
+        XCTAssertTrue(app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-3").firstMatch.exists)
     }
 
     func test_search_clearQuery_restoresEmptyState() {
