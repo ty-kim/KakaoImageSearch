@@ -80,7 +80,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 ### 네트워크 오류 재시도 UX
 - 검색 실패(hasError) 시 EmptyStateView에 재시도 버튼 표시
 - 추가 로드 실패(hasLoadMoreError) 시 목록 하단에 인라인 재시도 버튼 표시
-- 북마크 로드 실패(hasLoadError) 시 EmptyStateView에 재시도 버튼 표시
+- 북마크 로드 실패(loadErrorMessage) 시 EmptyStateView에 에러 메시지와 재시도 버튼 표시
 - 결과 없음(빈 배열)과 실제 오류를 구분해서 보여주도록 구성
 
 ### 북마크 에러 피드백

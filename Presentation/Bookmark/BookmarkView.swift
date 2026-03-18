@@ -21,9 +21,9 @@ struct BookmarkView: View {
                         .accessibilityLabel(L10n.Accessibility.loading)
                         .accessibilityIdentifier("bookmarkView.loadingIndicator")
 
-                } else if viewModel.hasLoadError {
+                } else if let errorMessage = viewModel.loadErrorMessage {
                     EmptyStateView(
-                        message: L10n.Bookmark.loadError,
+                        message: errorMessage,
                         accessibilityID: "bookmarkView.errorState",
                         retryAction: { viewModel.retryLoadBookmarks() }
                     )

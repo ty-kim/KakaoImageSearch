@@ -402,7 +402,7 @@ struct BookmarkViewModelTests {
         #expect(sut.isLoading == false)
     }
 
-    @Test("loadBookmarks 실패 시 hasLoadError 설정")
+    @Test("loadBookmarks 실패 시 hasLoadError 및 loadErrorMessage 설정")
     func loadBookmarks_failure_setsHasLoadError() async throws {
         let (sut, repo) = makeSUT()
         repo.stubbedFetchError = TestError.stub
@@ -410,10 +410,11 @@ struct BookmarkViewModelTests {
         await sut.loadBookmarks()
 
         #expect(sut.hasLoadError == true)
+        #expect(sut.loadErrorMessage != nil)
         #expect(sut.isLoading == false)
     }
 
-    @Test("loadBookmarks 재시도 성공 시 hasLoadError 해제")
+    @Test("loadBookmarks 재시도 성공 시 hasLoadError 및 loadErrorMessage 해제")
     func loadBookmarks_retrySuccess_clearsError() async throws {
         let items = [ImageItem.fixture(id: "a")]
         let (sut, repo) = makeSUT(initialItems: items)
@@ -421,11 +422,13 @@ struct BookmarkViewModelTests {
 
         await sut.loadBookmarks()
         #expect(sut.hasLoadError == true)
+        #expect(sut.loadErrorMessage != nil)
 
         repo.stubbedFetchError = nil
         await sut.loadBookmarks()
 
         #expect(sut.hasLoadError == false)
+        #expect(sut.loadErrorMessage == nil)
         #expect(sut.items.count == 1)
     }
 
