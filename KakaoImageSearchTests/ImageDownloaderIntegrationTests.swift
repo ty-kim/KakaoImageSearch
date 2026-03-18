@@ -140,6 +140,30 @@ struct ImageDownloaderIntegrationTests {
         #expect(requestCount == 1)
     }
 
+    // MARK: - in-flight dedup
+
+    @Test("동일 URL 동시 요청은 URLSession을 한 번만 호출한다 (in-flight dedup)")
+    func download_concurrentSameURL_deduplicatesNetworkRequest() async throws {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        defer { MockImageURLProtocol.requestHandler = nil }
+
+        var requestCount = 0
+        MockImageURLProtocol.requestHandler = { req in
+            requestCount += 1
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+        }
+
+        async let image1 = sut.download(from: imageURL)
+        async let image2 = sut.download(from: imageURL)
+
+        let (result1, result2) = try await (image1, image2)
+
+        #expect(requestCount == 1)
+        #expect(result1.size.width > 0)
+        #expect(result2.size.width > 0)
+    }
+
     // MARK: - http → https 변환
 
     @Test("http URL은 https로 변환되어 요청된다")

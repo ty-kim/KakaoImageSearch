@@ -28,7 +28,7 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
 
 - **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
 - **유닛 테스트**: Swift Testing Framework, 81개 케이스, Domain + ViewModel 커버리지 100%
-- **통합 테스트**: Swift Testing Framework, 25개 케이스, NetworkService + BookmarkStorage + ImageDownloader 실 I/O 검증
+- **통합 테스트**: Swift Testing Framework, 26개 케이스, NetworkService + BookmarkStorage + ImageDownloader 실 I/O 검증
 - **UI 테스트**: XCUITest, 25개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
 - **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
@@ -52,7 +52,7 @@ API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 
 - **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별
 - **재시도 UX**: 검색 실패 / 추가 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공
 - **에러 vs 결과없음 구분**: `hasError` / `errorMessage` 플래그 분리로 UX 분기 명확화
-- **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 `toastMessage`로 분리, 하단 Toast로 표시 후 3초 자동 소멸
+- **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 `toastMessage`로 분리, 하단 Toast로 표시 후 3초 자동 소멸. Toast 지속 시간은 `toastDuration: Duration` 생성자 주입으로 제어 — 프로덕션 기본값 `.seconds(3)`, 테스트는 `.zero`로 주입해 즉시 완료
 
 이 패턴은 웹툰/콘텐츠 앱의 핵심 흐름(작품 목록 무한 스크롤 → 북마크/찜 → 에러 복구)과 구조적으로 동일합니다.
 

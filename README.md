@@ -125,13 +125,13 @@ Swift Testing Framework 기반 81개 테스트 케이스, 전체 통과.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 25개 테스트 케이스, 전체 통과.
+Swift Testing Framework 기반 26개 테스트 케이스, 전체 통과.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `NetworkServiceIntegrationTests` | 8 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑 |
 | `BookmarkStorageIntegrationTests` | 12 | 실제 FileManager 파일 I/O, 저장/조회/삭제 시나리오 |
-| `ImageDownloaderIntegrationTests` | 5 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, http→https 변환 |
+| `ImageDownloaderIntegrationTests` | 6 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup, http→https 변환 |
 
 ### UI 테스트
 
