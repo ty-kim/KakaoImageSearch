@@ -10,29 +10,13 @@ import Foundation
 final class SearchImageUseCase: Sendable {
 
     private let imageSearchRepository: any ImageSearchRepository
-    private let bookmarkRepository: any BookmarkRepository
 
-    init(
-        imageSearchRepository: some ImageSearchRepository,
-        bookmarkRepository: some BookmarkRepository
-    ) {
+    init(imageSearchRepository: some ImageSearchRepository) {
         self.imageSearchRepository = imageSearchRepository
-        self.bookmarkRepository = bookmarkRepository
     }
 
-    /// 검색 결과에 북마크 상태를 merge해서 반환합니다.
+    /// 검색 결과를 반환합니다. 북마크 상태 merge는 Presentation 레이어(BookmarkStore)에서 처리합니다.
     func execute(query: String, page: Int = 1) async throws -> SearchResultPage {
-        async let searchResult = imageSearchRepository.search(query: query, page: page)
-        async let bookmarks = bookmarkRepository.fetchAll()
-
-        let result = try await searchResult
-        let bookmarkedIDs = Set(try await bookmarks.map(\.id))
-
-        var items = result.items
-        for i in items.indices {
-            items[i].isBookmarked = bookmarkedIDs.contains(items[i].id)
-        }
-
-        return SearchResultPage(items: items, isEnd: result.isEnd)
+        try await imageSearchRepository.search(query: query, page: page)
     }
 }

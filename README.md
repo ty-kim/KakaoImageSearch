@@ -88,8 +88,8 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - 북마크 토글 실패 시 목록을 유지한 채 하단 Toast로 표시 (3초 후 자동 소멸, 슬라이드 인/아웃 애니메이션)
 
 ### ATS 예외 설정
-- 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않아, 이미지 로딩을 위해 `daum.net`, `naver.net` 계열 도메인에 ATS 예외를 적용했습니다.
-- 현재는 관련 서브도메인을 포함해 예외를 두었고, 실제 사용 호스트를 더 좁힐 수 있으면 예외 범위를 축소할 수 있습니다.
+- 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않고, 실제 이미지 호스트도 여러 서브도메인으로 분산되어 있어 `daum.net`, `naver.net` 계열 도메인에 ATS 예외를 적용했습니다.
+- 이 예외는 검색 결과 이미지 로딩에만 사용하며, API 통신이나 민감 정보 전송에는 적용하지 않습니다. 현재 과제 범위에서는 호스트 구성이 다양해 이 방식이 가장 현실적이었고, 사용 호스트를 더 좁힐 수 있다면 예외 범위도 함께 축소할 수 있습니다.
 
 ### BookmarkStore (공유 상태 관리)
 - `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
@@ -127,12 +127,12 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 107개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 105개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `ImageItemTests` | 17 | aspectRatio 경계값, Codable 라운드트립, Hashable, listDisplayURL/detailDisplayURL fallback |
-| `SearchImageUseCaseTests` | 7 | 북마크 상태 merge, 에러 전파 |
+| `SearchImageUseCaseTests` | 5 | 검색 결과 반환, 에러 전파, 쿼리/페이지 전달 |
 | `ManageBookmarkUseCaseTests` | 10 | toggle add/remove, 중복 방지 |
 | `KakaoImageSearchEndpointTests` | 16 | URL 구성, 쿼리 파라미터, 헤더 검증, query/page/size 입력 클램핑 |
 | `KakaoSearchResponseDTOTests` | 12 | JSON 디코딩, snake_case 변환, 필드 fallback, URL 스킴 검증 (javascript:/file: 거부) |

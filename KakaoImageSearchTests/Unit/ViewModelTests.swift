@@ -33,8 +33,7 @@ struct SearchViewModelTests {
         )
         let sut = SearchViewModel(
             searchImageUseCase: SearchImageUseCase(
-                imageSearchRepository: searchRepo,
-                bookmarkRepository: bookmarkRepo
+                imageSearchRepository: searchRepo
             ),
             bookmarkStore: bookmarkStore,
             imagePrefetcher: imagePrefetcher,
@@ -569,8 +568,7 @@ struct MainViewModelTests {
         let searchRepo = MockImageSearchRepository()
         return MainViewModel(
             searchImageUseCase: SearchImageUseCase(
-                imageSearchRepository: searchRepo,
-                bookmarkRepository: bookmarkRepo
+                imageSearchRepository: searchRepo
             ),
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
         )
@@ -611,8 +609,7 @@ struct MainViewModelTests {
         let bookmarkRepo = MockBookmarkRepository()
         let sut = MainViewModel(
             searchImageUseCase: SearchImageUseCase(
-                imageSearchRepository: searchRepo,
-                bookmarkRepository: bookmarkRepo
+                imageSearchRepository: searchRepo
             ),
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
         )

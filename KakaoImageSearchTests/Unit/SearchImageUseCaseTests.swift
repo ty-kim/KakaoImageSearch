@@ -17,55 +17,31 @@ struct SearchImageUseCaseTests {
 
     private func makeSUT(
         searchItems: [ImageItem] = [],
-        bookmarkedItems: [ImageItem] = [],
         searchError: Error? = nil
-    ) -> (sut: SearchImageUseCase, searchRepo: MockImageSearchRepository, bookmarkRepo: MockBookmarkRepository) {
+    ) -> (sut: SearchImageUseCase, searchRepo: MockImageSearchRepository) {
         let searchRepo = MockImageSearchRepository()
         searchRepo.stubbedResult = searchItems
         searchRepo.stubbedError = searchError
 
-        let bookmarkRepo = MockBookmarkRepository()
-        bookmarkRepo.items = bookmarkedItems
-
-        let sut = SearchImageUseCase(
-            imageSearchRepository: searchRepo,
-            bookmarkRepository: bookmarkRepo
-        )
-        return (sut, searchRepo, bookmarkRepo)
+        let sut = SearchImageUseCase(imageSearchRepository: searchRepo)
+        return (sut, searchRepo)
     }
 
     // MARK: - Tests
 
-    @Test("북마크 없으면 모든 아이템 isBookmarked = false")
-    func execute_noBookmarks_allUnbookmarked() async throws {
+    @Test("검색 성공 시 결과 아이템 반환")
+    func execute_success_returnsItems() async throws {
         let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
-        let (sut, _, _) = makeSUT(searchItems: items)
+        let (sut, _) = makeSUT(searchItems: items)
 
         let result = try await sut.execute(query: "cat")
 
         #expect(result.items.count == 2)
-        #expect(result.items.allSatisfy { !$0.isBookmarked })
-    }
-
-    @Test("북마크된 id와 일치하는 아이템은 isBookmarked = true")
-    func execute_withBookmarks_mergesBookmarkState() async throws {
-        let itemA = ImageItem.fixture(id: "a")
-        let itemB = ImageItem.fixture(id: "b")
-        let bookmarked = ImageItem.fixture(id: "a", isBookmarked: true)
-
-        let (sut, _, _) = makeSUT(searchItems: [itemA, itemB], bookmarkedItems: [bookmarked])
-
-        let result = try await sut.execute(query: "cat")
-
-        let resultA = try #require(result.items.first { $0.id == "a" })
-        let resultB = try #require(result.items.first { $0.id == "b" })
-        #expect(resultA.isBookmarked == true)
-        #expect(resultB.isBookmarked == false)
     }
 
     @Test("검색 결과가 비어있으면 빈 배열 반환")
     func execute_emptyResult_returnsEmpty() async throws {
-        let (sut, _, _) = makeSUT(searchItems: [])
+        let (sut, _) = makeSUT(searchItems: [])
 
         let result = try await sut.execute(query: "zzz")
 
@@ -74,43 +50,28 @@ struct SearchImageUseCaseTests {
 
     @Test("검색 Repository 에러 시 throws")
     func execute_searchRepositoryError_throws() async throws {
-        let (sut, _, _) = makeSUT(searchError: URLError(.notConnectedToInternet))
+        let (sut, _) = makeSUT(searchError: URLError(.notConnectedToInternet))
 
         await #expect(throws: URLError.self) {
             try await sut.execute(query: "cat")
         }
     }
 
-    @Test("북마크 Repository 에러 시 throws")
-    func execute_bookmarkRepositoryError_throws() async throws {
-        let (sut, _, bookmarkRepo) = makeSUT(searchItems: [ImageItem.fixture()])
-        bookmarkRepo.stubbedFetchError = TestError.stub
-
-        await #expect(throws: TestError.self) {
-            try await sut.execute(query: "cat")
-        }
-    }
-
-    @Test("검색 결과 전체가 북마크된 경우 모두 isBookmarked = true")
-    func execute_allItemsBookmarked_allMarkedTrue() async throws {
-        let itemA = ImageItem.fixture(id: "a")
-        let itemB = ImageItem.fixture(id: "b")
-        let (sut, _, _) = makeSUT(
-            searchItems: [itemA, itemB],
-            bookmarkedItems: [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
-        )
-
-        let result = try await sut.execute(query: "cat")
-
-        #expect(result.items.allSatisfy { $0.isBookmarked })
-    }
-
     @Test("쿼리 문자열이 Repository에 올바르게 전달됨")
     func execute_passesQueryToRepository() async throws {
-        let (sut, searchRepo, _) = makeSUT()
+        let (sut, searchRepo) = makeSUT()
 
         _ = try await sut.execute(query: "고양이")
 
         #expect(searchRepo.lastQuery == "고양이")
+    }
+
+    @Test("page 파라미터가 Repository에 올바르게 전달됨")
+    func execute_passesPageToRepository() async throws {
+        let (sut, searchRepo) = makeSUT()
+
+        _ = try await sut.execute(query: "cat", page: 3)
+
+        #expect(searchRepo.lastPage == 3)
     }
 }

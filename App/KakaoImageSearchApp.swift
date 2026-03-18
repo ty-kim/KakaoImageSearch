@@ -59,8 +59,7 @@ enum AppAssembler {
         let bookmarkRepo = DefaultBookmarkRepository(storage: bookmarkStorage)
 
         let searchUseCase = SearchImageUseCase(
-            imageSearchRepository: imageSearchRepo,
-            bookmarkRepository: bookmarkRepo
+            imageSearchRepository: imageSearchRepo
         )
         let bookmarkUseCase = ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
 
