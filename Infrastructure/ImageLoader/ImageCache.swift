@@ -15,6 +15,7 @@ actor ImageCache {
     private let memoryCache = NSCache<NSString, UIImage>()
     private let fileManager = FileManager.default
     private let diskCacheURL: URL
+    private var memoryWarningTask: Task<Void, Never>?
 
     init() {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -24,11 +25,18 @@ actor ImageCache {
         memoryCache.countLimit = 100
         memoryCache.totalCostLimit = 50 * 1024 * 1024 // 50 MB
 
-        Task {
+        // [weak self] 캡처로 순환 참조 방지. ImageCache 해제 시 deinit에서 Task를 취소해
+        // for-await 루프를 종료하고 NotificationCenter 구독을 정리한다.
+        memoryWarningTask = Task { [weak self] in
             for await _ in NotificationCenter.default.notifications(named: UIApplication.didReceiveMemoryWarningNotification) {
-                await clearMemoryCache()
+                guard let self else { return }
+                self.clearMemoryCache()
             }
         }
+    }
+
+    deinit {
+        memoryWarningTask?.cancel()
     }
 
     /// 메모리 경고 수신 시 NSCache를 비워 RAM을 즉시 확보합니다.
