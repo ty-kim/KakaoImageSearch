@@ -37,7 +37,7 @@ struct BookmarkView: View {
                                     screenWidth: itemWidth,
                                     isBookmarkInFlight: viewModel.inFlightBookmarkIDs.contains(item.id)
                                 ) {
-                                    Task { await viewModel.removeBookmark(for: item) }
+                                    Task { await viewModel.toggleBookmark(for: item) }
                                 }
                                 .accessibilityIdentifier("bookmarkItem.\(item.id)")
                             }

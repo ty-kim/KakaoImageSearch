@@ -413,52 +413,52 @@ struct BookmarkViewModelTests {
         #expect(sut.isLoading == false)
     }
 
-    @Test("removeBookmark 실패 시 toastMessage 설정")
-    func removeBookmark_failure_setsToastMessage() async throws {
+    @Test("toggleBookmark 실패 시 toastMessage 설정")
+    func toggleBookmark_failure_setsToastMessage() async throws {
         let item = ImageItem.fixture(id: "a", isBookmarked: true)
         let (sut, repo) = makeSUT(initialItems: [item])
         await sut.loadBookmarks()
         repo.stubbedDeleteError = TestError.stub
 
-        await sut.removeBookmark(for: item)
+        await sut.toggleBookmark(for: item)
 
         #expect(sut.toastMessage != nil)
     }
 
-    @Test("removeBookmark 호출 시 해당 아이템 제거 후 목록 갱신")
-    func removeBookmark_removesItemAndReloads() async throws {
+    @Test("toggleBookmark 호출 시 해당 아이템 제거 후 목록 갱신")
+    func toggleBookmark_removesItemAndReloads() async throws {
         let itemA = ImageItem.fixture(id: "a", isBookmarked: true)
         let itemB = ImageItem.fixture(id: "b", isBookmarked: true)
         let (sut, _) = makeSUT(initialItems: [itemA, itemB])
         await sut.loadBookmarks()
 
-        await sut.removeBookmark(for: itemA)
+        await sut.toggleBookmark(for: itemA)
 
         #expect(sut.items.count == 1)
         #expect(sut.items.first?.id == "b")
     }
 
-    @Test("동일 아이템 연속 removeBookmark 시 한 번만 처리")
-    func removeBookmark_concurrent_deduplicates() async {
+    @Test("동일 아이템 연속 toggleBookmark 시 한 번만 처리")
+    func toggleBookmark_concurrent_deduplicates() async {
         let item = ImageItem.fixture(id: "a", isBookmarked: true)
         let (sut, repo) = makeSUT(initialItems: [item])
         await sut.loadBookmarks()
 
-        async let t1: Void = sut.removeBookmark(for: item)
-        async let t2: Void = sut.removeBookmark(for: item)
+        async let t1: Void = sut.toggleBookmark(for: item)
+        async let t2: Void = sut.toggleBookmark(for: item)
         _ = await (t1, t2)
 
         #expect(repo.deleteCallCount == 1)
     }
 
-    @Test("removeBookmark 실패 후 inFlightBookmarkIDs 복구")
-    func removeBookmark_failure_restoresInFlightState() async {
+    @Test("toggleBookmark 실패 후 inFlightBookmarkIDs 복구")
+    func toggleBookmark_failure_restoresInFlightState() async {
         let item = ImageItem.fixture(id: "a", isBookmarked: true)
         let (sut, repo) = makeSUT(initialItems: [item])
         await sut.loadBookmarks()
         repo.stubbedDeleteError = TestError.stub
 
-        await sut.removeBookmark(for: item)
+        await sut.toggleBookmark(for: item)
 
         #expect(!sut.inFlightBookmarkIDs.contains(item.id))
     }

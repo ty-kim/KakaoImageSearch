@@ -41,17 +41,17 @@ final class BookmarkViewModel {
         }
     }
 
-    func removeBookmark(for item: ImageItem) async {
+    func toggleBookmark(for item: ImageItem) async {
         guard !inFlightBookmarkIDs.contains(item.id) else { return }
         inFlightBookmarkIDs.insert(item.id)
         defer { inFlightBookmarkIDs.remove(item.id) }
 
         do {
-            _ = try await bookmarkStore.toggle(item)
-            Logger.presentation.debugPrint("Removed bookmark: \(item.id)")
+            let isNowBookmarked = try await bookmarkStore.toggle(item)
+            Logger.presentation.debugPrint("Toggled bookmark: \(item.id) → \(isNowBookmarked)")
         } catch {
             showToast(L10n.Bookmark.toggleError)
-            Logger.presentation.errorPrint("Remove bookmark failed: \(error)")
+            Logger.presentation.errorPrint("Toggle bookmark failed: \(error)")
         }
     }
 
