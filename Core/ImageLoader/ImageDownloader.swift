@@ -27,8 +27,11 @@ actor ImageDownloader: ImagePrefetcher {
 
     private let cache = ImageCache()
     private var inFlight: [URL: Task<UIImage, Error>] = [:]
+    private let session: URLSession
 
-    private init() {}
+    init(session: URLSession = .shared) {
+        self.session = session
+    }
 
     /// 다음 페이지 썸네일을 백그라운드에서 병렬 선수 다운로드합니다.
     /// 캐시에 이미 있는 URL은 건너뜁니다.
@@ -72,7 +75,7 @@ actor ImageDownloader: ImagePrefetcher {
         Logger.imageLoader.debugPrint("Downloading: \(secureURL.lastPathComponent)")
 
         let task = Task<UIImage, Error>(priority: priority) {
-            let (data, response) = try await URLSession.shared.data(from: secureURL)
+            let (data, response) = try await session.data(from: secureURL)
 
             guard let http = response as? HTTPURLResponse,
                   (200..<300).contains(http.statusCode) else {
