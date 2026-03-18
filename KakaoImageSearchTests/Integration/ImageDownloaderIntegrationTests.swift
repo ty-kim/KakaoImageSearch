@@ -198,6 +198,54 @@ struct ImageDownloaderIntegrationTests {
         #expect(result2.size.width > 0)
     }
 
+    // MARK: - prefetch 병렬도 제한
+
+    @Test("prefetch 동시 요청 수가 maxConcurrentPrefetches를 초과하지 않는다")
+    func prefetch_concurrencyIsLimited() async {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        let totalURLs = 20
+        let urls = (0..<totalURLs).map { URL(string: "https://example.com/img\($0).png")! }
+
+        let counter = MaxConcurrencyCounter()
+        defer { MockImageURLProtocol.requestHandler = nil }
+        MockImageURLProtocol.requestHandler = { req in
+            counter.increment()
+            // 약간의 지연으로 동시성 측정
+            Thread.sleep(forTimeInterval: 0.01)
+            counter.decrement()
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+        }
+
+        await sut.prefetch(urls: urls)
+
+        #expect(counter.maxConcurrent <= 6)
+        #expect(counter.maxConcurrent > 1) // 병렬 처리가 실제로 일어났는지 확인
+    }
+
+    @Test("prefetch 중 일부 실패해도 나머지는 계속 처리된다")
+    func prefetch_partialFailure_doesNotBlockOthers() async throws {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        let urls = (0..<10).map { URL(string: "https://example.com/img\($0).png")! }
+        defer { MockImageURLProtocol.requestHandler = nil }
+
+        var downloadedCount = 0
+        MockImageURLProtocol.requestHandler = { req in
+            // 짝수 인덱스만 실패
+            let index = Int(req.url!.lastPathComponent.replacingOccurrences(of: "img", with: "").replacingOccurrences(of: ".png", with: ""))!
+            if index % 2 == 0 {
+                return (HTTPURLResponse(url: req.url!, statusCode: 500, httpVersion: nil, headerFields: nil)!, Data())
+            }
+            downloadedCount += 1
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+        }
+
+        await sut.prefetch(urls: urls)
+
+        #expect(downloadedCount == 5) // 홀수 5개 성공
+    }
+
     // MARK: - Content-Type 검증
 
     @Test("200 OK인데 Content-Type이 text/html이면 notImageContentType을 던진다")
@@ -364,5 +412,26 @@ struct ImageCacheIntegrationTests {
 
         let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
         #expect(FileManager.default.fileExists(atPath: diskURL.path))
+    }
+}
+
+// MARK: - 동시성 측정 헬퍼
+
+private final class MaxConcurrencyCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var current = 0
+    private(set) var maxConcurrent = 0
+
+    func increment() {
+        lock.lock()
+        current += 1
+        if current > maxConcurrent { maxConcurrent = current }
+        lock.unlock()
+    }
+
+    func decrement() {
+        lock.lock()
+        current -= 1
+        lock.unlock()
     }
 }

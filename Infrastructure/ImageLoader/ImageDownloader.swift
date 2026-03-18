@@ -53,14 +53,34 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         self.session = session
     }
 
+    /// prefetch 최대 동시 다운로드 수
+    private nonisolated static let maxConcurrentPrefetches = 6
+
     /// 다음 페이지 썸네일을 백그라운드에서 병렬 선수 다운로드합니다.
-    /// 캐시에 이미 있는 URL은 건너뜁니다.
+    /// 캐시 히트 URL은 제외하고, 최대 동시 요청 수를 제한합니다.
     func prefetch(urls: [URL]) async {
+        // 캐시 히트 제외
+        var uncached: [URL] = []
+        for url in urls {
+            if await cache.get(for: url) == nil {
+                uncached.append(url)
+            }
+        }
+
+        guard !uncached.isEmpty else { return }
+
         await withTaskGroup(of: Void.self) { group in
-            for url in urls {
+            var running = 0
+
+            for url in uncached {
+                if running >= Self.maxConcurrentPrefetches {
+                    await group.next()
+                    running -= 1
+                }
                 group.addTask(priority: .background) {
                     _ = try? await self.download(from: url, priority: .background)
                 }
+                running += 1
             }
         }
     }
