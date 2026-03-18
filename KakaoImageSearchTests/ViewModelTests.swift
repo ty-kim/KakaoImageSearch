@@ -244,7 +244,7 @@ struct SearchViewModelTests {
         let (sut, _, _, _) = makeSUT(searchItems: items, imagePrefetcher: prefetcher)
 
         await sut.submitSearch(query: "cat").value
-        try await Task.sleep(for: .milliseconds(100))
+        _ = await prefetcher.prefetchCalled.first(where: { @Sendable _ in true })
 
         #expect(prefetcher.prefetchCallCount == 1)
         #expect(prefetcher.prefetchedURLs.count == 2)
@@ -259,11 +259,11 @@ struct SearchViewModelTests {
         )
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
-        try await Task.sleep(for: .milliseconds(100))
+        _ = await prefetcher.prefetchCalled.first(where: { @Sendable _ in true })
 
         searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
         await sut.loadMore()
-        try await Task.sleep(for: .milliseconds(100))
+        _ = await prefetcher.prefetchCalled.first(where: { @Sendable _ in true })
 
         #expect(prefetcher.prefetchCallCount == 2)
     }
@@ -278,7 +278,7 @@ struct SearchViewModelTests {
         let (sut, _, _, _) = makeSUT(searchItems: items, imagePrefetcher: prefetcher)
 
         await sut.submitSearch(query: "cat").value
-        try await Task.sleep(for: .milliseconds(100))
+        _ = await prefetcher.prefetchCalled.first(where: { @Sendable _ in true })
 
         #expect(prefetcher.prefetchedURLs.count == 1)
     }
@@ -289,7 +289,6 @@ struct SearchViewModelTests {
         let (sut, _, _, _) = makeSUT(searchError: TestError.stub, imagePrefetcher: prefetcher)
 
         await sut.submitSearch(query: "cat").value
-        try await Task.sleep(for: .milliseconds(100))
 
         #expect(prefetcher.prefetchCallCount == 0)
     }

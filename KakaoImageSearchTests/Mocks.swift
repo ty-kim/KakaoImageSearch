@@ -68,9 +68,20 @@ final class MockImagePrefetcher: ImagePrefetcher, @unchecked Sendable {
     private(set) var prefetchedURLs: [URL] = []
     private(set) var prefetchCallCount = 0
 
+    private let streamContinuation: AsyncStream<Void>.Continuation
+    /// prefetch(urls:) 호출마다 Void를 yield — 테스트에서 Task.sleep 없이 await 가능
+    let prefetchCalled: AsyncStream<Void>
+
+    init() {
+        var cont: AsyncStream<Void>.Continuation!
+        prefetchCalled = AsyncStream { cont = $0 }
+        streamContinuation = cont
+    }
+
     func prefetch(urls: [URL]) async {
         prefetchCallCount += 1
         prefetchedURLs.append(contentsOf: urls)
+        streamContinuation.yield(())
     }
 }
 
