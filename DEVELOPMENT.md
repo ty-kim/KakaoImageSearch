@@ -127,3 +127,4 @@ AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
 
 - **검색 히스토리**: 최근 검색어를 `actor` 기반 스토리지로 저장하고 검색창 포커스 시 자동완성 목록으로 표시. `BookmarkStorage`와 동일한 설계 패턴으로 Swift 6 동시성 일관성을 유지하면서 자연스럽게 확장 가능하다.
 - **이미지 상세 뷰어**: 목록 셀 탭 시 원본 해상도(`detailDisplayURL`)로 전환해 확대/축소 가능한 뷰어 표시. `ImageItem`에 `detailDisplayURL`(`imageURL ?? thumbnailURL`)이 이미 준비되어 있어 뷰와 네비게이션 연결만 추가하면 된다.
+- **이미지 로드 실패 UX**: 현재 로드 실패 시 `exclamationmark.triangle` placeholder만 표시되며 사용자가 취할 수 있는 액션이 없다. 셀 탭 또는 별도 재시도 버튼으로 `ImageDownloader.download(from:)`를 재호출하는 흐름을 추가하면 검색 결과 재시도 UX와 일관성을 맞출 수 있다.
