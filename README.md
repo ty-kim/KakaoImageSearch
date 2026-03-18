@@ -20,7 +20,7 @@
 
 ## 아키텍처
 
-Clean Architecture + MVVM 을 기반으로 4개 레이어로 구성했습니다.
+Clean Architecture + MVVM을 기반으로 4개 레이어로 구성했습니다.
 
 ```
 KakaoImageSearch
@@ -50,7 +50,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` 설정으로 전체 타입 기본 격리
 - `actor`: NetworkService, BookmarkStorage, ImageDownloader, ImageCache
 - `@Observable @MainActor final class`: 모든 ViewModel
-- `nonisolated`: APIEndpoint, Logger, DTO Decodable init, L10n 등 격리 불필요 지점에 명시적 선언
+- `nonisolated`: actor 격리가 필요하지 않은 APIEndpoint, Logger, DTO 초기화, L10n 등에 명시적으로 적용
 
 ### 자체 구현 컴포넌트 (외부 라이브러리 미사용)
 | 컴포넌트 | 구현 내용 |
@@ -58,7 +58,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 | **NetworkService** | `actor` 기반 Generic URLSession 래퍼, snake_case 자동 변환 |
 | **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시, in-flight 중복 요청 dedup, URLSession 주입 가능 |
 | **CachedAsyncImage** | `.task(id: url)` 기반 이미지 로더 — 뷰 수명과 Task 수명 일치, URL 변경 시 자동 리셋 |
-| **AppAssembler** | Composition Root 패턴, 모든 의존성을 생성자 주입으로 단일 지점에서 조립 |
+| **AppAssembler** | Composition Root 패턴, 주요 의존성은 AppAssembler에서 조립하도록 구성했습니다. |
 | **BookmarkStorage** | FileManager + JSON 파일 기반 영속성, `.atomic` 쓰기 |
 
 ### 검색 Debounce 및 취소 처리
@@ -86,7 +86,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 ### BookmarkStore (단일 진실 공급원)
 - `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
 - `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
-- `SearchViewModel` / `BookmarkViewModel` 이 동일 인스턴스를 참조해 양쪽 탭의 북마크 상태 동기화 보장
+- `SearchViewModel` / `BookmarkViewModel` 이 동일 인스턴스를 참조해 양쪽 탭에서 같은 북마크 상태를 참조하도록 구성했습니다.
 
 ### iPad 적응형 레이아웃
 - `horizontalSizeClass` 기반으로 iPhone / iPad 레이아웃 분기
@@ -96,7 +96,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 다국어 지원 (ko / en / ja)
 - `.xcstrings` String Catalog 기반
-- `L10n` 타입 세이프 헬퍼로 컴파일 타임 문자열 검증
+- `L10n` 헬퍼를 사용해 문자열 접근을 정리했습니다
 
 ### OSLog 기반 로깅
 - `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리
@@ -108,7 +108,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 81개 테스트 케이스, 전체 통과.
+Swift Testing Framework 기반 81개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
@@ -121,11 +121,11 @@ Swift Testing Framework 기반 81개 테스트 케이스, 전체 통과.
 | `BookmarkViewModelTests` | 4 | 목록 로드, 삭제 후 갱신, 삭제 실패 Toast |
 | `MainViewModelTests` | 4 | debounce 취소, 빈 입력 처리 |
 
-핵심 비즈니스 로직(Domain + ViewModel) 커버리지 **100%**.
+Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 26개 테스트 케이스, 전체 통과.
+Swift Testing Framework 기반 26개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
@@ -135,7 +135,7 @@ Swift Testing Framework 기반 26개 테스트 케이스, 전체 통과.
 
 ### UI 테스트
 
-XCUITest 기반 25개 테스트 케이스, 전체 통과.
+XCUITest 기반 25개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|

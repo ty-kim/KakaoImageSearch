@@ -4,62 +4,55 @@
 
 ## 개발 방향
 
-### 1. "외부 라이브러리 없음"을 역량 어필의 기회로
+### 1. 외부 라이브러리 없이 필요한 기능 직접 구현
 
-과제 조건인 "외부 라이브러리 금지"를 제약이 아닌 어필 포인트로 삼았습니다.
-Kingfisher, Alamofire 없이 직접 구현함으로써 각 라이브러리가 내부에서 해결하는 문제들을 직접 다뤘습니다.
+과제 조건인 외부 라이브러리 금지에 맞춰, 네트워크 통신, 이미지 로딩, 의존성 조립을 직접 구현했습니다.
+라이브러리로 해결할 수 있는 문제를 직접 다루면서, 각 구성 요소의 역할과 경계를 명확히 두는 데 집중했습니다.
 
-| 직접 구현한 것 | 대체되는 라이브러리 |
+| 직접 구현한 구성 요소 | 일반적으로 많이 사용하는 라이브러리 예시 |
 |---|---|
 | URLSession Generic 래퍼 + snake_case 변환 | Alamofire / Moya |
 | 메모리 + 디스크 2단계 이미지 캐시 + in-flight dedup | Kingfisher / SDWebImage |
 | Composition Root 기반 생성자 주입 (AppAssembler) | Swinject |
 
-### 2. Swift 6 Strict Concurrency 정면 돌파
+### 2. Swift 6 Concurrency 제약에 맞춘 구조 정리
 
-Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일 타임에 데이터 레이스를 차단했습니다.
-경고를 억제하는 `@preconcurrency` 우회 대신, `actor` / `nonisolated` / `nonisolated init(from:)` 으로 근본 원인을 해결했습니다.
-예를 들어 `NetworkError`의 `@preconcurrency LocalizedError` 우회는 `@MainActor` 제거 + `L10n` 전체를 `nonisolated` 선언하는 방식으로 정공법 해결했습니다.
-이 과정에서 발생한 문제들(DTO 런타임 크래시, Logger 격리 문제 등)을 하나씩 디버깅하며 Swift Concurrency 모델을 깊이 있게 다뤘습니다.
+Swift 6의 SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor 설정을 기준으로 동시성 관련 경고와 오류를 정리했습니다.
+@preconcurrency로 우회하기보다, 필요한 지점에 actor, nonisolated, nonisolated init(from:)를 적용해 격리 규칙을 맞추는 방향을 택했습니다.
+이 과정에서 DTO 디코딩, 로거 격리, 지역화 문자열 접근처럼 실제로 충돌이 발생한 부분을 하나씩 수정했습니다.
 
-### 3. 시니어 역량 어필: 다국어 + 테스트 + 상태 설계
+### 3. 다국어 + 테스트 + 상태 설계
 
-단순 기능 구현을 넘어 프로덕션 수준의 코드를 목표로 했습니다.
+기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
-- **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
-- **유닛 테스트**: Swift Testing Framework, 81개 케이스, Domain + ViewModel 커버리지 100%
-- **통합 테스트**: Swift Testing Framework, 26개 케이스, NetworkService + BookmarkStorage + ImageDownloader 실 I/O 검증
-- **UI 테스트**: XCUITest, 25개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
-- **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
-- **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
+- **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
+- **유닛 테스트**: Swift Testing Framework, 81개 케이스, Domain과 ViewModel 중심 검증
+- **통합 테스트**: Swift Testing Framework, 26개 케이스, NetworkService / BookmarkStorage / ImageDownloader I/O 검증
+- **UI 테스트**: XCUITest, 25개 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
+- **OSLog**: 카테고리별 로깅 구성
+- **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
 
 ### 4. iPad 적응형 레이아웃
 
-과제 조건에 "iPad 레이아웃 변경 가능"으로 명시된 부분을 적극 활용했습니다.
+과제 안내에 iPad 레이아웃 변경이 가능하다고 되어 있어, iPhone과 iPad에서 레이아웃을 분리해 구현했습니다.
 
-- **분기 기준**: `@Environment(\.horizontalSizeClass)` — iPhone(compact) / iPad(regular) 분리
-- **iPhone**: 기존 `TabView` 구조 그대로 유지
-- **iPad**: `NavigationSplitView`로 검색 결과(사이드바)와 북마크(디테일)를 동시 표시
-  - 단일 화면에서 검색과 북마크를 한눈에 볼 수 있어 콘텐츠 탐색 효율 향상
-- **그리드**: `LazyVGrid` 2열, 좌우 패딩 20pt, 컬럼 간격 20pt
-  - `itemWidth = (전체 너비 - 패딩 × 2 - 컬럼 간격) / 열 수` 로 정확히 계산
-- **iPad UI 테스트**: `setUpWithError` + `XCTSkipIf(!isIPad)`로 클래스 단위에서 iPad 시뮬레이터 전용 실행
+iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitView를 사용해 검색과 북마크를 한 화면에서 볼 수 있도록 했습니다.
+이미지 목록은 2열 그리드로 구성했고, 크기 계산은 화면 너비를 기준으로 처리했습니다.
 
 ### 5. 페이지네이션 & 에러 핸들링 UX
 
-API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 제공하는 데 집중했습니다.
+페이지네이션과 오류 상황에서의 사용자 피드백을 함께 고려했습니다.
 
-- **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별
-- **재시도 UX**: 검색 실패 / 추가 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공
-- **에러 vs 결과없음 구분**: `hasError` / `errorMessage` 플래그 분리로 UX 분기 명확화
-- **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 `toastMessage`로 분리, 하단 Toast로 표시 후 3초 자동 소멸. Toast 지속 시간은 `toastDuration: Duration` 생성자 주입으로 제어 — 프로덕션 기본값 `.seconds(3)`, 테스트는 `.zero`로 주입해 즉시 완료
+- **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별.
+- **재시도 UX**: 검색 실패 / 추가 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공.
+- **에러 vs 결과없음 구분**: `hasError` / `errorMessage` 플래그 분리로 UX 분기 명확화.
+- **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 toastMessage로 분리해 하단 Toast로 표시, 지속 시간은 생성자 주입으로 제어해 테스트에서는 즉시 완료.
 
-이 패턴은 웹툰/콘텐츠 앱의 핵심 흐름(작품 목록 무한 스크롤 → 북마크/찜 → 에러 복구)과 구조적으로 동일합니다.
+무한 스크롤, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 과제에서도 비슷한 관점으로 정리했습니다.
 
 ### 6. RxSwift 대신 Swift Concurrency
 
-과제 조건(Zero External Dependency)으로 RxSwift/RxCocoa를 사용하지 않았습니다.
-대신 Swift Concurrency로 동일한 반응형 데이터 흐름을 구현했습니다.
+이번 과제에서는 외부 의존성을 두지 않는 조건에 맞춰, Swift Concurrency로 반응형 흐름을 구성했습니다.
 
 | RxSwift 패턴 | 이번 구현 |
 |---|---|
@@ -79,20 +72,22 @@ API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 
 `CachedAsyncImage`는 `.task(id: url)`을 사용해 이미지 로드 Task를 뷰 수명에 바인딩합니다.
 URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `LazyVGrid` 셀 재사용 시 이전 URL의 이미지가 깜빡이거나 덮어쓰이는 문제를 방지합니다.
 
-#### cross-object 반응형 업데이트 — `withObservationTracking`
+#### 외부 상태 변화 반영 — `withObservationTracking`
 
 `SearchViewModel.items`는 computed property 대신 stored property로 캐싱합니다.
 `BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuildItems()`를 한 번만 실행합니다.
-이는 Combine의 `sink` / RxSwift의 `subscribe`를 대체하는 `@Observable` 네이티브 패턴으로, 외부 객체의 상태 변화에 반응하면서도 Combine 프레임워크 의존 없이 구현합니다.
+외부 객체 상태 변화에 반응하도록 구성했습니다.
 
-Swift Concurrency는 컴파일 타임 데이터 레이스 감지라는 RxSwift에 없는 안전성을 제공합니다.
+특히 동시성 관련 제약을 컴파일 단계에서 확인할 수 있다는 점이 장점이라고 봤습니다.
 
 ---
 
 ## AI 활용 범위
 
-이 프로젝트는 **Claude(Anthropic)** 를 페어 프로그래머로 활용해 개발했습니다.
-AI 활용 자체를 숨기기보다, 어떤 판단을 직접 내렸는지를 투명하게 기술합니다.
+이 프로젝트에서는 **Claude(Anthropic)**를 보조 도구로 활용했습니다.
+초안 작성과 반복 작업에는 도움을 받았고, 구조 선택과 채택 여부 판단은 직접 진행했습니다.
+
+AI를 사용한 부분과 직접 판단한 부분을 구분해서 정리했습니다.
 
 ### AI가 도운 것
 
@@ -109,7 +104,7 @@ AI 활용 자체를 숨기기보다, 어떤 판단을 직접 내렸는지를 투
 | 영역 | 내용 |
 |---|---|
 | **아키텍처 설계** | Clean Architecture + MVVM 레이어 구조 및 의존 방향 결정 |
-| **Swift 6 전략** | `@preconcurrency` 우회 거부, `nonisolated` 직접 선언 방식 채택 |
+| **Swift 6 전략** | `@preconcurrency` 대신 명시적 격리 적용, `nonisolated` 직접 선언 방식 채택 |
 | **기술적 트레이드오프** | `actor` vs `final class`, `UserDefaults` vs `FileManager` 등 |
 | **AI 제안 코드 검토** | 생성된 코드를 직접 읽고 이해한 후 채택 여부 결정 / 수정 |
 | **디버깅** | 런타임 크래시(DTO 디코딩, Main.storyboard) 원인 파악 및 수정 |
@@ -119,12 +114,12 @@ AI 활용 자체를 숨기기보다, 어떤 판단을 직접 내렸는지를 투
 
 AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
 하지만 "왜 이렇게 설계하는가", "이 트레이드오프가 맞는가"에 대한 판단은 여전히 개발자의 몫입니다.
-이 프로젝트에서 AI는 타이핑 속도를 높이는 도구였고, 아키텍처와 품질 기준은 제가 직접 설정하고 검증했습니다.
+이 프로젝트에서 AI는 초안 작성과 반복 작업을 줄이는 데 도움이 됐고, 아키텍처와 품질 기준은 제가 직접 설정하고 검증했습니다.
 
 ---
 
 ## 아쉬운 점 / 추가하고 싶었던 것
 
-- **검색 히스토리**: 최근 검색어를 `actor` 기반 스토리지로 저장하고 검색창 포커스 시 자동완성 목록으로 표시. `BookmarkStorage`와 동일한 설계 패턴으로 Swift 6 동시성 일관성을 유지하면서 자연스럽게 확장 가능하다.
-- **이미지 상세 뷰어**: 목록 셀 탭 시 원본 해상도(`detailDisplayURL`)로 전환해 확대/축소 가능한 뷰어 표시. `ImageItem`에 `detailDisplayURL`(`imageURL ?? thumbnailURL`)이 이미 준비되어 있어 뷰와 네비게이션 연결만 추가하면 된다.
-- **이미지 로드 실패 UX**: 현재 로드 실패 시 `exclamationmark.triangle` placeholder만 표시되며 사용자가 취할 수 있는 액션이 없다. 셀 탭 또는 별도 재시도 버튼으로 `ImageDownloader.download(from:)`를 재호출하는 흐름을 추가하면 검색 결과 재시도 UX와 일관성을 맞출 수 있다.
+- **검색 히스토리**: 최근 검색어 저장 기능도 추가 후보로 생각했습니다. 현재 북마크 저장 구조와 유사한 방식으로 확장할 수 있다고 봤습니다.
+- **이미지 상세 뷰어**: 이미지 상세 뷰어도 고려했지만, 이번 제출에서는 범위를 넓히지 않기 위해 제외했습니다. 필요하다면 현재 모델 구조를 바탕으로 비교적 무리 없이 확장할 수 있습니다.
+- **이미지 로드 실패 UX**: 현재 로드 실패 시 `exclamationmark.triangle` placeholder만 표시되며 사용자가 취할 수 있는 액션이 없다. 셀 탭 또는 별도 재시도 버튼으로 `ImageDownloader.download(from:)`를 재호출하는 흐름을 추가하면 검색 결과 재시도 UX와 비슷한 방식으로 정리할 수 있을 것 같습니다.
