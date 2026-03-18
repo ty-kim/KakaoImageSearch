@@ -203,6 +203,7 @@ final class SearchViewModel {
     func toggleBookmark(for item: ImageItem) async {
         do {
             _ = try await bookmarkStore.toggle(item)
+            rebuildItems()
         } catch {
             showToast(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(error)")
