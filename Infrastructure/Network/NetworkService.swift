@@ -13,7 +13,12 @@ import OSLog
 actor NetworkService {
     private let session: URLSession
 
-    init(session: URLSession = .shared) {
+    init(session: URLSession = {
+        let configuration = URLSessionConfiguration.default
+        configuration.timeoutIntervalForRequest = 15
+        configuration.timeoutIntervalForResource = 30
+        return URLSession(configuration: configuration)
+    }()) {
         self.session = session
     }
 
@@ -56,8 +61,12 @@ actor NetworkService {
             Logger.network.debugPrint("Decoded \(T.self) successfully")
             return result
         } catch {
+            #if DEBUG
             let raw = String(data: data, encoding: .utf8) ?? "non-UTF8"
             Logger.network.errorPrint("Decoding \(T.self) failed: \(error)\nRaw: \(raw)")
+            #else
+            Logger.network.errorPrint("Decoding \(T.self) failed: \(error)")
+            #endif
             throw NetworkError.decodingError(error)
         }
     }

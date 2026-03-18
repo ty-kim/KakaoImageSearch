@@ -66,6 +66,6 @@ actor BookmarkStorage {
     private func persist(_ items: [ImageItem]) throws {
         encoder.outputFormatting = .prettyPrinted
         let data = try encoder.encode(items)
-        try data.write(to: fileURL, options: .atomic)
+        try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
     }
 }

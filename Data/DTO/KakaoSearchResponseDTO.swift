@@ -76,13 +76,25 @@ extension KakaoSearchResponseDTO.Meta: Decodable {}
 extension KakaoSearchResponseDTO.Document: Decodable {}
 
 extension KakaoSearchResponseDTO.Document {
+
+    private static let allowedSchemes: Set<String> = ["http", "https"]
+
     func toImageItem() -> ImageItem? {
-        guard let imageUrl else { return nil }
+        guard let imageUrl,
+              let imageURL = URL(string: imageUrl),
+              let scheme = imageURL.scheme?.lowercased(),
+              Self.allowedSchemes.contains(scheme) else {
+            return nil
+        }
+
+        let thumbnailURL = thumbnailUrl
+            .flatMap { URL(string: $0) }
+            .flatMap { Self.allowedSchemes.contains($0.scheme?.lowercased() ?? "") ? $0 : nil }
 
         return ImageItem(
             id: imageUrl,
-            imageURL: URL(string: imageUrl),
-            thumbnailURL: URL(string: thumbnailUrl ?? ""),
+            imageURL: imageURL,
+            thumbnailURL: thumbnailURL,
             width: width,
             height: height,
             isBookmarked: false

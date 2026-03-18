@@ -27,10 +27,13 @@ enum KakaoImageSearchEndpoint: APIEndpoint, Sendable {
     var queryItems: [URLQueryItem]? {
         switch self {
         case let .searchImages(query, page, size):
+            let clampedQuery = String(query.prefix(256))
+            let clampedPage = min(max(page, 1), 50)
+            let clampedSize = min(max(size, 1), 80)
             return [
-                URLQueryItem(name: "query", value: query),
-                URLQueryItem(name: "page", value: String(page)),
-                URLQueryItem(name: "size", value: String(size))
+                URLQueryItem(name: "query", value: clampedQuery),
+                URLQueryItem(name: "page", value: String(clampedPage)),
+                URLQueryItem(name: "size", value: String(clampedSize))
             ]
         }
     }
