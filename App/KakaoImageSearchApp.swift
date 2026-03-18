@@ -17,9 +17,10 @@ private final class FailingImageSearchRepository: ImageSearchRepository, @unchec
 
 // MARK: - DI 조립
 
-/// DI 조립 담당. SceneDelegate에서 MainActor.assumeIsolated 내에 호출됩니다.
+/// Composition Root. 모든 의존성을 생성자 주입으로 조립하는 단일 진입점.
+/// SceneDelegate에서 MainActor.assumeIsolated 내에 호출됩니다.
 @MainActor
-enum AppDependencies {
+enum AppAssembler {
 
     static func makeMainViewModel() -> MainViewModel {
         if CommandLine.arguments.contains("--resetBookmarks") {
