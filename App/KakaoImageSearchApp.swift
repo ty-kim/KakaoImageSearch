@@ -7,6 +7,7 @@
 
 import Foundation
 
+#if DEBUG
 // MARK: - UI 테스트용 Stub
 
 private final class FailingImageSearchRepository: ImageSearchRepository, @unchecked Sendable {
@@ -30,6 +31,7 @@ private final class FixtureImageSearchRepository: ImageSearchRepository, @unchec
         return SearchResultPage(items: items, isEnd: true)
     }
 }
+#endif
 
 // MARK: - DI 조립
 
@@ -39,16 +41,19 @@ private final class FixtureImageSearchRepository: ImageSearchRepository, @unchec
 enum AppAssembler {
 
     static func makeMainViewModel() -> MainViewModel {
+        #if DEBUG
         if CommandLine.arguments.contains("--resetBookmarks") {
             let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
             let url = appSupport.appendingPathComponent("KakaoImageSearch/bookmarks.json")
             try? FileManager.default.removeItem(at: url)
         }
+        #endif
 
         let networkService = NetworkService()
         let bookmarkStorage = BookmarkStorage()
 
         let imageSearchRepo: any ImageSearchRepository
+        #if DEBUG
         if CommandLine.arguments.contains("--simulateNetworkError") {
             imageSearchRepo = FailingImageSearchRepository()
         } else if CommandLine.arguments.contains("--useFixtureData") {
@@ -56,6 +61,9 @@ enum AppAssembler {
         } else {
             imageSearchRepo = DefaultImageSearchRepository(networkService: networkService)
         }
+        #else
+        imageSearchRepo = DefaultImageSearchRepository(networkService: networkService)
+        #endif
         let bookmarkRepo = DefaultBookmarkRepository(storage: bookmarkStorage)
 
         let searchUseCase = SearchImageUseCase(
