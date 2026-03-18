@@ -88,6 +88,15 @@ nonisolated enum L10n {
             let h = height ?? 0
             return String(localized: "accessibility.image_item \(w) \(h)")
         }
+        static var tabSearchHint: String {
+            String(localized: "accessibility.tab.search.hint")
+        }
+        static var tabBookmarkHint: String {
+            String(localized: "accessibility.tab.bookmark.hint")
+        }
+        static var loadMoreRetryHint: String {
+            String(localized: "accessibility.load_more_retry.hint")
+        }
     }
 
     enum Bookmark {

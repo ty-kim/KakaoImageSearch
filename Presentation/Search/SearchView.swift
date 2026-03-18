@@ -75,6 +75,7 @@ struct SearchView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
+                            .accessibilityHint(L10n.Accessibility.loadMoreRetryHint)
                             .accessibilityIdentifier("searchView.loadMoreRetryButton")
                         }
                     }

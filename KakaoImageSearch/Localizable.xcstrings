@@ -552,6 +552,75 @@
           }
         }
       }
+    },
+    "accessibility.tab.search.hint" : {
+      "comment" : "VoiceOver hint for search tab",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View image search results"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像検索結果を表示します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 검색 결과를 봅니다"
+          }
+        }
+      }
+    },
+    "accessibility.tab.bookmark.hint" : {
+      "comment" : "VoiceOver hint for bookmark tab",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "View bookmarked images"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマークした画像を表示します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크한 이미지를 봅니다"
+          }
+        }
+      }
+    },
+    "accessibility.load_more_retry.hint" : {
+      "comment" : "VoiceOver hint for load more retry button",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to retry loading more results"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップで追加結果の読み込みを再試行します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이중 탭하여 추가 결과 로드를 재시도합니다"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

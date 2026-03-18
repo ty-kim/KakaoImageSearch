@@ -40,12 +40,14 @@ struct MainView: View {
                         Label(L10n.Tab.search, systemImage: "magnifyingglass")
                     }
                     .tag(MainViewModel.Tab.search)
+                    .accessibilityHint(L10n.Accessibility.tabSearchHint)
 
                 BookmarkView(viewModel: viewModel.bookmarkViewModel)
                     .tabItem {
                         Label(L10n.Tab.bookmark, systemImage: "bookmark.fill")
                     }
                     .tag(MainViewModel.Tab.bookmark)
+                    .accessibilityHint(L10n.Accessibility.tabBookmarkHint)
             }
         }
     }

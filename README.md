@@ -108,9 +108,12 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - `L10n` 헬퍼를 사용해 문자열 접근을 정리했습니다
 
 ### VoiceOver 접근성
-- `BookmarkButton`: 북마크 상태에 따라 `accessibilityLabel`(`북마크 추가` / `북마크 해제`)과 `accessibilityHint`를 다르게 적용했습니다.
-- `SearchBar`: 검색어 지우기 버튼에 VoiceOver용 `accessibilityLabel`을 추가했습니다.
-- `SearchResultItemView`: 이미지 크기 정보를 포함한 `accessibilityLabel`을 적용했습니다.
+- `BookmarkButton`: 북마크 상태에 따라 `accessibilityLabel`과 `accessibilityHint`를 분기 적용
+- `SearchBar`: 검색어 지우기 버튼에 `accessibilityLabel` 적용
+- `SearchResultItemView`: 이미지 크기 정보를 포함한 `accessibilityLabel` 적용
+- `ToastView`: 등장 시 `AccessibilityNotification.Announcement`로 VoiceOver 자동 안내
+- 탭(검색/북마크): `accessibilityHint`로 탭 전환 시 역할 안내
+- 추가 로드 재시도 버튼: `accessibilityHint` 적용
 - 접근성 문자열은 `L10n.Accessibility`에서 관리하며, 한국어/영어/일본어를 지원합니다.
 
 ### OSLog 기반 로깅

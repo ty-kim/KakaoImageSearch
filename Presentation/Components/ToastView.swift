@@ -20,5 +20,9 @@ struct ToastView: View {
             .background(Color.black.opacity(0.75))
             .clipShape(Capsule())
             .padding(.horizontal, 24)
+            .accessibilityLabel(message)
+            .onAppear {
+                AccessibilityNotification.Announcement(message).post()
+            }
     }
 }
