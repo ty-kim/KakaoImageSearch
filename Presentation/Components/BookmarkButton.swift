@@ -21,6 +21,8 @@ struct BookmarkButton: View {
                 .contentTransition(.symbolEffect(.replace))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(isBookmarked ? L10n.Accessibility.bookmarkRemove : L10n.Accessibility.bookmarkAdd)
+        .accessibilityHint(isBookmarked ? L10n.Accessibility.bookmarkRemoveHint : L10n.Accessibility.bookmarkAddHint)
         .accessibilityIdentifier(isBookmarked ? "bookmarkButton.active" : "bookmarkButton.inactive")
     }
 }

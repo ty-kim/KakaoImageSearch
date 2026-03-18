@@ -27,5 +27,7 @@ struct SearchResultItemView: View {
                 .disabled(isBookmarkInFlight)
                 .padding(12)
         }
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(L10n.Accessibility.imageItem(width: item.width, height: item.height))
     }
 }

@@ -31,6 +31,7 @@ struct SearchBar: View {
                         .foregroundStyle(.secondary)
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(L10n.Accessibility.searchClear)
                 .accessibilityIdentifier("searchBar.clearButton")
             }
         }

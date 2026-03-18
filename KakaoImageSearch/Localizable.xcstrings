@@ -414,6 +414,144 @@
           }
         }
       }
+    },
+    "accessibility.bookmark.add" : {
+      "comment" : "VoiceOver label for bookmark button when not bookmarked",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add bookmark"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマークに追加"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크 추가"
+          }
+        }
+      }
+    },
+    "accessibility.bookmark.remove" : {
+      "comment" : "VoiceOver label for bookmark button when already bookmarked",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove bookmark"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ブックマークを解除"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "북마크 해제"
+          }
+        }
+      }
+    },
+    "accessibility.bookmark.add.hint" : {
+      "comment" : "VoiceOver hint for adding a bookmark",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to bookmark this image"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップでこの画像をブックマークします"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이중 탭하여 이 이미지를 북마크합니다"
+          }
+        }
+      }
+    },
+    "accessibility.bookmark.remove.hint" : {
+      "comment" : "VoiceOver hint for removing a bookmark",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to remove this bookmark"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップでブックマークを解除します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이중 탭하여 북마크를 해제합니다"
+          }
+        }
+      }
+    },
+    "accessibility.search.clear" : {
+      "comment" : "VoiceOver label for search bar clear button",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Clear search text"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "検索テキストをクリア"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "검색어 지우기"
+          }
+        }
+      }
+    },
+    "accessibility.image_item %lld %lld" : {
+      "comment" : "VoiceOver label for an image search result with width and height",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Image, %1$lld by %2$lld pixels"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像、%1$lld×%2$lldピクセル"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지, %1$lld × %2$lld 픽셀"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
