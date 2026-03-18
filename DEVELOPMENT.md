@@ -27,7 +27,7 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
 단순 기능 구현을 넘어 프로덕션 수준의 코드를 목표로 했습니다.
 
 - **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
-- **유닛 테스트**: Swift Testing Framework, 54개 케이스, Domain + ViewModel 커버리지 100%
+- **유닛 테스트**: Swift Testing Framework, 60개 케이스, Domain + ViewModel 커버리지 100%
 - **UI 테스트**: XCUITest, 25개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
 - **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
@@ -108,3 +108,4 @@ AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
 ## 아쉬운 점 / 추가하고 싶었던 것
 
 - **검색 히스토리**: 최근 검색어를 `actor` 기반 스토리지로 저장하고 검색창 포커스 시 자동완성 목록으로 표시. `BookmarkStorage`와 동일한 설계 패턴으로 Swift 6 동시성 일관성을 유지하면서 자연스럽게 확장 가능하다.
+- **이미지 상세 뷰어**: 목록 셀 탭 시 원본 해상도(`detailDisplayURL`)로 전환해 확대/축소 가능한 뷰어 표시. `ImageItem`에 `detailDisplayURL`(`imageURL ?? thumbnailURL`)이 이미 준비되어 있어 뷰와 네비게이션 연결만 추가하면 된다.

@@ -268,11 +268,11 @@ struct SearchViewModelTests {
         #expect(prefetcher.prefetchCallCount == 2)
     }
 
-    @Test("thumbnailURL이 nil인 아이템은 프리패치에서 제외")
-    func search_success_nilThumbnailURLsExcludedFromPrefetch() async throws {
+    @Test("imageURL·thumbnailURL 모두 nil인 아이템은 프리패치에서 제외")
+    func search_success_nilDisplayURLsExcludedFromPrefetch() async throws {
         let items = [
-            ImageItem.fixture(id: "a", thumbnailURL: URL(string: "https://example.com/thumb.jpg")),
-            ImageItem.fixture(id: "b", thumbnailURL: nil)
+            ImageItem.fixture(id: "a"),
+            ImageItem.fixture(id: "b", imageURL: nil, thumbnailURL: nil)
         ]
         let prefetcher = MockImagePrefetcher()
         let (sut, _, _, _) = makeSUT(searchItems: items, imagePrefetcher: prefetcher)

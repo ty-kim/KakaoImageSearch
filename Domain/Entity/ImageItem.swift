@@ -20,6 +20,15 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         guard let width, let height, width > 0 else { return 1 }
         return Double(height) / Double(width)
     }
+    
+    var listDisplayURL: URL? {
+        thumbnailURL ?? imageURL
+    }
+
+    // 이미지 상세 뷰어가 생기면 사용
+    var detailDisplayURL: URL? {
+        imageURL ?? thumbnailURL
+    }
 }
 
 extension ImageItem {
