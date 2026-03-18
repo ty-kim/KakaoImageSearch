@@ -18,10 +18,15 @@ protocol ImagePrefetcher: Sendable {
     func prefetch(urls: [URL]) async
 }
 
+/// 단일 이미지 다운로드 추상화. CachedAsyncImage의 @Environment 주입에 사용됩니다.
+protocol ImageDownloading: Sendable {
+    func download(from url: URL) async throws -> UIImage
+}
+
 /// actor 기반 자체 이미지 다운로더.
 /// - 메모리/디스크 캐시 우선 조회
 /// - 동일 URL 중복 요청 dedup 처리
-actor ImageDownloader: ImagePrefetcher {
+actor ImageDownloader: ImagePrefetcher, ImageDownloading {
 
     static let shared = ImageDownloader()
 

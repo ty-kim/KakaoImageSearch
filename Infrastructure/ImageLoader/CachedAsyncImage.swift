@@ -7,11 +7,23 @@
 
 import SwiftUI
 
+private struct ImageDownloaderKey: EnvironmentKey {
+    static let defaultValue: any ImageDownloading = ImageDownloader.shared
+}
+
+extension EnvironmentValues {
+    var imageDownloader: any ImageDownloading {
+        get { self[ImageDownloaderKey.self] }
+        set { self[ImageDownloaderKey.self] = newValue }
+    }
+}
+
 /// ImageDownloader를 통해 캐시를 지원하는 SwiftUI 이미지 컴포넌트.
 struct CachedAsyncImage: View {
 
     let url: URL?
 
+    @Environment(\.imageDownloader) private var downloader
     @State private var phase: Phase = .idle
 
     private enum Phase {
@@ -56,7 +68,7 @@ struct CachedAsyncImage: View {
         phase = .loading
 
         do {
-            let image = try await ImageDownloader.shared.download(from: url)
+            let image = try await downloader.download(from: url)
             phase = .success(image)
         } catch is CancellationError {
             phase = .idle
