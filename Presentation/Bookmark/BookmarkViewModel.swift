@@ -14,6 +14,7 @@ import OSLog
 final class BookmarkViewModel {
 
     private let bookmarkStore: BookmarkStore
+    private let toastDuration: Duration
     private(set) var toastMessage: String? = nil
     private var toastTask: Task<Void, Never>? = nil
 
@@ -25,8 +26,9 @@ final class BookmarkViewModel {
         bookmarkStore.isLoading
     }
 
-    init(bookmarkStore: BookmarkStore) {
+    init(bookmarkStore: BookmarkStore, toastDuration: Duration = .seconds(3)) {
         self.bookmarkStore = bookmarkStore
+        self.toastDuration = toastDuration
     }
 
     func loadBookmarks() async {
@@ -47,7 +49,7 @@ final class BookmarkViewModel {
         toastTask?.cancel()
         toastMessage = message
         toastTask = Task {
-            try? await Task.sleep(for: .seconds(3))
+            try? await Task.sleep(for: toastDuration)
             guard !Task.isCancelled else { return }
             toastMessage = nil
         }

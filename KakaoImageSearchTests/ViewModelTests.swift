@@ -37,7 +37,8 @@ struct SearchViewModelTests {
                 bookmarkRepository: bookmarkRepo
             ),
             bookmarkStore: bookmarkStore,
-            imagePrefetcher: imagePrefetcher
+            imagePrefetcher: imagePrefetcher,
+            toastDuration: .zero
         )
         return (sut, searchRepo, bookmarkRepo, imagePrefetcher)
     }
@@ -310,7 +311,8 @@ struct BookmarkViewModelTests {
         let sut = BookmarkViewModel(
             bookmarkStore: BookmarkStore(
                 manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: repo)
-            )
+            ),
+            toastDuration: .zero
         )
         return (sut, repo)
     }

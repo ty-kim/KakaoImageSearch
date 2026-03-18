@@ -27,6 +27,7 @@ final class SearchViewModel {
     private var currentQuery: String = ""
     private var currentPage: Int = 1
     private var toastTask: Task<Void, Never>? = nil
+    private let toastDuration: Duration
 
     private var searchTask: Task<Void, Never>? = nil
     private var activeSearchID: UUID? = nil
@@ -38,11 +39,13 @@ final class SearchViewModel {
     init(
         searchImageUseCase: SearchImageUseCase,
         bookmarkStore: BookmarkStore,
-        imagePrefetcher: any ImagePrefetcher = ImageDownloader.shared
+        imagePrefetcher: any ImagePrefetcher = ImageDownloader.shared,
+        toastDuration: Duration = .seconds(3)
     ) {
         self.searchImageUseCase = searchImageUseCase
         self.bookmarkStore = bookmarkStore
         self.imagePrefetcher = imagePrefetcher
+        self.toastDuration = toastDuration
         observeBookmarkStore()
     }
 
@@ -222,7 +225,7 @@ final class SearchViewModel {
         toastMessage = message
 
         toastTask = Task {
-            try? await Task.sleep(for: .seconds(3))
+            try? await Task.sleep(for: toastDuration)
             guard !Task.isCancelled else { return }
             toastMessage = nil
         }
