@@ -55,8 +55,5 @@ struct BookmarkView: View {
             }
         }
         .animation(.easeInOut(duration: 0.3), value: viewModel.toastMessage)
-        .onAppear {
-            Task { await viewModel.loadBookmarks() }
-        }
     }
 }
