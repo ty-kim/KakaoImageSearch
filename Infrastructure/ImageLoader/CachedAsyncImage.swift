@@ -64,7 +64,10 @@ struct CachedAsyncImage: View {
     }
 
     private func load() async {
-        guard let url else { return }
+        guard let url else {
+            phase = .idle
+            return
+        }
         phase = .loading
 
         do {
