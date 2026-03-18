@@ -154,15 +154,15 @@ struct KakaoImageSearchEndpointTests {
         #expect(page == "1")
     }
 
-    @Test("page가 50을 초과하면 50으로 클램핑된다")
-    func pageParam_over50_clampedTo50() throws {
+    @Test("page가 15를 초과하면 15로 클램핑된다")
+    func pageParam_over15_clampedTo15() throws {
         let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 100)
         let request = try endpoint.makeURLRequest()
 
         let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
         let page = items?.first { $0.name == "page" }?.value
 
-        #expect(page == "50")
+        #expect(page == "15")
     }
 
     @Test("size가 0 이하이면 1로 클램핑된다")
@@ -176,14 +176,14 @@ struct KakaoImageSearchEndpointTests {
         #expect(size == "1")
     }
 
-    @Test("size가 80을 초과하면 80으로 클램핑된다")
-    func sizeParam_over80_clampedTo80() throws {
+    @Test("size가 30을 초과하면 30으로 클램핑된다")
+    func sizeParam_over30_clampedTo30() throws {
         let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 1, size: 200)
         let request = try endpoint.makeURLRequest()
 
         let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
         let size = items?.first { $0.name == "size" }?.value
 
-        #expect(size == "80")
+        #expect(size == "30")
     }
 }

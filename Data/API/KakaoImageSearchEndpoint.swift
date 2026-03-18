@@ -12,6 +12,8 @@
 import Foundation
 
 enum KakaoImageSearchEndpoint: APIEndpoint, Sendable {
+    /// - page: 결과 페이지 번호 (Kakao API 허용 범위: 1~15)
+    /// - size: 한 페이지에 보여질 문서 수 (Kakao API 허용 범위: 1~30, 기본값 15)
     case searchImages(query: String, page: Int, size: Int = 30)
 
     var baseURL: String { "https://dapi.kakao.com" }
@@ -28,8 +30,8 @@ enum KakaoImageSearchEndpoint: APIEndpoint, Sendable {
         switch self {
         case let .searchImages(query, page, size):
             let clampedQuery = String(query.prefix(256))
-            let clampedPage = min(max(page, 1), 50)
-            let clampedSize = min(max(size, 1), 80)
+            let clampedPage = min(max(page, 1), 15)
+            let clampedSize = min(max(size, 1), 30)
             return [
                 URLQueryItem(name: "query", value: clampedQuery),
                 URLQueryItem(name: "page", value: String(clampedPage)),
