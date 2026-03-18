@@ -80,12 +80,12 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 ### 네트워크 오류 재시도 UX
 - 검색 실패(hasError) 시 EmptyStateView에 재시도 버튼 표시
 - 추가 로드 실패(hasLoadMoreError) 시 목록 하단에 인라인 재시도 버튼 표시
+- 북마크 로드 실패(hasLoadError) 시 EmptyStateView에 재시도 버튼 표시
 - 결과 없음(빈 배열)과 실제 오류를 구분해서 보여주도록 구성
 
-### 북마크 에러 Toast 피드백
-- 북마크 토글 실패 시 검색 결과를 유지한 채 하단 Toast로 표시
-- `errorMessage`(검색 실패 전용)와 `toastMessage`(일시적 에러 전용) 역할 분리
-- Toast는 3초 후 자동 소멸, 슬라이드 인/아웃 애니메이션 적용
+### 북마크 에러 피드백
+- 북마크 로드 실패 시 EmptyStateView에 재시도 버튼 표시
+- 북마크 토글 실패 시 목록을 유지한 채 하단 Toast로 표시 (3초 후 자동 소멸, 슬라이드 인/아웃 애니메이션)
 
 ### ATS 예외 설정
 - 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않아, 이미지 로딩을 위해 `daum.net`, `naver.net` 도메인에 한해 ATS 예외를 추가했습니다.
@@ -133,7 +133,7 @@ Swift Testing Framework 기반 94개 테스트 케이스를 작성했고, 로컬
 | `KakaoImageSearchEndpointTests` | 11 | URL 구성, 쿼리 파라미터, 헤더 검증 |
 | `KakaoSearchResponseDTOTests` | 8 | JSON 디코딩, snake_case 변환, 필드 fallback |
 | `SearchViewModelTests` | 26 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast, 연속 토글 dedup, loadMore/prefetch Task 취소 |
-| `BookmarkViewModelTests` | 6 | 목록 로드/실패 Toast, 삭제 후 갱신, 삭제 실패 Toast, 연속 삭제 dedup |
+| `BookmarkViewModelTests` | 7 | 목록 로드/실패, 로드 재시도 성공, 토글 후 갱신, 토글 실패 Toast, 연속 토글 dedup |
 | `BookmarkStoreTests` | 5 | load 성공/실패(throws), toggle 추가/제거, isBookmarked 판별 |
 | `MainViewModelTests` | 4 | debounce 취소, 빈 입력 처리 |
 

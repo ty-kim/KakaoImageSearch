@@ -16,6 +16,7 @@ final class BookmarkViewModel {
     private let bookmarkStore: BookmarkStore
     private let toastDuration: Duration
     private(set) var toastMessage: String? = nil
+    private(set) var hasLoadError: Bool = false
     private(set) var inFlightBookmarkIDs: Set<String> = []
     private var toastTask: Task<Void, Never>? = nil
 
@@ -33,12 +34,17 @@ final class BookmarkViewModel {
     }
 
     func loadBookmarks() async {
+        hasLoadError = false
         do {
             try await bookmarkStore.load()
         } catch {
-            showToast(L10n.Bookmark.loadError)
+            hasLoadError = true
             Logger.presentation.errorPrint("Load bookmarks failed: \(error)")
         }
+    }
+
+    func retryLoadBookmarks() {
+        Task { await loadBookmarks() }
     }
 
     func toggleBookmark(for item: ImageItem) async {

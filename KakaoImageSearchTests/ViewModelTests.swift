@@ -402,15 +402,31 @@ struct BookmarkViewModelTests {
         #expect(sut.isLoading == false)
     }
 
-    @Test("loadBookmarks 실패 시 toastMessage 설정")
-    func loadBookmarks_failure_setsToastMessage() async throws {
+    @Test("loadBookmarks 실패 시 hasLoadError 설정")
+    func loadBookmarks_failure_setsHasLoadError() async throws {
         let (sut, repo) = makeSUT()
         repo.stubbedFetchError = TestError.stub
 
         await sut.loadBookmarks()
 
-        #expect(sut.toastMessage != nil)
+        #expect(sut.hasLoadError == true)
         #expect(sut.isLoading == false)
+    }
+
+    @Test("loadBookmarks 재시도 성공 시 hasLoadError 해제")
+    func loadBookmarks_retrySuccess_clearsError() async throws {
+        let items = [ImageItem.fixture(id: "a")]
+        let (sut, repo) = makeSUT(initialItems: items)
+        repo.stubbedFetchError = TestError.stub
+
+        await sut.loadBookmarks()
+        #expect(sut.hasLoadError == true)
+
+        repo.stubbedFetchError = nil
+        await sut.loadBookmarks()
+
+        #expect(sut.hasLoadError == false)
+        #expect(sut.items.count == 1)
     }
 
     @Test("toggleBookmark 실패 시 toastMessage 설정")

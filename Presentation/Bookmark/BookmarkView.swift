@@ -20,6 +20,13 @@ struct BookmarkView: View {
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityIdentifier("bookmarkView.loadingIndicator")
 
+                } else if viewModel.hasLoadError {
+                    EmptyStateView(
+                        message: L10n.Bookmark.loadError,
+                        accessibilityID: "bookmarkView.errorState",
+                        retryAction: { viewModel.retryLoadBookmarks() }
+                    )
+
                 } else if viewModel.items.isEmpty {
                     EmptyStateView(message: L10n.Bookmark.empty, accessibilityID: "bookmarkView.emptyState")
 
