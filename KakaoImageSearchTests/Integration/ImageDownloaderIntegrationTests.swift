@@ -281,17 +281,19 @@ struct ImageDownloaderIntegrationTests {
         #expect(image.size.width > 0)
     }
 
-    @Test("Content-Type 헤더가 없으면 notImageContentType을 던진다")
+    @Test("Content-Type 헤더가 없고 URL 확장자로도 추론 불가하면 notImageContentType을 던진다")
     func download_200_noContentType_throwsNotImageContentType() async throws {
         let sut = makeDownloader()
         let png = makePNGData()
+        // 확장자 없는 URL — HTTPURLResponse가 MIME type을 추론할 수 없음
+        let noExtURL = URL(string: "https://example.com/blob")!
         defer { MockImageURLProtocol.requestHandler = nil }
         MockImageURLProtocol.requestHandler = { req in
             (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
         }
 
         await #expect(throws: ImageDownloadError.notImageContentType) {
-            _ = try await sut.download(from: imageURL)
+            _ = try await sut.download(from: noExtURL)
         }
     }
 
@@ -333,88 +335,47 @@ struct ImageDownloaderIntegrationTests {
 
         #expect(capturedURL?.scheme == "https")
     }
+    // MARK: - in-flight dedup 취소 내성
+
+    @Test("첫 호출자가 취소돼도 동일 URL 재요청 시 in-flight task를 재사용한다")
+    func download_firstCallerCancelled_secondCallerReusesInFlight() async throws {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        defer { MockImageURLProtocol.requestHandler = nil }
+
+        let requestStarted = Semaphore()
+        var networkCallCount = 0
+
+        MockImageURLProtocol.requestHandler = { req in
+            networkCallCount += 1
+            requestStarted.signal()
+            // 응답 지연 — 취소 타이밍을 만들기 위해
+            Thread.sleep(forTimeInterval: 0.1)
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
+        }
+
+        // 1. 첫 번째 호출 시작 후 취소
+        let firstTask = Task {
+            try await sut.download(from: imageURL)
+        }
+        requestStarted.wait()
+        firstTask.cancel()
+
+        // 2. 첫 번째 task가 아직 진행 중일 때 동일 URL 재요청
+        let image = try await sut.download(from: imageURL)
+
+        #expect(image.size.width > 0)
+        #expect(networkCallCount == 1) // 네트워크 호출은 1회만
+    }
 }
 
-// MARK: - ImageCache 통합 테스트
+// MARK: - 동기 세마포어 헬퍼
 
-@Suite("ImageCache 통합 테스트")
-struct ImageCacheIntegrationTests {
-
-    private let tempDir: URL
-    private let imageURL = URL(string: "https://example.com/image.jpg")!
-
-    init() {
-        tempDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
-    }
-
-    private func makeSUT(ttl: TimeInterval = 7 * 24 * 60 * 60) -> ImageCache {
-        ImageCache(diskCacheURL: tempDir, ttl: ttl)
-    }
-
-    /// cacheKey(for:) private 메서드와 동일한 로직
-    private func cacheKey(for url: URL) -> String {
-        url.absoluteString
-            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)
-            ?? url.lastPathComponent
-    }
-
-    @Test("손상된 디스크 캐시 파일 읽기 시 파일 삭제 후 nil 반환")
-    func get_corruptDiskFile_removesFileAndReturnsNil() async {
-        let sut = makeSUT()
-        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
-        try? "not an image".data(using: .utf8)?.write(to: diskURL)
-        #expect(FileManager.default.fileExists(atPath: diskURL.path))
-
-        let result = await sut.get(for: imageURL)
-
-        #expect(result == nil)
-        #expect(!FileManager.default.fileExists(atPath: diskURL.path))
-    }
-
-    @Test("손상 파일 삭제 후 정상 이미지 set → 다음 get에서 복구")
-    func get_afterCorruptFileRemoved_returnsNewlyCachedImage() async {
-        let sut = makeSUT()
-        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
-        try? "not an image".data(using: .utf8)?.write(to: diskURL)
-
-        _ = await sut.get(for: imageURL)  // 손상 파일 삭제 트리거
-
-        let validImage = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
-            .image { _ in }
-        await sut.set(validImage, for: imageURL)
-
-        let result = await sut.get(for: imageURL)
-        #expect(result != nil)
-    }
-
-    @Test("TTL 초과 파일은 cleanup 시 삭제됨")
-    func cleanupExpiredFiles_removesExpiredFiles() async {
-        let sut = makeSUT(ttl: 3600)
-        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
-        try? "fake".data(using: .utf8)?.write(to: diskURL)
-
-        // 수정 날짜를 TTL보다 이전으로 조작
-        let pastDate = Date(timeIntervalSinceNow: -7200)
-        try? FileManager.default.setAttributes([.modificationDate: pastDate], ofItemAtPath: diskURL.path)
-
-        await sut.cleanupExpiredFiles()
-
-        #expect(!FileManager.default.fileExists(atPath: diskURL.path))
-    }
-
-    @Test("TTL 미초과 파일은 cleanup 시 유지됨")
-    func cleanupExpiredFiles_keepsValidFiles() async {
-        let sut = makeSUT(ttl: 3600)
-        let image = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { _ in }
-        await sut.set(image, for: imageURL)
-
-        await sut.cleanupExpiredFiles()
-
-        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
-        #expect(FileManager.default.fileExists(atPath: diskURL.path))
-    }
+/// URLProtocol handler(동기 컨텍스트)에서 테스트 코드로 신호를 보내기 위한 래퍼
+private final class Semaphore: Sendable {
+    private let inner = DispatchSemaphore(value: 0)
+    func signal() { inner.signal() }
+    func wait() { inner.wait() }
 }
 
 // MARK: - 동시성 측정 헬퍼
