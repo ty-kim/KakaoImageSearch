@@ -131,7 +131,7 @@ struct SearchViewModelTests {
         await sut.loadMore()
 
         #expect(sut.hasLoadMoreError == true)
-        #expect(sut.rawItems.count == 1)
+        #expect(sut.items.count == 1)
     }
 
     @Test("retryLoadMore 호출 시 hasLoadMoreError 초기화 후 추가 로드")
@@ -149,7 +149,7 @@ struct SearchViewModelTests {
         await sut.retryLoadMore()
 
         #expect(sut.hasLoadMoreError == false)
-        #expect(sut.rawItems.count == 2)
+        #expect(sut.items.count == 2)
     }
 
     @Test("재검색 시 hasLoadMoreError 초기화")

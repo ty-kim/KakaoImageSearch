@@ -13,7 +13,8 @@ import OSLog
 @MainActor
 final class SearchViewModel {
 
-    private(set) var rawItems: [ImageItem] = []
+    private(set) var items: [ImageItem] = []
+    private var rawItems: [ImageItem] = []
     private(set) var isLoading: Bool = false
     private(set) var isLoadingMore: Bool = false
     private(set) var isEnd: Bool = false
@@ -34,16 +35,6 @@ final class SearchViewModel {
     private let bookmarkStore: BookmarkStore
     private let imagePrefetcher: any ImagePrefetcher
 
-    var items: [ImageItem] {
-        let bookmarkedIDs = bookmarkStore.bookmarkedIDs
-
-        return rawItems.map { item in
-            var updated = item
-            updated.isBookmarked = bookmarkedIDs.contains(item.id)
-            return updated
-        }
-    }
-    
     init(
         searchImageUseCase: SearchImageUseCase,
         bookmarkStore: BookmarkStore,
@@ -52,6 +43,28 @@ final class SearchViewModel {
         self.searchImageUseCase = searchImageUseCase
         self.bookmarkStore = bookmarkStore
         self.imagePrefetcher = imagePrefetcher
+        observeBookmarkStore()
+    }
+
+    // bookmarkedIDs 변경 시에만 재계산 — withObservationTracking으로 단일 의존성 추적
+    private func observeBookmarkStore() {
+        withObservationTracking {
+            _ = bookmarkStore.bookmarkedIDs
+        } onChange: { [weak self] in
+            Task { @MainActor [weak self] in
+                self?.rebuildItems()
+                self?.observeBookmarkStore()
+            }
+        }
+    }
+
+    private func rebuildItems() {
+        let ids = bookmarkStore.bookmarkedIDs
+        items = rawItems.map { item in
+            var updated = item
+            updated.isBookmarked = ids.contains(item.id)
+            return updated
+        }
     }
 
     // MainViewModel에서 debounce 후 호출. retry()도 이 경로를 사용
@@ -102,6 +115,7 @@ final class SearchViewModel {
             guard !Task.isCancelled, activeSearchID == searchID else { return }
 
             rawItems = result.items
+            rebuildItems()
             isEnd = result.isEnd
 
             Logger.presentation.debugPrint("Search completed: \(result.items.count) results, isEnd: \(isEnd)")
@@ -117,6 +131,7 @@ final class SearchViewModel {
             guard activeSearchID == searchID else { return }
 
             rawItems = []
+            items = []
             errorMessage = L10n.Search.error(error.localizedDescription)
             hasError = true
 
@@ -162,6 +177,7 @@ final class SearchViewModel {
                   queryAtRequestTime == currentQuery else { return }
 
             rawItems += result.items
+            rebuildItems()
             isEnd = result.isEnd
             currentPage = nextPage
 
@@ -217,6 +233,7 @@ final class SearchViewModel {
         activeSearchID = nil
 
         rawItems = []
+        items = []
         errorMessage = nil
         hasError = false
         hasLoadMoreError = false
