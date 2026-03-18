@@ -94,6 +94,11 @@ actor ImageDownloader: ImagePrefetcher {
         }
 
         inFlight[secureURL] = task
+        // defer는 이 download() 호출의 첫 번째 호출자(Caller A) 컨텍스트가 끝날 때 실행됨.
+        // 내부 task는 unstructured이므로 Caller A가 취소되어도 task 자체는 계속 실행되며,
+        // 이미 existing.value를 await 중인 다른 호출자(Caller B)는 정상적으로 결과를 받음.
+        // 단, Caller A 취소 후 inFlight에서 제거된 상태에서 새 호출자(Caller C)가 들어오면
+        // task가 아직 실행 중이더라도 중복 요청이 발생할 수 있음. 이미지 로더 특성상 허용된 트레이드오프.
         defer { inFlight.removeValue(forKey: secureURL) }
 
         return try await task.value
