@@ -24,7 +24,11 @@ actor ImageCache {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         self.diskCacheURL = diskCacheURL ?? caches.appendingPathComponent("ImageCache", isDirectory: true)
         self.ttl = ttl
-        try? fileManager.createDirectory(at: self.diskCacheURL, withIntermediateDirectories: true)
+        do {
+            try fileManager.createDirectory(at: self.diskCacheURL, withIntermediateDirectories: true)
+        } catch {
+            Logger.imageLoader.errorPrint("Failed to create image cache directory: \(error)")
+        }
 
         memoryCache.countLimit = 100
         memoryCache.totalCostLimit = 50 * 1024 * 1024 // 50 MB

@@ -21,7 +21,11 @@ actor BookmarkStorage {
         let appSupport = FileManager.default
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         let directory = appSupport.appendingPathComponent("KakaoImageSearch", isDirectory: true)
-        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        do {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        } catch {
+            Logger.bookmark.errorPrint("Failed to create bookmark directory: \(error)")
+        }
         self.fileURL = directory.appendingPathComponent("bookmarks.json")
     }
 
