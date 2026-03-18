@@ -215,3 +215,58 @@ struct ImageDownloaderIntegrationTests {
         #expect(capturedURL?.scheme == "https")
     }
 }
+
+// MARK: - ImageCache 통합 테스트
+
+@Suite("ImageCache 통합 테스트")
+struct ImageCacheIntegrationTests {
+
+    private let tempDir: URL
+    private let imageURL = URL(string: "https://example.com/image.jpg")!
+
+    init() {
+        tempDir = FileManager.default.temporaryDirectory
+            .appendingPathComponent(UUID().uuidString, isDirectory: true)
+        try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
+    }
+
+    private func makeSUT() -> ImageCache {
+        ImageCache(diskCacheURL: tempDir)
+    }
+
+    /// cacheKey(for:) private 메서드와 동일한 로직
+    private func cacheKey(for url: URL) -> String {
+        url.absoluteString
+            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)
+            ?? url.lastPathComponent
+    }
+
+    @Test("손상된 디스크 캐시 파일 읽기 시 파일 삭제 후 nil 반환")
+    func get_corruptDiskFile_removesFileAndReturnsNil() async {
+        let sut = makeSUT()
+        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
+        try? "not an image".data(using: .utf8)?.write(to: diskURL)
+        #expect(FileManager.default.fileExists(atPath: diskURL.path))
+
+        let result = await sut.get(for: imageURL)
+
+        #expect(result == nil)
+        #expect(!FileManager.default.fileExists(atPath: diskURL.path))
+    }
+
+    @Test("손상 파일 삭제 후 정상 이미지 set → 다음 get에서 복구")
+    func get_afterCorruptFileRemoved_returnsNewlyCachedImage() async {
+        let sut = makeSUT()
+        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
+        try? "not an image".data(using: .utf8)?.write(to: diskURL)
+
+        _ = await sut.get(for: imageURL)  // 손상 파일 삭제 트리거
+
+        let validImage = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
+            .image { _ in }
+        await sut.set(validImage, for: imageURL)
+
+        let result = await sut.get(for: imageURL)
+        #expect(result != nil)
+    }
+}

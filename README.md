@@ -126,13 +126,14 @@ Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 28개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 30개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `NetworkServiceIntegrationTests` | 8 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑 |
 | `BookmarkStorageIntegrationTests` | 12 | 실제 FileManager 파일 I/O, 저장/조회/삭제 시나리오 |
 | `ImageDownloaderIntegrationTests` | 8 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup, prefetch 부분 실패, http→https 변환 |
+| `ImageCacheIntegrationTests` | 2 | 손상 파일 자동 삭제 후 nil 반환, 손상 제거 후 재캐싱 복구 |
 
 ### UI 테스트
 

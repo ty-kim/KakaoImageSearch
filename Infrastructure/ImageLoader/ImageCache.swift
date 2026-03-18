@@ -19,10 +19,10 @@ actor ImageCache {
     // 실제 데이터 레이스 없으므로 nonisolated(unsafe) 선언.
     nonisolated(unsafe) private var memoryWarningTask: Task<Void, Never>?
 
-    init() {
+    init(diskCacheURL: URL? = nil) {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-        diskCacheURL = caches.appendingPathComponent("ImageCache", isDirectory: true)
-        try? fileManager.createDirectory(at: diskCacheURL, withIntermediateDirectories: true)
+        self.diskCacheURL = diskCacheURL ?? caches.appendingPathComponent("ImageCache", isDirectory: true)
+        try? fileManager.createDirectory(at: self.diskCacheURL, withIntermediateDirectories: true)
 
         memoryCache.countLimit = 100
         memoryCache.totalCostLimit = 50 * 1024 * 1024 // 50 MB
@@ -56,9 +56,15 @@ actor ImageCache {
         }
 
         let diskURL = diskCacheURL.appendingPathComponent(key)
-        if let data = try? Data(contentsOf: diskURL), let image = UIImage(data: data) {
-            memoryCache.setObject(image, forKey: key as NSString)
-            return image
+        if let data = try? Data(contentsOf: diskURL) {
+            if let image = UIImage(data: data) {
+                memoryCache.setObject(image, forKey: key as NSString)
+                return image
+            } else {
+                // 데이터는 읽혔지만 이미지 디코딩 실패 → 손상된 파일 삭제해 반복 미스 방지
+                try? fileManager.removeItem(at: diskURL)
+                Logger.imageLoader.errorPrint("Corrupt disk cache removed: \(diskURL.lastPathComponent)")
+            }
         }
 
         return nil
@@ -70,7 +76,7 @@ actor ImageCache {
 
         let diskURL = diskCacheURL.appendingPathComponent(key)
         if let data = image.jpegData(compressionQuality: 0.8) {
-            try? data.write(to: diskURL)
+            try? data.write(to: diskURL, options: .atomic)
         }
     }
 
