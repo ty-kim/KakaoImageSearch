@@ -8,9 +8,16 @@
 import UIKit
 import OSLog
 
-enum ImageDownloadError: Error {
+enum ImageDownloadError: Error, LocalizedError {
     case invalidResponse
     case invalidData
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidResponse: return L10n.ImageDownload.invalidResponse
+        case .invalidData:     return L10n.ImageDownload.invalidData
+        }
+    }
 }
 
 /// 이미지 선수 다운로드 추상화. 테스트에서 Mock으로 교체 가능합니다.

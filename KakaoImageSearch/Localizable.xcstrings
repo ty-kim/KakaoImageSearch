@@ -323,6 +323,52 @@
         }
       }
     },
+    "image_download.error.invalid_response" : {
+      "comment" : "Error when image server returns an invalid HTTP response",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Invalid response from the image server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像サーバーから無効なレスポンスを受信しました。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 서버 응답이 유효하지 않습니다."
+          }
+        }
+      }
+    },
+    "image_download.error.invalid_data" : {
+      "comment" : "Error when received data cannot be decoded as an image",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The image data could not be read."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像データを読み込めませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 데이터를 읽을 수 없습니다."
+          }
+        }
+      }
+    },
     "bookmark.error.load" : {
       "comment" : "Toast message shown when loading bookmarks fails",
       "localizations" : {

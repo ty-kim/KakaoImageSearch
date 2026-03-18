@@ -58,6 +58,15 @@ nonisolated enum L10n {
         }
     }
 
+    enum ImageDownload {
+        static var invalidResponse: String {
+            String(localized: "image_download.error.invalid_response")
+        }
+        static var invalidData: String {
+            String(localized: "image_download.error.invalid_data")
+        }
+    }
+
     enum Bookmark {
         static var empty: String {
             String(localized: "bookmark.empty")
