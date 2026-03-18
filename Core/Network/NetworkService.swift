@@ -25,6 +25,12 @@ actor NetworkService {
         let (data, response): (Data, URLResponse)
         do {
             (data, response) = try await session.data(for: urlRequest)
+        } catch is CancellationError {
+            Logger.network.debugPrint("Request cancelled")
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            Logger.network.debugPrint("Request cancelled: \(error)")
+            throw CancellationError()
         } catch {
             Logger.network.errorPrint("Request failed: \(error)")
             throw NetworkError.unknown(error)

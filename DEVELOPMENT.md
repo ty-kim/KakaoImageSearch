@@ -27,7 +27,7 @@ Swift 6의 `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor`를 활성화해 컴파일
 단순 기능 구현을 넘어 프로덕션 수준의 코드를 목표로 했습니다.
 
 - **다국어(ko / en / ja)**: `.xcstrings` String Catalog + 타입 세이프 `L10n` 헬퍼
-- **유닛 테스트**: Swift Testing Framework, 47개 케이스, Domain + ViewModel 커버리지 100%
+- **유닛 테스트**: Swift Testing Framework, 54개 케이스, Domain + ViewModel 커버리지 100%
 - **UI 테스트**: XCUITest, 25개 케이스, 실제 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로거, `OS_ACTIVITY_MODE=disable` 환경 대응
 - **BookmarkStore**: 단일 진실 공급원 패턴으로 탭 간 북마크 상태 동기화 보장
@@ -65,7 +65,7 @@ API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 
 | `PublishSubject` + `debounce` | `Task.sleep(1.0)` + `Task.cancel()` |
 | `BehaviorRelay` / `Driver` | `@Observable` + `@MainActor` |
 | `DisposeBag` | `Task` 명시적 취소 (`searchTask?.cancel()`) |
-| `flatMapLatest` | `Task` 재생성으로 이전 요청 취소 |
+| `flatMapLatest` | `searchTask` 재생성 + `activeSearchID` stale 결과 무시로 이전 요청 취소 |
 
 Swift Concurrency는 컴파일 타임 데이터 레이스 감지라는 RxSwift에 없는 안전성을 제공합니다.
 

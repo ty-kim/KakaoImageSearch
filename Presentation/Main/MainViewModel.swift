@@ -49,18 +49,20 @@ final class MainViewModel {
     func onSearchTextChanged(_ newValue: String) {
         debounceTask?.cancel()
 
-        let trimmed = newValue.trimmingCharacters(in: .whitespaces)
+        let trimmed = newValue.trimmingCharacters(in: .whitespacesAndNewlines)
 
         guard !trimmed.isEmpty else {
-            searchViewModel.clearResults()
+            searchViewModel.cancelSearchAndClear()
             return
         }
 
         Logger.presentation.debugPrint("Debounce queued: \"\(trimmed)\"")
-        debounceTask = Task {
+
+        debounceTask = Task { [weak self] in
             try? await Task.sleep(for: .seconds(1.0))
-            guard !Task.isCancelled else { return }
-            await searchViewModel.search(query: trimmed)
+            guard !Task.isCancelled, let self else { return }
+
+            self.searchViewModel.submitSearch(query: trimmed)
         }
     }
 }

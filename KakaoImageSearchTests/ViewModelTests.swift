@@ -108,13 +108,14 @@ struct SearchViewModelTests {
     }
 
     @Test("retry 호출 시 동일 쿼리로 재검색")
-    func retry_searchesWithSameQuery() async {
+    func retry_searchesWithSameQuery() async throws {
         let (sut, searchRepo, _, _) = makeSUT(searchError: TestError.stub)
         await sut.search(query: "고양이")
 
         searchRepo.stubbedError = nil
         searchRepo.stubbedResult = [ImageItem.fixture()]
-        await sut.retry()
+        sut.retry()
+        try await Task.sleep(for: .milliseconds(50))
 
         #expect(searchRepo.lastQuery == "고양이")
         #expect(searchRepo.searchCallCount == 2)
@@ -167,24 +168,22 @@ struct SearchViewModelTests {
         #expect(sut.hasLoadMoreError == false)
     }
 
-    @Test("isLoading 중 재검색 무시")
-    func search_whileLoading_ignored() async throws {
+    @Test("currentQuery 없을 때 retry 호출 시 검색 미실행")
+    func retry_withEmptyQuery_doesNotSearch() {
         let (sut, searchRepo, _, _) = makeSUT()
 
-        // isLoading 상태를 직접 만들 수 없으므로 searchCallCount 로 검증
-        await sut.search(query: "first")
-        let callCount = searchRepo.searchCallCount
+        sut.retry()
 
-        #expect(callCount == 1)
+        #expect(searchRepo.searchCallCount == 0)
     }
 
-    @Test("clearResults 호출 시 상태 초기화")
-    func clearResults_resetsState() async throws {
+    @Test("cancelSearchAndClear 호출 시 상태 초기화")
+    func cancelSearchAndClear_resetsState() async throws {
         let items = [ImageItem.fixture(id: "a")]
         let (sut, _, _, _) = makeSUT(searchItems: items)
         await sut.search(query: "cat")
 
-        sut.clearResults()
+        sut.cancelSearchAndClear()
 
         #expect(sut.items.isEmpty)
         #expect(sut.errorMessage == nil)
