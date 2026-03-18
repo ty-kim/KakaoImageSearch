@@ -108,7 +108,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 81개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 86개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
@@ -119,19 +119,20 @@ Swift Testing Framework 기반 81개 테스트 케이스를 작성했고, 로컬
 | `KakaoSearchResponseDTOTests` | 8 | JSON 디코딩, snake_case 변환, 필드 fallback |
 | `SearchViewModelTests` | 20 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast |
 | `BookmarkViewModelTests` | 4 | 목록 로드, 삭제 후 갱신, 삭제 실패 Toast |
+| `BookmarkStoreTests` | 5 | load 성공/실패, toggle 추가/제거, isBookmarked 판별 |
 | `MainViewModelTests` | 4 | debounce 취소, 빈 입력 처리 |
 
 Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 26개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 27개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `NetworkServiceIntegrationTests` | 8 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑 |
 | `BookmarkStorageIntegrationTests` | 12 | 실제 FileManager 파일 I/O, 저장/조회/삭제 시나리오 |
-| `ImageDownloaderIntegrationTests` | 6 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup, http→https 변환 |
+| `ImageDownloaderIntegrationTests` | 7 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, prefetch 부분 실패, in-flight dedup, http→https 변환 |
 
 ### UI 테스트
 

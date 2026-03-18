@@ -15,7 +15,9 @@ actor ImageCache {
     private let memoryCache = NSCache<NSString, UIImage>()
     private let fileManager = FileManager.default
     private let diskCacheURL: URL
-    private var memoryWarningTask: Task<Void, Never>?
+    // init/deinit에서만 접근 — init은 actor 노출 전 단일 스레드, deinit은 마지막 참조.
+    // 실제 데이터 레이스 없으므로 nonisolated(unsafe) 선언.
+    nonisolated(unsafe) private var memoryWarningTask: Task<Void, Never>?
 
     init() {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
@@ -30,7 +32,7 @@ actor ImageCache {
         memoryWarningTask = Task { [weak self] in
             for await _ in NotificationCenter.default.notifications(named: UIApplication.didReceiveMemoryWarningNotification) {
                 guard let self else { return }
-                self.clearMemoryCache()
+                await self.clearMemoryCache()
             }
         }
     }

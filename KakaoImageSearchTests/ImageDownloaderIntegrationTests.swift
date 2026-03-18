@@ -140,6 +140,37 @@ struct ImageDownloaderIntegrationTests {
         #expect(requestCount == 1)
     }
 
+    // MARK: - prefetch 실패
+
+    @Test("prefetch 중 일부 URL 실패해도 성공한 URL은 캐시에 저장된다")
+    func prefetch_partialFailure_cachesSuccessfulDownloads() async throws {
+        let sut = makeDownloader()
+        let png = makePNGData()
+        let successURL = URL(string: "https://example.com/success.png")!
+        let failURL = URL(string: "https://example.com/fail.png")!
+        defer { MockImageURLProtocol.requestHandler = nil }
+
+        MockImageURLProtocol.requestHandler = { req in
+            if req.url == successURL {
+                return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            } else {
+                return (HTTPURLResponse(url: req.url!, statusCode: 500, httpVersion: nil, headerFields: nil)!, Data())
+            }
+        }
+
+        await sut.prefetch(urls: [successURL, failURL])
+
+        // 성공한 URL은 캐시에 저장되어 두 번째 다운로드 시 URLSession을 호출하지 않는다
+        var requestCount = 0
+        MockImageURLProtocol.requestHandler = { req in
+            requestCount += 1
+            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+        }
+        _ = try await sut.download(from: successURL)
+
+        #expect(requestCount == 0)
+    }
+
     // MARK: - in-flight dedup
 
     @Test("동일 URL 동시 요청은 URLSession을 한 번만 호출한다 (in-flight dedup)")

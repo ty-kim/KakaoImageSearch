@@ -50,6 +50,11 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         }
     }
 
+    /// ImageDownloading 프로토콜 준수 — priority 기본값(.userInitiated)으로 위임.
+    func download(from url: URL) async throws -> UIImage {
+        try await download(from: url, priority: .userInitiated)
+    }
+
     func download(from url: URL, priority: TaskPriority = .userInitiated) async throws -> UIImage {
         // http → https 변환 (daum.net / naver.net 은 ATS 예외로 처리하므로 제외)
         let secureURL: URL
