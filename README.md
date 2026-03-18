@@ -60,7 +60,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 | 컴포넌트 | 구현 내용 |
 |----------|-----------|
 | **NetworkService** | `actor` 기반 Generic URLSession 래퍼, snake_case 자동 변환 |
-| **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시, in-flight 중복 요청 dedup, Content-Type·크기 검증, prefetch 병렬도 제한(최대 6), URLSession 주입 가능 |
+| **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시, in-flight 중복 요청 dedup(호출자 취소 내성), Content-Type·크기 검증(Content-Length 사전 검사 + 스트리밍 중 조기 중단), prefetch 병렬도 제한(최대 6), URLSession 주입 가능 |
 | **CachedAsyncImage** | `.task(id: url)` 기반 이미지 로더 — 뷰 수명과 Task 수명 일치, URL 변경 시 이전 상태를 정리하고 새 이미지를 로드하도록 구성 |
 | **AppAssembler** | Composition Root 패턴, 주요 의존성은 AppAssembler에서 조립하도록 구성했습니다. |
 | **BookmarkStorage** | FileManager + JSON 파일 기반 영속성, `.atomic` 쓰기 |
@@ -145,13 +145,13 @@ Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 41개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 43개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `NetworkServiceIntegrationTests` | 9 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑, 타임아웃 |
 | `BookmarkStorageIntegrationTests` | 14 | 실제 FileManager 파일 I/O, 저장/조회/삭제, 읽기전용 경로 에러, 손상 JSON 에러, 앱 재시작 영속성 |
-| `ImageDownloaderIntegrationTests` | 14 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup, prefetch 병렬도 제한·부분 실패, Content-Type 검증, 크기 제한, http→https 변환 |
+| `ImageDownloaderIntegrationTests` | 16 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup(호출자 취소 내성), prefetch 병렬도 제한·부분 실패, Content-Type 검증, Content-Length 사전 검사·스트리밍 크기 제한, http→https 변환 |
 | `ImageCacheIntegrationTests` | 4 | 손상 파일 자동 삭제 후 nil 반환, 재캐싱 복구, TTL 초과 파일 삭제, TTL 유효 파일 유지 |
 
 ### UI 테스트

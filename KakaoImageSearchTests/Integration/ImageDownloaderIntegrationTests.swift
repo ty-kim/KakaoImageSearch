@@ -281,25 +281,45 @@ struct ImageDownloaderIntegrationTests {
         #expect(image.size.width > 0)
     }
 
-    @Test("Content-Type 헤더가 없고 URL 확장자로도 추론 불가하면 notImageContentType을 던진다")
-    func download_200_noContentType_throwsNotImageContentType() async throws {
+    @Test("Content-Type이 application/octet-stream이면 notImageContentType을 던진다")
+    func download_200_octetStream_throwsNotImageContentType() async throws {
         let sut = makeDownloader()
-        let png = makePNGData()
-        // 확장자 없는 URL — HTTPURLResponse가 MIME type을 추론할 수 없음
-        let noExtURL = URL(string: "https://example.com/blob")!
         defer { MockImageURLProtocol.requestHandler = nil }
         MockImageURLProtocol.requestHandler = { req in
-            (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!, png)
+            let response = HTTPURLResponse(
+                url: req.url!, statusCode: 200, httpVersion: nil,
+                headerFields: ["Content-Type": "application/octet-stream"])!
+            return (response, Data("binary blob".utf8))
         }
 
         await #expect(throws: ImageDownloadError.notImageContentType) {
-            _ = try await sut.download(from: noExtURL)
+            _ = try await sut.download(from: imageURL)
         }
     }
 
     // MARK: - Content-Length 제한
 
-    @Test("다운로드 데이터가 maxContentLength를 초과하면 contentLengthExceeded를 던진다")
+    @Test("Content-Length 헤더가 상한 초과이면 본문 수신 전에 contentLengthExceeded를 던진다")
+    func download_contentLengthHeader_exceeds_throwsEarly() async throws {
+        let sut = makeDownloader()
+        let smallData = Data("tiny".utf8)
+        defer { MockImageURLProtocol.requestHandler = nil }
+        MockImageURLProtocol.requestHandler = { req in
+            let response = HTTPURLResponse(
+                url: req.url!, statusCode: 200, httpVersion: nil,
+                headerFields: [
+                    "Content-Type": "image/png",
+                    "Content-Length": "99999999"
+                ])!
+            return (response, smallData)
+        }
+
+        await #expect(throws: ImageDownloadError.contentLengthExceeded) {
+            _ = try await sut.download(from: imageURL)
+        }
+    }
+
+    @Test("Content-Length 헤더 없이 실제 데이터가 상한을 초과하면 스트리밍 중 contentLengthExceeded를 던진다")
     func download_oversizedData_throwsContentLengthExceeded() async throws {
         let sut = makeDownloader()
         let oversizedData = Data(repeating: 0xFF, count: Int(ImageDownloader.maxContentLength) + 1)
@@ -343,14 +363,12 @@ struct ImageDownloaderIntegrationTests {
         let png = makePNGData()
         defer { MockImageURLProtocol.requestHandler = nil }
 
-        let requestStarted = Semaphore()
         var networkCallCount = 0
 
         MockImageURLProtocol.requestHandler = { req in
             networkCallCount += 1
-            requestStarted.signal()
             // 응답 지연 — 취소 타이밍을 만들기 위해
-            Thread.sleep(forTimeInterval: 0.1)
+            Thread.sleep(forTimeInterval: 0.15)
             return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
@@ -358,7 +376,7 @@ struct ImageDownloaderIntegrationTests {
         let firstTask = Task {
             try await sut.download(from: imageURL)
         }
-        requestStarted.wait()
+        try await Task.sleep(for: .milliseconds(50))
         firstTask.cancel()
 
         // 2. 첫 번째 task가 아직 진행 중일 때 동일 URL 재요청
@@ -367,15 +385,6 @@ struct ImageDownloaderIntegrationTests {
         #expect(image.size.width > 0)
         #expect(networkCallCount == 1) // 네트워크 호출은 1회만
     }
-}
-
-// MARK: - 동기 세마포어 헬퍼
-
-/// URLProtocol handler(동기 컨텍스트)에서 테스트 코드로 신호를 보내기 위한 래퍼
-private final class Semaphore: Sendable {
-    private let inner = DispatchSemaphore(value: 0)
-    func signal() { inner.signal() }
-    func wait() { inner.wait() }
 }
 
 // MARK: - 동시성 측정 헬퍼

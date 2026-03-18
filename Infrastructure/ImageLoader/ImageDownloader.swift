@@ -122,7 +122,7 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         // dedup 목적으로 생성하는 unstructured Task.
         // self 전체가 아닌 실제 필요한 session·cache만 명시적으로 캡처한다.
         let task = Task<UIImage, Error>(priority: priority) { [session = self.session, cache = self.cache] in
-            let (data, response) = try await session.data(from: secureURL)
+            let (bytes, response) = try await session.bytes(from: secureURL)
 
             guard let http = response as? HTTPURLResponse,
                   (200..<300).contains(http.statusCode) else {
@@ -138,10 +138,23 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
                 throw ImageDownloadError.notImageContentType
             }
 
-            // 다운로드된 데이터 크기가 상한을 초과하면 거부
-            if data.count > ImageDownloader.maxContentLength {
-                Logger.imageLoader.errorPrint("Content length \(data.count) exceeds limit for: \(secureURL.lastPathComponent)")
+            // Content-Length 헤더로 사전 검사 — 본문 수신 전 조기 중단
+            let maxBytes = Int(ImageDownloader.maxContentLength)
+            if http.expectedContentLength > 0,
+               http.expectedContentLength > Int64(maxBytes) {
+                Logger.imageLoader.errorPrint("Content-Length \(http.expectedContentLength) exceeds limit for: \(secureURL.lastPathComponent)")
                 throw ImageDownloadError.contentLengthExceeded
+            }
+
+            // 스트리밍 수신 — 누적 크기가 상한을 넘으면 즉시 중단
+            var data = Data()
+            data.reserveCapacity(min(Int(http.expectedContentLength), maxBytes))
+            for try await byte in bytes {
+                data.append(byte)
+                if data.count > maxBytes {
+                    Logger.imageLoader.errorPrint("Download size \(data.count) exceeds limit for: \(secureURL.lastPathComponent)")
+                    throw ImageDownloadError.contentLengthExceeded
+                }
             }
 
             guard let image = UIImage(data: data) else {
