@@ -171,8 +171,8 @@ struct KakaoSearchResponseDTOTests {
         #expect(items.map(\.id) == ["https://example.com/1.jpg", "https://example.com/2.jpg"])
     }
 
-    @Test("thumbnailUrl이 빈 문자열인 경우 thumbnailURL은 빈 URL이 된다")
-    func toImageItem_emptyThumbnailUrl_emptyURL() throws {
+    @Test("thumbnailUrl이 빈 문자열인 경우 thumbnailURL은 nil이 된다")
+    func toImageItem_emptyThumbnailUrl_returnsNil() throws {
         let json = """
         {
             "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
@@ -183,6 +183,67 @@ struct KakaoSearchResponseDTOTests {
         let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
         let item = try #require(dto.documents[0].toImageItem())
 
-        #expect(item.thumbnailURL == URL(string: ""))
+        #expect(item.thumbnailURL == nil)
+    }
+
+    // MARK: - URL 스킴 검증
+
+    @Test("javascript: 스킴의 imageUrl은 toImageItem이 nil을 반환한다")
+    func toImageItem_javascriptScheme_returnsNil() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{ "image_url": "javascript:alert('xss')" }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        #expect(dto.documents[0].toImageItem() == nil)
+    }
+
+    @Test("file: 스킴의 imageUrl은 toImageItem이 nil을 반환한다")
+    func toImageItem_fileScheme_returnsNil() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{ "image_url": "file:///etc/passwd" }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        #expect(dto.documents[0].toImageItem() == nil)
+    }
+
+    @Test("http 스킴의 imageUrl은 유효한 ImageItem을 반환한다")
+    func toImageItem_httpScheme_returnsItem() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{ "image_url": "http://example.com/image.jpg" }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        let item = dto.documents[0].toImageItem()
+        #expect(item != nil)
+    }
+
+    @Test("javascript: 스킴의 thumbnailUrl은 nil로 처리된다")
+    func toImageItem_javascriptThumbnail_returnsNilThumbnail() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{
+                "image_url": "https://example.com/image.jpg",
+                "thumbnail_url": "javascript:void(0)"
+            }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        let item = try #require(dto.documents[0].toImageItem())
+
+        #expect(item.imageURL != nil)
+        #expect(item.thumbnailURL == nil)
     }
 }

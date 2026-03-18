@@ -128,4 +128,62 @@ struct KakaoImageSearchEndpointTests {
 
         #expect(request.url != nil)
     }
+
+    // MARK: - 입력값 클램핑
+
+    @Test("256자를 초과하는 쿼리는 256자로 잘린다")
+    func queryParam_longQuery_clampedTo256() throws {
+        let longQuery = String(repeating: "a", count: 500)
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: longQuery, page: 1)
+        let request = try endpoint.makeURLRequest()
+
+        let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
+        let query = items?.first { $0.name == "query" }?.value
+
+        #expect(query?.count == 256)
+    }
+
+    @Test("page가 0 이하이면 1로 클램핑된다")
+    func pageParam_zeroOrNegative_clampedTo1() throws {
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 0)
+        let request = try endpoint.makeURLRequest()
+
+        let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
+        let page = items?.first { $0.name == "page" }?.value
+
+        #expect(page == "1")
+    }
+
+    @Test("page가 50을 초과하면 50으로 클램핑된다")
+    func pageParam_over50_clampedTo50() throws {
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 100)
+        let request = try endpoint.makeURLRequest()
+
+        let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
+        let page = items?.first { $0.name == "page" }?.value
+
+        #expect(page == "50")
+    }
+
+    @Test("size가 0 이하이면 1로 클램핑된다")
+    func sizeParam_zeroOrNegative_clampedTo1() throws {
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 1, size: -5)
+        let request = try endpoint.makeURLRequest()
+
+        let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
+        let size = items?.first { $0.name == "size" }?.value
+
+        #expect(size == "1")
+    }
+
+    @Test("size가 80을 초과하면 80으로 클램핑된다")
+    func sizeParam_over80_clampedTo80() throws {
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 1, size: 200)
+        let request = try endpoint.makeURLRequest()
+
+        let items = URLComponents(url: request.url!, resolvingAgainstBaseURL: false)?.queryItems
+        let size = items?.first { $0.name == "size" }?.value
+
+        #expect(size == "80")
+    }
 }

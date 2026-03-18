@@ -127,15 +127,15 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 94개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 105개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `ImageItemTests` | 17 | aspectRatio 경계값, Codable 라운드트립, Hashable, listDisplayURL/detailDisplayURL fallback |
 | `SearchImageUseCaseTests` | 7 | 북마크 상태 merge, 에러 전파 |
 | `ManageBookmarkUseCaseTests` | 10 | toggle add/remove, 중복 방지 |
-| `KakaoImageSearchEndpointTests` | 11 | URL 구성, 쿼리 파라미터, 헤더 검증 |
-| `KakaoSearchResponseDTOTests` | 8 | JSON 디코딩, snake_case 변환, 필드 fallback |
+| `KakaoImageSearchEndpointTests` | 16 | URL 구성, 쿼리 파라미터, 헤더 검증, query/page/size 입력 클램핑 |
+| `KakaoSearchResponseDTOTests` | 12 | JSON 디코딩, snake_case 변환, 필드 fallback, URL 스킴 검증 (javascript:/file: 거부) |
 | `SearchViewModelTests` | 26 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast, 연속 토글 dedup, loadMore/prefetch Task 취소 |
 | `BookmarkViewModelTests` | 7 | 목록 로드/실패, 로드 재시도 성공, 토글 후 갱신, 토글 실패 Toast, 연속 토글 dedup |
 | `BookmarkStoreTests` | 5 | load 성공/실패(throws), toggle 추가/제거, isBookmarked 판별 |
