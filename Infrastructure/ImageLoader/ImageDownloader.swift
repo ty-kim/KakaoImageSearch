@@ -74,7 +74,9 @@ actor ImageDownloader: ImagePrefetcher {
         // 3. 신규 요청
         Logger.imageLoader.debugPrint("Downloading: \(secureURL.lastPathComponent)")
 
-        let task = Task<UIImage, Error>(priority: priority) {
+        // dedup 목적으로 생성하는 unstructured Task.
+        // self 전체가 아닌 실제 필요한 session·cache만 명시적으로 캡처한다.
+        let task = Task<UIImage, Error>(priority: priority) { [session = self.session, cache = self.cache] in
             let (data, response) = try await session.data(from: secureURL)
 
             guard let http = response as? HTTPURLResponse,
