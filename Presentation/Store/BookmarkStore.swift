@@ -9,6 +9,9 @@ import Foundation
 import Observation
 import OSLog
 
+/// SearchViewModel과 BookmarkViewModel 사이의 북마크 UI 상태를 공유하기 위한 Presentation 레이어 공유 객체.
+/// SwiftUI의 @EnvironmentObject와 동일한 역할로, 동일 인스턴스를 두 ViewModel에 주입해 탭 간 북마크 상태 동기화를 보장한다.
+/// 비즈니스 로직은 ManageBookmarkUseCase에 위임하며, 이 클래스는 UseCase 결과를 UI 상태(배열/Set)로 변환하는 역할만 담당한다.
 @Observable
 @MainActor
 final class BookmarkStore {
