@@ -135,9 +135,9 @@ XCUITest 기반 25개 테스트 케이스, 전체 통과.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
-| `KakaoImageSearchIPhoneUITests` | 11 | 앱 실행, 검색창 인터랙션, 탭 전환, 검색 결과 (iPhone 전용) |
+| `KakaoImageSearchIPhoneUITests` | 11 | 앱 실행, 검색창 인터랙션, 탭 전환, 검색 결과 (`--useFixtureData` fixture 기반, iPhone 전용) |
 | `KakaoImageSearchIPhoneRetryUITests` | 4 | 네트워크 오류 시 재시도 버튼 UX (`--simulateNetworkError`, iPhone 전용) |
-| `KakaoImageSearchIPadUITests` | 6 | NavigationSplitView 구조, 양쪽 패널 동시 표시 (iPad 전용) |
+| `KakaoImageSearchIPadUITests` | 6 | NavigationSplitView 구조, 양쪽 패널 동시 표시 (`--useFixtureData` fixture 기반, iPad 전용) |
 | `KakaoImageSearchIPadRetryUITests` | 4 | 네트워크 오류 시 재시도 버튼 UX, 에러 후 양쪽 패널 유지 (iPad 전용) |
 
 ---

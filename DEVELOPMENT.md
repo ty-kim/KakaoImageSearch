@@ -79,6 +79,12 @@ API의 기능을 최대한 활용하고, 사용자에게 명확한 피드백을 
 `CachedAsyncImage`는 `.task(id: url)`을 사용해 이미지 로드 Task를 뷰 수명에 바인딩합니다.
 URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `LazyVGrid` 셀 재사용 시 이전 URL의 이미지가 깜빡이거나 덮어쓰이는 문제를 방지합니다.
 
+#### cross-object 반응형 업데이트 — `withObservationTracking`
+
+`SearchViewModel.items`는 computed property 대신 stored property로 캐싱합니다.
+`BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuildItems()`를 한 번만 실행합니다.
+이는 Combine의 `sink` / RxSwift의 `subscribe`를 대체하는 `@Observable` 네이티브 패턴으로, 외부 객체의 상태 변화에 반응하면서도 Combine 프레임워크 의존 없이 구현합니다.
+
 Swift Concurrency는 컴파일 타임 데이터 레이스 감지라는 RxSwift에 없는 안전성을 제공합니다.
 
 ---
