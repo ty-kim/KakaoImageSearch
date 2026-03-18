@@ -230,8 +230,8 @@ struct ImageCacheIntegrationTests {
         try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
     }
 
-    private func makeSUT() -> ImageCache {
-        ImageCache(diskCacheURL: tempDir)
+    private func makeSUT(ttl: TimeInterval = 7 * 24 * 60 * 60) -> ImageCache {
+        ImageCache(diskCacheURL: tempDir, ttl: ttl)
     }
 
     /// cacheKey(for:) private 메서드와 동일한 로직
@@ -268,5 +268,32 @@ struct ImageCacheIntegrationTests {
 
         let result = await sut.get(for: imageURL)
         #expect(result != nil)
+    }
+
+    @Test("TTL 초과 파일은 cleanup 시 삭제됨")
+    func cleanupExpiredFiles_removesExpiredFiles() async {
+        let sut = makeSUT(ttl: 3600)
+        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
+        try? "fake".data(using: .utf8)?.write(to: diskURL)
+
+        // 수정 날짜를 TTL보다 이전으로 조작
+        let pastDate = Date(timeIntervalSinceNow: -7200)
+        try? FileManager.default.setAttributes([.modificationDate: pastDate], ofItemAtPath: diskURL.path)
+
+        await sut.cleanupExpiredFiles()
+
+        #expect(!FileManager.default.fileExists(atPath: diskURL.path))
+    }
+
+    @Test("TTL 미초과 파일은 cleanup 시 유지됨")
+    func cleanupExpiredFiles_keepsValidFiles() async {
+        let sut = makeSUT(ttl: 3600)
+        let image = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { _ in }
+        await sut.set(image, for: imageURL)
+
+        await sut.cleanupExpiredFiles()
+
+        let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
+        #expect(FileManager.default.fileExists(atPath: diskURL.path))
     }
 }

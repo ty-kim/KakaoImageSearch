@@ -1,6 +1,10 @@
 # KakaoImageSearch
 
-카카오 이미지 검색 API를 활용한 이미지 검색 및 북마크 iOS 앱입니다.
+이미지 검색과 북마크 기능을 구현한 SwiftUI 기반 iOS 앱입니다.  
+Clean Architecture와 MVVM을 바탕으로 설계했으며, Swift Concurrency를 활용해 비동기 상태를 관리했습니다.  
+debounce 검색, 페이지네이션, 북마크 영속화, 이미지 캐싱, iPad 대응 레이아웃을 포함합니다.  
+외부 라이브러리 없이 핵심 컴포넌트를 직접 구현했고 테스트 코드로 주요 동작을 검증했습니다.  
+프로젝트 문서에는 실행 방법, 설계 의도, 예외 처리, 개선 방향을 정리했습니다.
 
 ---
 
@@ -126,14 +130,14 @@ Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 30개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 32개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `NetworkServiceIntegrationTests` | 8 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑 |
 | `BookmarkStorageIntegrationTests` | 12 | 실제 FileManager 파일 I/O, 저장/조회/삭제 시나리오 |
 | `ImageDownloaderIntegrationTests` | 8 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup, prefetch 부분 실패, http→https 변환 |
-| `ImageCacheIntegrationTests` | 2 | 손상 파일 자동 삭제 후 nil 반환, 손상 제거 후 재캐싱 복구 |
+| `ImageCacheIntegrationTests` | 4 | 손상 파일 자동 삭제 후 nil 반환, 재캐싱 복구, TTL 초과 파일 삭제, TTL 유효 파일 유지 |
 
 ### UI 테스트
 

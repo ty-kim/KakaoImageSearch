@@ -15,13 +15,15 @@ actor ImageCache {
     private let memoryCache = NSCache<NSString, UIImage>()
     private let fileManager = FileManager.default
     private let diskCacheURL: URL
+    private let ttl: TimeInterval
     // init/deinit에서만 접근 — init은 actor 노출 전 단일 스레드, deinit은 마지막 참조.
     // 실제 데이터 레이스 없으므로 nonisolated(unsafe) 선언.
     nonisolated(unsafe) private var memoryWarningTask: Task<Void, Never>?
 
-    init(diskCacheURL: URL? = nil) {
+    init(diskCacheURL: URL? = nil, ttl: TimeInterval = 7 * 24 * 60 * 60) {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         self.diskCacheURL = diskCacheURL ?? caches.appendingPathComponent("ImageCache", isDirectory: true)
+        self.ttl = ttl
         try? fileManager.createDirectory(at: self.diskCacheURL, withIntermediateDirectories: true)
 
         memoryCache.countLimit = 100
@@ -34,6 +36,11 @@ actor ImageCache {
                 guard let self else { return }
                 await self.clearMemoryCache()
             }
+        }
+
+        // 앱 시작 시 만료된 디스크 캐시 파일을 백그라운드에서 정리
+        Task(priority: .background) { [weak self] in
+            await self?.cleanupExpiredFiles()
         }
     }
 
@@ -77,6 +84,34 @@ actor ImageCache {
         let diskURL = diskCacheURL.appendingPathComponent(key)
         if let data = image.jpegData(compressionQuality: 0.8) {
             try? data.write(to: diskURL, options: .atomic)
+        }
+    }
+
+    /// TTL이 지난 디스크 캐시 파일을 삭제합니다.
+    /// 앱 시작 시 자동으로 background 우선순위로 실행되며, 테스트에서 직접 호출도 가능합니다.
+    func cleanupExpiredFiles() {
+        let expiredBefore = Date().addingTimeInterval(-ttl)
+
+        guard let contents = try? fileManager.contentsOfDirectory(
+            at: diskCacheURL,
+            includingPropertiesForKeys: [.contentModificationDateKey],
+            options: .skipsHiddenFiles
+        ) else { return }
+
+        var removedCount = 0
+        for fileURL in contents {
+            guard let modDate = try? fileURL.resourceValues(
+                forKeys: [.contentModificationDateKey]
+            ).contentModificationDate,
+            modDate < expiredBefore else { continue }
+
+            if (try? fileManager.removeItem(at: fileURL)) != nil {
+                removedCount += 1
+            }
+        }
+
+        if removedCount > 0 {
+            Logger.imageLoader.debugPrint("Disk cache cleanup: \(removedCount) expired files removed")
         }
     }
 
