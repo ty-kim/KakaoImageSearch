@@ -42,8 +42,8 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
 
     static let shared = ImageDownloader()
 
-    /// 썸네일 이미지 최대 허용 크기 (10 MB)
-    nonisolated static let maxContentLength: Int64 = 10 * 1024 * 1024
+    /// 이미지 최대 허용 크기 (20 MB)
+    nonisolated static let maxContentLength: Int64 = 20 * 1024 * 1024
 
     private let cache = ImageCache()
     private var inFlight: [URL: Task<UIImage, Error>] = [:]

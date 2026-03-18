@@ -21,11 +21,7 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         return Double(height) / Double(width)
     }
     
-    var listDisplayURL: URL? {
-        thumbnailURL ?? imageURL
-    }
-
-    var detailDisplayURL: URL? {
+    var displayURL: URL? {
         imageURL ?? thumbnailURL
     }
 }

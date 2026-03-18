@@ -16,7 +16,7 @@ struct SearchResultItemView: View {
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
-            CachedAsyncImage(url: item.listDisplayURL)
+            CachedAsyncImage(url: item.displayURL)
                 .frame(
                     width: screenWidth,
                     height: screenWidth * item.aspectRatio

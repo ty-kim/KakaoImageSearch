@@ -34,7 +34,7 @@ actor ImageCache {
         }
 
         memoryCache.countLimit = 100
-        memoryCache.totalCostLimit = 50 * 1024 * 1024 // 50 MB
+        memoryCache.totalCostLimit = 150 * 1024 * 1024 // 150 MB
 
         // [weak self] 캡처로 순환 참조 방지. ImageCache 해제 시 deinit에서 Task를 취소해
         // for-await 루프를 종료하고 NotificationCenter 구독을 정리한다.

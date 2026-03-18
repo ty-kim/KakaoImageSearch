@@ -89,46 +89,26 @@ struct ImageItemTests {
         #expect(decoded.height == nil)
     }
 
-    // MARK: - listDisplayURL / detailDisplayURL
+    // MARK: - displayURL
 
-    @Test("thumbnailURL 있으면 listDisplayURL = thumbnailURL")
-    func listDisplayURL_thumbnailPresent() {
-        let thumb = URL(string: "https://example.com/thumb.jpg")!
-        let item = ImageItem.fixture(thumbnailURL: thumb)
-        #expect(item.listDisplayURL == thumb)
-    }
-
-    @Test("thumbnailURL nil이면 listDisplayURL = imageURL")
-    func listDisplayURL_thumbnailNil_fallsBackToImageURL() {
-        let image = URL(string: "https://example.com/image.jpg")!
-        let item = ImageItem.fixture(imageURL: image, thumbnailURL: nil)
-        #expect(item.listDisplayURL == image)
-    }
-
-    @Test("imageURL·thumbnailURL 모두 nil이면 listDisplayURL = nil")
-    func listDisplayURL_bothNil() {
-        let item = ImageItem.fixture(imageURL: nil, thumbnailURL: nil)
-        #expect(item.listDisplayURL == nil)
-    }
-
-    @Test("imageURL 있으면 detailDisplayURL = imageURL")
-    func detailDisplayURL_imageURLPresent() {
+    @Test("imageURL 있으면 displayURL = imageURL")
+    func displayURL_imageURLPresent() {
         let image = URL(string: "https://example.com/image.jpg")!
         let item = ImageItem.fixture(imageURL: image)
-        #expect(item.detailDisplayURL == image)
+        #expect(item.displayURL == image)
     }
 
-    @Test("imageURL nil이면 detailDisplayURL = thumbnailURL")
-    func detailDisplayURL_imageURLNil_fallsBackToThumbnailURL() {
+    @Test("imageURL nil이면 displayURL = thumbnailURL")
+    func displayURL_imageURLNil_fallsBackToThumbnailURL() {
         let thumb = URL(string: "https://example.com/thumb.jpg")!
         let item = ImageItem.fixture(imageURL: nil, thumbnailURL: thumb)
-        #expect(item.detailDisplayURL == thumb)
+        #expect(item.displayURL == thumb)
     }
 
-    @Test("imageURL·thumbnailURL 모두 nil이면 detailDisplayURL = nil")
-    func detailDisplayURL_bothNil() {
+    @Test("imageURL·thumbnailURL 모두 nil이면 displayURL = nil")
+    func displayURL_bothNil() {
         let item = ImageItem.fixture(imageURL: nil, thumbnailURL: nil)
-        #expect(item.detailDisplayURL == nil)
+        #expect(item.displayURL == nil)
     }
 
     // MARK: - Hashable / Equatable

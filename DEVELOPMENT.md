@@ -33,7 +33,7 @@ UI 구현은 SwiftUI 중심으로 구성했지만, 앱 진입 구조는 `AppDele
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 104개 케이스, Domain + ViewModel + BookmarkStore 중심 검증 (`Unit/`)
+- **유닛 테스트**: Swift Testing Framework, 101개 케이스, Domain + ViewModel + BookmarkStore 중심 검증 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 43개 케이스, NetworkService / BookmarkStorage / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
 - **UI 테스트**: XCUITest, 25개 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성

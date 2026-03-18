@@ -240,7 +240,7 @@ final class SearchViewModel {
     }
 
     private func prefetch(_ items: [ImageItem]) {
-        let urls = items.compactMap(\.listDisplayURL)
+        let urls = items.compactMap(\.displayURL)
         prefetchTask?.cancel()
         prefetchTask = Task(priority: .background) { [weak self] in
             await self?.imagePrefetcher.prefetch(urls: urls)
