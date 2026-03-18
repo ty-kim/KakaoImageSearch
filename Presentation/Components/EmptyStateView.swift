@@ -27,6 +27,7 @@ struct EmptyStateView: View {
                     .padding(.horizontal, 32)
             }
             .accessibilityElement(children: .combine)
+            .accessibilityLabel(message)
             .accessibilityIdentifier(accessibilityID)
 
             if let retryAction {
@@ -39,6 +40,7 @@ struct EmptyStateView: View {
                         .foregroundStyle(.tint)
                         .clipShape(Capsule())
                 }
+                .accessibilityHint(L10n.Accessibility.retryHint)
                 .accessibilityIdentifier("emptyStateView.retryButton")
             }
         }

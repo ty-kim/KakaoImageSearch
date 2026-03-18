@@ -621,6 +621,75 @@
           }
         }
       }
+    },
+    "accessibility.retry.hint" : {
+      "comment" : "VoiceOver hint for retry button in EmptyStateView",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Double-tap to retry"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ダブルタップで再試行します"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이중 탭하여 재시도합니다"
+          }
+        }
+      }
+    },
+    "accessibility.search_field.hint" : {
+      "comment" : "VoiceOver hint for search text field",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Search starts automatically after 1 second"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1秒後に自動で検索が開始されます"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "1초 후 자동으로 검색이 시작됩니다"
+          }
+        }
+      }
+    },
+    "accessibility.loading" : {
+      "comment" : "VoiceOver label for loading indicator",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Loading"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込み中"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "로딩 중"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

@@ -18,6 +18,7 @@ struct BookmarkView: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityLabel(L10n.Accessibility.loading)
                         .accessibilityIdentifier("bookmarkView.loadingIndicator")
 
                 } else if viewModel.hasLoadError {

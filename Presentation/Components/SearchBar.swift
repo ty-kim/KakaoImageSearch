@@ -21,6 +21,7 @@ struct SearchBar: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .submitLabel(.search)
+                .accessibilityHint(L10n.Accessibility.searchFieldHint)
                 .accessibilityIdentifier("searchBar.textField")
 
             if !text.isEmpty {

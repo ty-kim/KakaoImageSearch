@@ -97,6 +97,15 @@ nonisolated enum L10n {
         static var loadMoreRetryHint: String {
             String(localized: "accessibility.load_more_retry.hint")
         }
+        static var retryHint: String {
+            String(localized: "accessibility.retry.hint")
+        }
+        static var searchFieldHint: String {
+            String(localized: "accessibility.search_field.hint")
+        }
+        static var loading: String {
+            String(localized: "accessibility.loading")
+        }
     }
 
     enum Bookmark {

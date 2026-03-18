@@ -18,6 +18,7 @@ struct SearchView: View {
                 if viewModel.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .accessibilityLabel(L10n.Accessibility.loading)
                         .accessibilityIdentifier("searchView.loadingIndicator")
 
                 } else if let message = viewModel.errorMessage {
