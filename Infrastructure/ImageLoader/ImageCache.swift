@@ -16,14 +16,17 @@ actor ImageCache {
     private let fileManager = FileManager.default
     private let diskCacheURL: URL
     private let ttl: TimeInterval
+    private let maxDiskBytes: Int
     // init/deinit에서만 접근 — init은 actor 노출 전 단일 스레드, deinit은 마지막 참조.
     // 실제 데이터 레이스 없으므로 nonisolated(unsafe) 선언.
     nonisolated(unsafe) private var memoryWarningTask: Task<Void, Never>?
 
-    init(diskCacheURL: URL? = nil, ttl: TimeInterval = 7 * 24 * 60 * 60) {
+    /// - maxDiskBytes: 디스크 캐시 최대 용량 (기본 200 MB)
+    init(diskCacheURL: URL? = nil, ttl: TimeInterval = 7 * 24 * 60 * 60, maxDiskBytes: Int = 200 * 1024 * 1024) {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]
         self.diskCacheURL = diskCacheURL ?? caches.appendingPathComponent("ImageCache", isDirectory: true)
         self.ttl = ttl
+        self.maxDiskBytes = maxDiskBytes
         do {
             try fileManager.createDirectory(at: self.diskCacheURL, withIntermediateDirectories: true)
         } catch {
@@ -91,31 +94,51 @@ actor ImageCache {
         }
     }
 
-    /// TTL이 지난 디스크 캐시 파일을 삭제합니다.
+    /// TTL이 지난 파일을 삭제한 뒤, 총 용량이 상한을 넘으면 오래된 파일부터 추가 삭제합니다.
     /// 앱 시작 시 자동으로 background 우선순위로 실행되며, 테스트에서 직접 호출도 가능합니다.
     func cleanupExpiredFiles() {
-        let expiredBefore = Date().addingTimeInterval(-ttl)
+        let keys: Set<URLResourceKey> = [.contentModificationDateKey, .fileSizeKey]
 
         guard let contents = try? fileManager.contentsOfDirectory(
             at: diskCacheURL,
-            includingPropertiesForKeys: [.contentModificationDateKey],
+            includingPropertiesForKeys: Array(keys),
             options: .skipsHiddenFiles
         ) else { return }
 
+        // 1단계: TTL 초과 파일 삭제
+        let expiredBefore = Date().addingTimeInterval(-ttl)
+        var surviving: [(url: URL, date: Date, size: Int)] = []
         var removedCount = 0
-        for fileURL in contents {
-            guard let modDate = try? fileURL.resourceValues(
-                forKeys: [.contentModificationDateKey]
-            ).contentModificationDate,
-            modDate < expiredBefore else { continue }
 
-            if (try? fileManager.removeItem(at: fileURL)) != nil {
-                removedCount += 1
+        for fileURL in contents {
+            guard let values = try? fileURL.resourceValues(forKeys: keys),
+                  let modDate = values.contentModificationDate,
+                  let size = values.fileSize else { continue }
+
+            if modDate < expiredBefore {
+                if (try? fileManager.removeItem(at: fileURL)) != nil {
+                    removedCount += 1
+                }
+            } else {
+                surviving.append((fileURL, modDate, size))
+            }
+        }
+
+        // 2단계: 총 용량이 상한을 넘으면 오래된 파일부터 삭제 (LRU)
+        var totalSize = surviving.reduce(0) { $0 + $1.size }
+        if totalSize > maxDiskBytes {
+            surviving.sort { $0.date < $1.date }
+            for file in surviving {
+                guard totalSize > maxDiskBytes else { break }
+                if (try? fileManager.removeItem(at: file.url)) != nil {
+                    totalSize -= file.size
+                    removedCount += 1
+                }
             }
         }
 
         if removedCount > 0 {
-            Logger.imageLoader.debugPrint("Disk cache cleanup: \(removedCount) expired files removed")
+            Logger.imageLoader.debugPrint("Disk cache cleanup: \(removedCount) files removed, \(totalSize) bytes remaining")
         }
     }
 

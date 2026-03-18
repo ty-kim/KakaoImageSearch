@@ -21,8 +21,8 @@ struct ImageCacheIntegrationTests {
         try? FileManager.default.createDirectory(at: tempDir, withIntermediateDirectories: true)
     }
 
-    private func makeSUT(ttl: TimeInterval = 7 * 24 * 60 * 60) -> ImageCache {
-        ImageCache(diskCacheURL: tempDir, ttl: ttl)
+    private func makeSUT(ttl: TimeInterval = 7 * 24 * 60 * 60, maxDiskBytes: Int = 200 * 1024 * 1024) -> ImageCache {
+        ImageCache(diskCacheURL: tempDir, ttl: ttl, maxDiskBytes: maxDiskBytes)
     }
 
     /// cacheKey(for:) private 메서드와 동일한 로직
@@ -86,5 +86,48 @@ struct ImageCacheIntegrationTests {
 
         let diskURL = tempDir.appendingPathComponent(cacheKey(for: imageURL))
         #expect(FileManager.default.fileExists(atPath: diskURL.path))
+    }
+
+    // MARK: - 디스크 용량 제한
+
+    @Test("총 용량이 maxDiskBytes를 초과하면 오래된 파일부터 삭제된다")
+    func cleanupExpiredFiles_exceedingMaxSize_removesOldestFirst() async {
+        // maxDiskBytes를 100바이트로 설정해 초과를 유도
+        let sut = makeSUT(maxDiskBytes: 100)
+
+        let url1 = URL(string: "https://example.com/old.jpg")!
+        let url2 = URL(string: "https://example.com/new.jpg")!
+
+        // old 파일 생성 후 수정 날짜를 과거로 조작
+        let oldDisk = tempDir.appendingPathComponent(cacheKey(for: url1))
+        try? Data(repeating: 0xAA, count: 60).write(to: oldDisk)
+        try? FileManager.default.setAttributes(
+            [.modificationDate: Date(timeIntervalSinceNow: -3600)],
+            ofItemAtPath: oldDisk.path
+        )
+
+        // new 파일 생성 (현재 시각)
+        let newDisk = tempDir.appendingPathComponent(cacheKey(for: url2))
+        try? Data(repeating: 0xBB, count: 60).write(to: newDisk)
+
+        // 총 120바이트 > maxDiskBytes(100) → old 파일이 먼저 삭제됨
+        await sut.cleanupExpiredFiles()
+
+        #expect(!FileManager.default.fileExists(atPath: oldDisk.path))
+        #expect(FileManager.default.fileExists(atPath: newDisk.path))
+    }
+
+    @Test("총 용량이 maxDiskBytes 이하이면 파일이 유지된다")
+    func cleanupExpiredFiles_withinMaxSize_keepsAllFiles() async {
+        // maxDiskBytes를 넉넉하게 설정
+        let sut = makeSUT(maxDiskBytes: 10_000)
+
+        let url1 = URL(string: "https://example.com/a.jpg")!
+        let disk1 = tempDir.appendingPathComponent(cacheKey(for: url1))
+        try? Data(repeating: 0xAA, count: 60).write(to: disk1)
+
+        await sut.cleanupExpiredFiles()
+
+        #expect(FileManager.default.fileExists(atPath: disk1.path))
     }
 }
