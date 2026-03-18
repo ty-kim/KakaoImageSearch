@@ -107,6 +107,12 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - `.xcstrings` String Catalog 기반
 - `L10n` 헬퍼를 사용해 문자열 접근을 정리했습니다
 
+### VoiceOver 접근성
+- `BookmarkButton`: 북마크 상태에 따라 `accessibilityLabel`(`북마크 추가` / `북마크 해제`)과 `accessibilityHint`를 다르게 적용했습니다.
+- `SearchBar`: 검색어 지우기 버튼에 VoiceOver용 `accessibilityLabel`을 추가했습니다.
+- `SearchResultItemView`: 이미지 크기 정보를 포함한 `accessibilityLabel`을 적용했습니다.
+- 접근성 문자열은 `L10n.Accessibility`에서 관리하며, 한국어/영어/일본어를 지원합니다.
+
 ### OSLog 기반 로깅
 - `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리
 - `debugPrint` / `errorPrint` 헬퍼로 `OS_ACTIVITY_MODE=disable` 환경에서도 Xcode 콘솔 출력 보장
