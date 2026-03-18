@@ -87,6 +87,11 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - `errorMessage`(검색 실패 전용)와 `toastMessage`(일시적 에러 전용) 역할 분리
 - Toast는 3초 후 자동 소멸, 슬라이드 인/아웃 애니메이션 적용
 
+### ATS 예외 설정
+- 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않아, 이미지 로딩을 위해 `daum.net`, `naver.net` 도메인에 한해 ATS 예외를 추가했습니다.
+- 해당 예외는 검색 결과 이미지 표시 용도로만 사용되며, API 통신이나 민감 정보 전송에는 적용하지 않습니다.
+- 필요한 도메인만 대상으로 예외를 제한했고, 향후 HTTPS를 지원하는 리소스로 대체 가능할 경우 해당 예외는 제거할 수 있습니다.
+
 ### BookmarkStore (단일 진실 공급원)
 - `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
 - `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
@@ -112,7 +117,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 92개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 94개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
@@ -121,7 +126,7 @@ Swift Testing Framework 기반 92개 테스트 케이스를 작성했고, 로컬
 | `ManageBookmarkUseCaseTests` | 10 | toggle add/remove, 중복 방지 |
 | `KakaoImageSearchEndpointTests` | 11 | URL 구성, 쿼리 파라미터, 헤더 검증 |
 | `KakaoSearchResponseDTOTests` | 8 | JSON 디코딩, snake_case 변환, 필드 fallback |
-| `SearchViewModelTests` | 24 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast, 연속 토글 dedup, loadMore 취소 |
+| `SearchViewModelTests` | 26 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast, 연속 토글 dedup, loadMore/prefetch Task 취소 |
 | `BookmarkViewModelTests` | 6 | 목록 로드/실패 Toast, 삭제 후 갱신, 삭제 실패 Toast, 연속 삭제 dedup |
 | `BookmarkStoreTests` | 5 | load 성공/실패(throws), toggle 추가/제거, isBookmarked 판별 |
 | `MainViewModelTests` | 4 | debounce 취소, 빈 입력 처리 |

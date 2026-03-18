@@ -19,8 +19,8 @@ struct SearchViewModelTests {
         searchItems: [ImageItem] = [],
         bookmarkedItems: [ImageItem] = [],
         searchError: Error? = nil,
-        imagePrefetcher: MockImagePrefetcher = MockImagePrefetcher()
-    ) -> (sut: SearchViewModel, searchRepo: MockImageSearchRepository, bookmarkRepo: MockBookmarkRepository, prefetcher: MockImagePrefetcher) {
+        imagePrefetcher: any ImagePrefetcher = MockImagePrefetcher()
+    ) -> (sut: SearchViewModel, searchRepo: MockImageSearchRepository, bookmarkRepo: MockBookmarkRepository, prefetcher: any ImagePrefetcher) {
         let searchRepo = MockImageSearchRepository()
         searchRepo.stubbedResult = searchItems
         searchRepo.stubbedError = searchError
@@ -341,6 +341,31 @@ struct SearchViewModelTests {
         await sut.toggleBookmark(for: item)
 
         #expect(!sut.inFlightBookmarkIDs.contains(item.id))
+    }
+
+    @Test("새 검색 시작 시 진행 중인 prefetch Task가 취소된다")
+    func newSearch_cancelsPreviousPrefetchTask() async {
+        let blockingPrefetcher = BlockingMockImagePrefetcher()
+        let (sut, _, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")], imagePrefetcher: blockingPrefetcher)
+
+        sut.submitSearch(query: "cat")
+        _ = await blockingPrefetcher.started.first(where: { @Sendable _ in true })
+
+        sut.submitSearch(query: "dog")
+        _ = await blockingPrefetcher.cancelled.first(where: { @Sendable _ in true })
+        // cancelled stream에서 yield됐으면 취소 전파 확인
+    }
+
+    @Test("cancelSearchAndClear 시 진행 중인 prefetch Task가 취소된다")
+    func cancelSearchAndClear_cancelsPrefetchTask() async {
+        let blockingPrefetcher = BlockingMockImagePrefetcher()
+        let (sut, _, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")], imagePrefetcher: blockingPrefetcher)
+
+        sut.submitSearch(query: "cat")
+        _ = await blockingPrefetcher.started.first(where: { @Sendable _ in true })
+
+        sut.cancelSearchAndClear()
+        _ = await blockingPrefetcher.cancelled.first(where: { @Sendable _ in true })
     }
 }
 

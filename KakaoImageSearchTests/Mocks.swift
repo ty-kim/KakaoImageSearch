@@ -85,6 +85,40 @@ final class MockImagePrefetcher: ImagePrefetcher, @unchecked Sendable {
     }
 }
 
+// MARK: - BlockingMockImagePrefetcher
+
+/// prefetch(urls:) 진입 시 blocking 상태를 유지하다가 Task 취소 시 종료되는 Mock.
+/// 취소 전파 검증 테스트에서 사용합니다.
+final class BlockingMockImagePrefetcher: ImagePrefetcher, @unchecked Sendable {
+
+    private let startedContinuation: AsyncStream<Void>.Continuation
+    /// prefetch(urls:)가 호출된 시점에 Void를 yield — 테스트에서 시작 시점을 await 가능
+    let started: AsyncStream<Void>
+
+    private let cancelledContinuation: AsyncStream<Void>.Continuation
+    /// Task가 취소된 시점에 Void를 yield — 테스트에서 취소 전파를 await 가능
+    let cancelled: AsyncStream<Void>
+
+    init() {
+        var startCont: AsyncStream<Void>.Continuation!
+        started = AsyncStream { startCont = $0 }
+        startedContinuation = startCont
+
+        var cancelCont: AsyncStream<Void>.Continuation!
+        cancelled = AsyncStream { cancelCont = $0 }
+        cancelledContinuation = cancelCont
+    }
+
+    func prefetch(urls: [URL]) async {
+        startedContinuation.yield(())
+        await withTaskCancellationHandler {
+            try? await Task.sleep(for: .seconds(60))
+        } onCancel: { [cancelledContinuation] in
+            cancelledContinuation.yield(())
+        }
+    }
+}
+
 // MARK: - TestError
 
 enum TestError: Error {

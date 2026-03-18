@@ -32,6 +32,7 @@ final class SearchViewModel {
 
     private var searchTask: Task<Void, Never>? = nil
     private var loadMoreTask: Task<Void, Never>? = nil
+    private var prefetchTask: Task<Void, Never>? = nil
     private var activeSearchID: UUID? = nil
 
     private let searchImageUseCase: SearchImageUseCase
@@ -91,6 +92,7 @@ final class SearchViewModel {
     private func beginSearch(query: String) -> UUID {
         searchTask?.cancel()
         loadMoreTask?.cancel()
+        prefetchTask?.cancel()
 
         let searchID = UUID()
         activeSearchID = searchID
@@ -239,8 +241,9 @@ final class SearchViewModel {
 
     private func prefetch(_ items: [ImageItem]) {
         let urls = items.compactMap(\.listDisplayURL)
-        Task(priority: .background) {
-            await imagePrefetcher.prefetch(urls: urls)
+        prefetchTask?.cancel()
+        prefetchTask = Task(priority: .background) { [weak self] in
+            await self?.imagePrefetcher.prefetch(urls: urls)
         }
     }
 
@@ -260,6 +263,8 @@ final class SearchViewModel {
         searchTask = nil
         loadMoreTask?.cancel()
         loadMoreTask = nil
+        prefetchTask?.cancel()
+        prefetchTask = nil
         activeSearchID = nil
 
         rawItems = []
