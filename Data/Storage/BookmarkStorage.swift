@@ -49,7 +49,10 @@ actor BookmarkStorage {
     }
 
     func fetchAll() throws -> [ImageItem] {
-        guard FileManager.default.fileExists(atPath: fileURL.path) else { return [] }
+        guard FileManager.default.fileExists(atPath: fileURL.path) else {
+            Logger.bookmark.debugPrint("Bookmark file not found — first launch or cleared")
+            return []
+        }
         let data = try Data(contentsOf: fileURL)
         let items = try decoder.decode([ImageItem].self, from: data)
         Logger.bookmark.debugPrint("Fetched \(items.count) bookmarks")
