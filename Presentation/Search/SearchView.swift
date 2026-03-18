@@ -63,7 +63,7 @@ struct SearchView: View {
                                 .accessibilityIdentifier("searchView.loadingMore")
                         } else if viewModel.hasLoadMoreError {
                             Button {
-                                Task { await viewModel.retryLoadMore() }
+                                viewModel.retryLoadMore()
                             } label: {
                                 Text(L10n.Search.loadMoreRetry)
                                     .font(.callout.weight(.medium))

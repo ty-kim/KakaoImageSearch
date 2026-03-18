@@ -31,6 +31,7 @@ final class SearchViewModel {
     private let toastDuration: Duration
 
     private var searchTask: Task<Void, Never>? = nil
+    private var loadMoreTask: Task<Void, Never>? = nil
     private var activeSearchID: UUID? = nil
 
     private let searchImageUseCase: SearchImageUseCase
@@ -89,6 +90,7 @@ final class SearchViewModel {
 
     private func beginSearch(query: String) -> UUID {
         searchTask?.cancel()
+        loadMoreTask?.cancel()
 
         let searchID = UUID()
         activeSearchID = searchID
@@ -98,6 +100,7 @@ final class SearchViewModel {
         isEnd = false
 
         isLoading = true
+        isLoadingMore = false
         errorMessage = nil
         hasError = false
         hasLoadMoreError = false
@@ -152,9 +155,11 @@ final class SearchViewModel {
         return submitSearch(query: currentQuery)
     }
 
-    func loadMore() async {
+    // @discardableResult로 반환된 Task를 무시하거나, 테스트에서 .value로 await 가능 (submitSearch와 동일 패턴)
+    @discardableResult
+    func loadMore() -> Task<Void, Never>? {
         // loadMore 실패 후에는 자동 재시도 루프를 막고 버튼으로만 재시도
-        guard !isEnd, !isLoading, !isLoadingMore, !hasLoadMoreError else { return }
+        guard !isEnd, !isLoading, !isLoadingMore, !hasLoadMoreError else { return nil }
 
         let queryAtRequestTime = currentQuery
         let searchIDAtRequestTime = activeSearchID
@@ -165,46 +170,57 @@ final class SearchViewModel {
 
         Logger.presentation.debugPrint("Loading more: page \(nextPage)")
 
+        let task = Task { [weak self] in
+            guard let self else { return }
+            await self.performLoadMore(
+                query: queryAtRequestTime,
+                searchID: searchIDAtRequestTime,
+                page: nextPage
+            )
+        }
+        loadMoreTask = task
+        return task
+    }
+
+    private func performLoadMore(query: String, searchID: UUID?, page: Int) async {
         defer {
-            if searchIDAtRequestTime == activeSearchID,
-               queryAtRequestTime == currentQuery {
+            // 아직 활성 요청인 경우에만 isLoadingMore 해제.
+            // 새 검색/clear 시에는 beginSearch/cancelSearchAndClear에서 직접 처리.
+            if searchID == activeSearchID, query == currentQuery {
                 isLoadingMore = false
             }
         }
 
         do {
-            let result = try await searchImageUseCase.execute(
-                query: queryAtRequestTime,
-                page: nextPage
-            )
+            let result = try await searchImageUseCase.execute(query: query, page: page)
 
             // 검색어가 이미 바뀌었으면 이전 loadMore 결과 무시
             guard !Task.isCancelled,
-                  searchIDAtRequestTime == activeSearchID,
-                  queryAtRequestTime == currentQuery else { return }
+                  searchID == activeSearchID,
+                  query == currentQuery else { return }
 
             rawItems += result.items
             rebuildItems()
             isEnd = result.isEnd
-            currentPage = nextPage
+            currentPage = page
 
             Logger.presentation.debugPrint("Loaded \(result.items.count) more, isEnd: \(isEnd)")
 
             prefetch(result.items)
         } catch is CancellationError {
-            Logger.presentation.debugPrint("Load more cancelled: \(queryAtRequestTime), page \(nextPage)")
+            Logger.presentation.debugPrint("Load more cancelled: \(query), page \(page)")
         } catch {
-            guard searchIDAtRequestTime == activeSearchID,
-                  queryAtRequestTime == currentQuery else { return }
+            guard searchID == activeSearchID, query == currentQuery else { return }
 
             hasLoadMoreError = true
             Logger.presentation.errorPrint("Load more failed: \(error)")
         }
     }
 
-    func retryLoadMore() async {
+    @discardableResult
+    func retryLoadMore() -> Task<Void, Never>? {
         hasLoadMoreError = false
-        await loadMore()
+        return loadMore()
     }
 
     func toggleBookmark(for item: ImageItem) async {
@@ -242,6 +258,8 @@ final class SearchViewModel {
     func cancelSearchAndClear() {
         searchTask?.cancel()
         searchTask = nil
+        loadMoreTask?.cancel()
+        loadMoreTask = nil
         activeSearchID = nil
 
         rawItems = []

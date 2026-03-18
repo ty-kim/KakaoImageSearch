@@ -108,7 +108,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 90개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 92개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
@@ -117,7 +117,7 @@ Swift Testing Framework 기반 90개 테스트 케이스를 작성했고, 로컬
 | `ManageBookmarkUseCaseTests` | 10 | toggle add/remove, 중복 방지 |
 | `KakaoImageSearchEndpointTests` | 11 | URL 구성, 쿼리 파라미터, 헤더 검증 |
 | `KakaoSearchResponseDTOTests` | 8 | JSON 디코딩, snake_case 변환, 필드 fallback |
-| `SearchViewModelTests` | 22 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast, 연속 토글 dedup |
+| `SearchViewModelTests` | 24 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, 재시도, 북마크 토글/Toast, 연속 토글 dedup, loadMore 취소 |
 | `BookmarkViewModelTests` | 6 | 목록 로드/실패 Toast, 삭제 후 갱신, 삭제 실패 Toast, 연속 삭제 dedup |
 | `BookmarkStoreTests` | 5 | load 성공/실패(throws), toggle 추가/제거, isBookmarked 판별 |
 | `MainViewModelTests` | 4 | debounce 취소, 빈 입력 처리 |

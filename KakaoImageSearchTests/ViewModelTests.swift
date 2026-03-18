@@ -129,7 +129,7 @@ struct SearchViewModelTests {
         await sut.submitSearch(query: "cat").value
 
         searchRepo.stubbedError = TestError.stub
-        await sut.loadMore()
+        await sut.loadMore()?.value
 
         #expect(sut.hasLoadMoreError == true)
         #expect(sut.items.count == 1)
@@ -142,12 +142,12 @@ struct SearchViewModelTests {
         await sut.submitSearch(query: "cat").value
 
         searchRepo.stubbedError = TestError.stub
-        await sut.loadMore()
+        await sut.loadMore()?.value
         #expect(sut.hasLoadMoreError == true)
 
         searchRepo.stubbedError = nil
         searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
-        await sut.retryLoadMore()
+        await sut.retryLoadMore()?.value
 
         #expect(sut.hasLoadMoreError == false)
         #expect(sut.items.count == 2)
@@ -159,7 +159,7 @@ struct SearchViewModelTests {
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
         searchRepo.stubbedError = TestError.stub
-        await sut.loadMore()
+        await sut.loadMore()?.value
         #expect(sut.hasLoadMoreError == true)
 
         searchRepo.stubbedError = nil
@@ -188,6 +188,33 @@ struct SearchViewModelTests {
         #expect(sut.items.isEmpty)
         #expect(sut.errorMessage == nil)
         #expect(sut.hasSearched == false)
+    }
+
+    @Test("새 검색 시작 시 진행 중인 loadMore의 isLoadingMore 즉시 리셋")
+    func newSearch_whileLoadMoreInProgress_resetsIsLoadingMore() async {
+        let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.submitSearch(query: "cat").value
+
+        // loadMore Task를 시작하되 완료 전에 새 검색 진행
+        let loadMoreTask = sut.loadMore()
+        sut.submitSearch(query: "dog")  // beginSearch에서 loadMoreTask.cancel() + isLoadingMore = false
+
+        #expect(sut.isLoadingMore == false)
+        _ = await loadMoreTask?.value  // task 정리
+    }
+
+    @Test("cancelSearchAndClear 시 진행 중인 loadMore의 isLoadingMore 리셋")
+    func cancelSearchAndClear_whileLoadMoreInProgress_resetsIsLoadingMore() async {
+        let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.submitSearch(query: "cat").value
+
+        let loadMoreTask = sut.loadMore()
+        sut.cancelSearchAndClear()
+
+        #expect(sut.isLoadingMore == false)
+        _ = await loadMoreTask?.value
     }
 
     @Test("toggleBookmark 성공 시 해당 아이템 isBookmarked 반전")
@@ -262,7 +289,7 @@ struct SearchViewModelTests {
         _ = await prefetcher.prefetchCalled.first(where: { @Sendable _ in true })
 
         searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
-        await sut.loadMore()
+        await sut.loadMore()?.value
         _ = await prefetcher.prefetchCalled.first(where: { @Sendable _ in true })
 
         #expect(prefetcher.prefetchCallCount == 2)
