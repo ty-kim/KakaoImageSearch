@@ -65,7 +65,7 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
 | RxSwift 패턴 | 이번 구현 |
 |---|---|
-| `PublishSubject` + `debounce` | `Task.sleep(1.0)` + `Task.cancel()` |
+| `PublishSubject` + `debounce` | `Task.sleep(for: .seconds(1.0))` + `Task.cancel()` |
 | `BehaviorRelay` / `Driver` | `@Observable` + `@MainActor` |
 | `DisposeBag` | `Task` 명시적 취소 (`searchTask?.cancel()`) |
 | `flatMapLatest` | `searchTask` 재생성 + `activeSearchID` stale 결과 무시로 이전 요청 취소 |

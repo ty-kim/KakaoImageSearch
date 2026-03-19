@@ -72,7 +72,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - `activeSearchID`(UUID)로 stale 응답 무시 — 취소 신호가 미처 전달되기 전에 응답이 도착해도 이전 검색 결과가 UI에 반영되지 않도록 처리
 - `submitSearch`는 `@discardableResult Task<Void, Never>` 반환 — 프로덕션에서는 결과를 무시하고, 테스트에서는 `.value`로 await해 안정적인 테스트 타이밍 확보
 
-### 무한 스크롤 페이지네이션
+### 페이지네이션
 - Kakao API의 `page` 파라미터를 활용해 추가 결과를 자동 로드
 - `LazyVGrid` 마지막 아이템 `.onAppear` 시점에 `loadMore()` 호출
 - API의 `isEnd` 플래그로 마지막 페이지 판별
