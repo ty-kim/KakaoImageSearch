@@ -443,7 +443,7 @@ struct BookmarkViewModelTests {
         return (sut, repo)
     }
 
-    @Test("loadBookmarks 성공 시 items 설정")
+    @Test("loadBookmarks 성공 시 items 설정, loaded 상태")
     func loadBookmarks_success_setsItems() async throws {
         let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
         let (sut, _) = makeSUT(initialItems: items)
@@ -451,36 +451,44 @@ struct BookmarkViewModelTests {
         await sut.loadBookmarks()
 
         #expect(sut.items.count == 2)
-        #expect(sut.isLoading == false)
+        guard case .loaded = sut.bookmarkState else {
+            Issue.record("Expected .loaded state")
+            return
+        }
     }
 
-    @Test("loadBookmarks 실패 시 hasLoadError 및 loadErrorMessage 설정")
-    func loadBookmarks_failure_setsHasLoadError() async throws {
+    @Test("loadBookmarks 실패 시 error 상태")
+    func loadBookmarks_failure_setsErrorState() async throws {
         let (sut, repo) = makeSUT()
         repo.stubbedFetchError = TestError.stub
 
         await sut.loadBookmarks()
 
-        #expect(sut.hasLoadError == true)
-        #expect(sut.loadErrorMessage != nil)
-        #expect(sut.isLoading == false)
+        guard case .error = sut.bookmarkState else {
+            Issue.record("Expected .error state")
+            return
+        }
     }
 
-    @Test("loadBookmarks 재시도 성공 시 hasLoadError 및 loadErrorMessage 해제")
+    @Test("loadBookmarks 재시도 성공 시 loaded 상태로 복구")
     func loadBookmarks_retrySuccess_clearsError() async throws {
         let items = [ImageItem.fixture(id: "a")]
         let (sut, repo) = makeSUT(initialItems: items)
         repo.stubbedFetchError = TestError.stub
 
         await sut.loadBookmarks()
-        #expect(sut.hasLoadError == true)
-        #expect(sut.loadErrorMessage != nil)
+        guard case .error = sut.bookmarkState else {
+            Issue.record("Expected .error state")
+            return
+        }
 
         repo.stubbedFetchError = nil
         await sut.loadBookmarks()
 
-        #expect(sut.hasLoadError == false)
-        #expect(sut.loadErrorMessage == nil)
+        guard case .loaded = sut.bookmarkState else {
+            Issue.record("Expected .loaded state")
+            return
+        }
         #expect(sut.items.count == 1)
     }
 
@@ -563,7 +571,6 @@ struct BookmarkStoreTests {
 
         #expect(sut.bookmarkedItems.count == 2)
         #expect(sut.bookmarkedIDs == ["a", "b"])
-        #expect(sut.isLoading == false)
     }
 
     @Test("load 실패 시 에러 throw")
@@ -573,7 +580,6 @@ struct BookmarkStoreTests {
         await #expect(throws: TestError.stub) {
             try await sut.load()
         }
-        #expect(sut.isLoading == false)
     }
 
     @Test("toggle 북마크 추가 시 bookmarkedItems, bookmarkedIDs에 반영")

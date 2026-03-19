@@ -15,23 +15,24 @@ struct BookmarkView: View {
     var body: some View {
         GeometryReader { geometry in
             Group {
-                if viewModel.isLoading {
+                switch viewModel.bookmarkState {
+                case .idle, .loading:
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityLabel(L10n.Accessibility.loading)
                         .accessibilityIdentifier("bookmarkView.loadingIndicator")
 
-                } else if let errorMessage = viewModel.loadErrorMessage {
+                case .error(let message):
                     EmptyStateView(
-                        message: errorMessage,
+                        message: message,
                         accessibilityID: "bookmarkView.errorState",
                         retryAction: { viewModel.retryLoadBookmarks() }
                     )
 
-                } else if viewModel.items.isEmpty {
+                case .loaded where viewModel.items.isEmpty:
                     EmptyStateView(message: L10n.Bookmark.empty, accessibilityID: "bookmarkView.emptyState")
 
-                } else {
+                case .loaded:
                     let horizontalPadding: CGFloat = 20
                     let columnSpacing: CGFloat = 20
                     let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)

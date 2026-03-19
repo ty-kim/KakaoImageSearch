@@ -18,7 +18,6 @@ final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
     private(set) var bookmarkedIDs: Set<String> = []
-    private(set) var isLoading: Bool = false
 
     private let manageBookmarkUseCase: ManageBookmarkUseCase
 
@@ -27,9 +26,6 @@ final class BookmarkStore {
     }
 
     func load() async throws {
-        isLoading = true
-        defer { isLoading = false }
-
         let fetched = try await manageBookmarkUseCase.fetchAll()
         bookmarkedItems = fetched
         bookmarkedIDs = Set(fetched.map(\.id))

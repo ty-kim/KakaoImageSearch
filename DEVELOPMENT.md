@@ -53,7 +53,7 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
 - **페이지네이션**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, 응답의 `isEnd` 값으로 완료 판별. API 페이지 제한(15페이지) 도달 시 실제 결과 소진과 구분해 안내 문구를 다르게 표시.
 - **재시도 UX**: 검색 실패 / 추가 로드 실패 / 북마크 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공.
-- **에러 vs 결과없음 구분**: 검색(`SearchState.error`/`.empty`)과 북마크(`loadErrorMessage`) 모두 상태 기반으로 UX 분기를 통일.
+- **에러 vs 결과없음 구분**: 검색(`SearchState.error`/`.empty`)과 북마크(`BookmarkState.error`/`.loaded`) 모두 상태 enum 기반으로 UX 분기를 통일.
 - **이미지 에러 분류**: 재시도 가능 에러(일시적 서버 오류)와 불가 에러(포맷·크기)를 구분해, 불가 에러는 즉시 영구 실패 처리.
 - **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 toastMessage로 분리해 하단 Toast로 표시, 지속 시간은 생성자 주입으로 제어해 테스트에서는 즉시 완료.
 

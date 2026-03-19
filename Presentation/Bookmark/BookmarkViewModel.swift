@@ -13,20 +13,22 @@ import OSLog
 @MainActor
 final class BookmarkViewModel {
 
+    enum BookmarkState {
+        case idle
+        case loading
+        case loaded
+        case error(message: String)
+    }
+
     private let bookmarkStore: BookmarkStore
     private let toastDuration: Duration
+    private(set) var bookmarkState: BookmarkState = .idle
     private(set) var toastMessage: String? = nil
-    private(set) var hasLoadError: Bool = false
-    private(set) var loadErrorMessage: String? = nil
     private(set) var inFlightBookmarkIDs: Set<String> = []
     private var toastTask: Task<Void, Never>? = nil
 
     var items: [ImageItem] {
         bookmarkStore.bookmarkedItems
-    }
-
-    var isLoading: Bool {
-        bookmarkStore.isLoading
     }
 
     init(bookmarkStore: BookmarkStore, toastDuration: Duration = .seconds(3)) {
@@ -35,13 +37,12 @@ final class BookmarkViewModel {
     }
 
     func loadBookmarks() async {
-        hasLoadError = false
-        loadErrorMessage = nil
+        bookmarkState = .loading
         do {
             try await bookmarkStore.load()
+            bookmarkState = .loaded
         } catch {
-            hasLoadError = true
-            loadErrorMessage = L10n.Bookmark.loadError
+            bookmarkState = .error(message: L10n.Bookmark.loadError)
             Logger.presentation.errorPrint("Load bookmarks failed: \(error)")
         }
     }
