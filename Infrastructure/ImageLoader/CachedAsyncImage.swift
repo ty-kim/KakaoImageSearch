@@ -18,21 +18,15 @@ extension EnvironmentValues {
     }
 }
 
-/// ImageDownloader를 통해 캐시를 지원하는 SwiftUI 이미지 컴포넌트.
-struct CachedAsyncImage: View {
+// MARK: - ViewModel
 
-    let url: URL?
+/// CachedAsyncImage의 Phase 상태 전이 로직을 분리한 ViewModel.
+/// View 수명주기와 독립적으로 테스트 가능합니다.
+@Observable
+@MainActor
+final class CachedAsyncImageViewModel {
 
-    @Environment(\.imageDownloader) private var downloader
-    @State private var phase: Phase = .idle
-    /// URL 변경 또는 실패 후 탭 시 값이 바뀌어 .task를 재실행한다.
-    @State private var loadTrigger = UUID()
-    @State private var retryCount = 0
-
-    /// 이미지 로드 최대 재시도 횟수
-    private static let maxRetryCount = 3
-
-    private enum Phase {
+    enum Phase {
         case idle
         case loading
         case success(UIImage)
@@ -40,9 +34,57 @@ struct CachedAsyncImage: View {
         case permanentFailure
     }
 
+    /// 이미지 로드 최대 재시도 횟수
+    static let maxRetryCount = 3
+
+    private(set) var phase: Phase = .idle
+    private(set) var retryCount = 0
+    private var downloader: any ImageDownloading = ImageDownloader.shared
+
+    func configure(downloader: any ImageDownloading) {
+        self.downloader = downloader
+    }
+
+    func load(url: URL?) async {
+        guard let url else {
+            phase = .idle
+            return
+        }
+        phase = .loading
+
+        do {
+            let image = try await downloader.download(from: url)
+            phase = .success(image)
+        } catch is CancellationError {
+            phase = .idle
+        } catch let error as ImageDownloadError where !error.isRetryable {
+            phase = .permanentFailure
+        } catch {
+            retryCount += 1
+            phase = retryCount > Self.maxRetryCount ? .permanentFailure : .failure
+        }
+    }
+
+    func resetRetry() {
+        retryCount = 0
+    }
+}
+
+// MARK: - View
+
+/// ImageDownloader를 통해 캐시를 지원하는 SwiftUI 이미지 컴포넌트.
+struct CachedAsyncImage: View {
+
+    let url: URL?
+
+    @Environment(\.imageDownloader) private var downloader
+    @State private var viewModel = CachedAsyncImageViewModel()
+    /// URL 변경 또는 실패 후 탭 시 값이 바뀌어 .task를 재실행한다.
+    @State private var loadTrigger = UUID()
+
     var body: some View {
         Group {
-            switch phase {
+            switch viewModel.phase {
             case .idle:
                 placeholder(systemName: "photo")
 
@@ -65,10 +107,11 @@ struct CachedAsyncImage: View {
             }
         }
         .task(id: loadTrigger) {
-            await load()
+            viewModel.configure(downloader: downloader)
+            await viewModel.load(url: url)
         }
         .onChange(of: url) {
-            retryCount = 0
+            viewModel.resetRetry()
             loadTrigger = UUID()
         }
     }
@@ -81,25 +124,5 @@ struct CachedAsyncImage: View {
                     .font(.title)
                     .foregroundStyle(.secondary)
             )
-    }
-
-    private func load() async {
-        guard let url else {
-            phase = .idle
-            return
-        }
-        phase = .loading
-
-        do {
-            let image = try await downloader.download(from: url)
-            phase = .success(image)
-        } catch is CancellationError {
-            phase = .idle
-        } catch let error as ImageDownloadError where !error.isRetryable {
-            phase = .permanentFailure
-        } catch {
-            retryCount += 1
-            phase = retryCount > Self.maxRetryCount ? .permanentFailure : .failure
-        }
     }
 }

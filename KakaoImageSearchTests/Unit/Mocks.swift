@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 @testable import KakaoImageSearch
 
 // MARK: - MockImageSearchRepository
@@ -116,6 +117,16 @@ final class BlockingMockImagePrefetcher: ImagePrefetcher, @unchecked Sendable {
         } onCancel: { [cancelledContinuation] in
             cancelledContinuation.yield(())
         }
+    }
+}
+
+// MARK: - MockImageDownloader
+
+final class MockImageDownloader: ImageDownloading, @unchecked Sendable {
+    var stubbedResult: Result<UIImage, Error> = .success(UIImage())
+
+    func download(from url: URL) async throws -> UIImage {
+        try stubbedResult.get()
     }
 }
 
