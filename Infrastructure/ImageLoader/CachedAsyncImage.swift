@@ -95,6 +95,8 @@ struct CachedAsyncImage: View {
             phase = .success(image)
         } catch is CancellationError {
             phase = .idle
+        } catch let error as ImageDownloadError where !error.isRetryable {
+            phase = .permanentFailure
         } catch {
             retryCount += 1
             phase = retryCount > Self.maxRetryCount ? .permanentFailure : .failure

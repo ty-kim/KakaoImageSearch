@@ -14,6 +14,15 @@ enum ImageDownloadError: Error, LocalizedError {
     case notImageContentType
     case contentLengthExceeded
 
+    var isRetryable: Bool {
+        switch self {
+        case .invalidResponse:       return true
+        case .invalidData:           return false
+        case .notImageContentType:   return false
+        case .contentLengthExceeded: return false
+        }
+    }
+
     var errorDescription: String? {
         switch self {
         case .invalidResponse:       return L10n.ImageDownload.invalidResponse
