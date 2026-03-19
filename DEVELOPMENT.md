@@ -33,7 +33,7 @@ UI 구현은 SwiftUI 중심으로 구성했지만, 앱 진입 구조는 `AppDele
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 101개 케이스, Domain + ViewModel + BookmarkStore 중심 검증 (`Unit/`)
+- **유닛 테스트**: Swift Testing Framework, 103개 케이스, Domain + ViewModel + BookmarkStore 중심 검증 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 45개 케이스, NetworkService / BookmarkStorage / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
 - **UI 테스트**: XCUITest, 25개 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성
@@ -51,7 +51,7 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
 페이지네이션과 오류 상황에서의 사용자 피드백을 함께 고려했습니다.
 
-- **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별.
+- **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별. API 페이지 제한(15페이지) 도달 시 실제 결과 소진과 구분해 안내 문구를 다르게 표시.
 - **재시도 UX**: 검색 실패 / 추가 로드 실패 / 북마크 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공.
 - **에러 vs 결과없음 구분**: 검색(`errorMessage`)과 북마크(`loadErrorMessage`) 모두 에러 메시지 기반으로 UX 분기를 통일.
 - **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 toastMessage로 분리해 하단 Toast로 표시, 지속 시간은 생성자 주입으로 제어해 테스트에서는 즉시 완료.

@@ -231,6 +231,29 @@
         }
       }
     },
+    "search.api_limit_reached" : {
+      "comment" : "Shown when pagination stops due to API page limit, not because results are exhausted",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cannot load more results due to external API limits."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "外部APIの制限により、これ以上の結果を取得できません。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "외부 API 제한으로 더 많은 결과를 가져올 수 없습니다."
+          }
+        }
+      }
+    },
     "search.error.generic %@" : {
       "comment" : "Generic search error with description",
       "localizations" : {

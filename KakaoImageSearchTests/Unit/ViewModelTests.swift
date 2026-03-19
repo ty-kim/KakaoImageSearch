@@ -367,23 +367,52 @@ struct SearchViewModelTests {
         #expect(searchRepo.searchCallCount == 1)
     }
 
-    @Test("page 15 도달 후 isEnd = false여도 클램핑되어 정상 동작")
-    func loadMore_page15_clampedByEndpoint() async {
+    @Test("page 15 도달 시 isEnd = false여도 isEnd = true, isApiLimitReached = true")
+    func loadMore_page15_setsApiLimitReached() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
 
-        // 14번 loadMore로 page 15까지 진행
         for i in 2...15 {
             searchRepo.stubbedResult = [ImageItem.fixture(id: "p\(i)")]
             await sut.loadMore()?.value
         }
 
-        // page 16 요청 — Endpoint에서 15로 클램핑됨
-        searchRepo.stubbedResult = [ImageItem.fixture(id: "p16")]
+        #expect(sut.isEnd == true)
+        #expect(sut.isApiLimitReached == true)
+        #expect(sut.loadMore() == nil) // 추가 요청 차단
+    }
+
+    @Test("API가 isEnd = true 반환 시 isApiLimitReached = false")
+    func loadMore_apiReturnsIsEnd_doesNotSetApiLimitReached() async {
+        let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.submitSearch(query: "cat").value
+
+        searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
+        searchRepo.stubbedIsEnd = true
         await sut.loadMore()?.value
 
-        #expect(searchRepo.lastPage == 16) // ViewModel은 16을 전달, Endpoint에서 15로 클램핑
+        #expect(sut.isEnd == true)
+        #expect(sut.isApiLimitReached == false)
+    }
+
+    @Test("재검색 시 isApiLimitReached 초기화")
+    func newSearch_clearsApiLimitReached() async {
+        let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
+        searchRepo.stubbedIsEnd = false
+        await sut.submitSearch(query: "cat").value
+
+        for i in 2...15 {
+            searchRepo.stubbedResult = [ImageItem.fixture(id: "p\(i)")]
+            await sut.loadMore()?.value
+        }
+        #expect(sut.isApiLimitReached == true)
+
+        searchRepo.stubbedResult = [ImageItem.fixture(id: "new")]
+        await sut.submitSearch(query: "dog").value
+
+        #expect(sut.isApiLimitReached == false)
     }
 
     @Test("cancelSearchAndClear 시 진행 중인 prefetch Task가 취소된다")

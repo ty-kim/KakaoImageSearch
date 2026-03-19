@@ -18,6 +18,7 @@ final class SearchViewModel {
     private(set) var isLoading: Bool = false
     private(set) var isLoadingMore: Bool = false
     private(set) var isEnd: Bool = false
+    private(set) var isApiLimitReached: Bool = false
     private(set) var hasError: Bool = false
     private(set) var hasLoadMoreError: Bool = false
     private(set) var errorMessage: String? = nil
@@ -35,6 +36,7 @@ final class SearchViewModel {
     private var prefetchTask: Task<Void, Never>? = nil
     private var activeSearchID: UUID? = nil
 
+    private let maxPage = 15
     private let searchImageUseCase: SearchImageUseCase
     private let bookmarkStore: BookmarkStore
     private let imagePrefetcher: any ImagePrefetcher
@@ -100,6 +102,7 @@ final class SearchViewModel {
         currentQuery = query
         currentPage = 1
         isEnd = false
+        isApiLimitReached = false
 
         isLoading = true
         isLoadingMore = false
@@ -128,9 +131,9 @@ final class SearchViewModel {
 
             rawItems = result.items
             rebuildItems()
-            isEnd = result.isEnd
+            updateEndState(isEnd: result.isEnd, page: 1)
 
-            Logger.presentation.debugPrint("Search completed: \(result.items.count) results, isEnd: \(isEnd)")
+            Logger.presentation.debugPrint("Search completed: \(result.items.count) results, isEnd: \(self.isEnd)")
 
             if result.items.isEmpty {
                 errorMessage = L10n.Search.emptyNoResults
@@ -203,7 +206,7 @@ final class SearchViewModel {
 
             rawItems += result.items
             rebuildItems()
-            isEnd = result.isEnd
+            updateEndState(isEnd: result.isEnd, page: page)
             currentPage = page
 
             Logger.presentation.debugPrint("Loaded \(result.items.count) more, isEnd: \(isEnd)")
@@ -247,6 +250,11 @@ final class SearchViewModel {
         }
     }
 
+    private func updateEndState(isEnd: Bool, page: Int) {
+        isApiLimitReached = !isEnd && page >= maxPage
+        self.isEnd = isEnd || page >= maxPage
+    }
+
     private func showToast(_ message: String) {
         toastTask?.cancel()
         toastMessage = message
@@ -276,6 +284,7 @@ final class SearchViewModel {
         isLoading = false
         isLoadingMore = false
         isEnd = false
+        isApiLimitReached = false
 
         currentQuery = ""
         currentPage = 1

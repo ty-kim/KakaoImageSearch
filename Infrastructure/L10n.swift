@@ -47,6 +47,9 @@ nonisolated enum L10n {
         static var loadMoreRetry: String {
             String(localized: "search.error.load_more_retry")
         }
+        static var apiLimitReached: String {
+            String(localized: "search.api_limit_reached")
+        }
     }
 
     enum Tab {

@@ -62,6 +62,13 @@ struct SearchView: View {
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 20)
                                 .accessibilityIdentifier("searchView.loadingMore")
+                        } else if viewModel.isApiLimitReached {
+                            Text(L10n.Search.apiLimitReached)
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 12)
+                                .accessibilityIdentifier("searchView.apiLimitReached")
                         } else if viewModel.hasLoadMoreError {
                             Button {
                                 viewModel.retryLoadMore()
