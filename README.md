@@ -30,7 +30,7 @@ Clean Architecture + MVVM을 기반으로 4개 레이어로 구성했습니다.
 KakaoImageSearch
 ├── Domain          # 비즈니스 규칙 (Entity, UseCase, Repository Protocol)
 ├── Data            # 외부 데이터 (DTO, Repository 구현체, Storage)
-├── Infrastructure  # 인프라 (Network, ImageLoader, L10n, Logger)
+├── Infrastructure  # 인프라 (Network, ImageLoader, L10n, OSLog Logger)
 └── Presentation    # UI (View, ViewModel)
 ```
 
@@ -54,7 +54,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` 설정으로 전체 타입 기본 격리
 - `actor`: NetworkService, BookmarkStorage, ImageDownloader, ImageCache
 - `@Observable @MainActor final class`: 모든 ViewModel
-- `nonisolated`: actor 격리가 필요하지 않은 APIEndpoint, Logger, DTO 초기화, L10n 등에 명시적으로 적용
+- `nonisolated`: actor 격리가 필요하지 않은 APIEndpoint, OSLog Logger, DTO 초기화, L10n 등에 명시적으로 적용
 
 ### 자체 구현 컴포넌트 (외부 라이브러리 미사용)
 | 컴포넌트 | 구현 내용 |
@@ -79,8 +79,8 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - API 페이지 제한(15페이지) 도달과 실제 결과 소진을 구분해 안내 문구를 다르게 표시
 
 ### 네트워크 오류 재시도 UX
-- 검색 실패(hasError) 시 EmptyStateView에 재시도 버튼 표시
-- 추가 로드 실패(hasLoadMoreError) 시 목록 하단에 인라인 재시도 버튼 표시
+- 검색 실패(`.error`) 시 EmptyStateView에 재시도 버튼 표시
+- 추가 로드 실패(`.loadMoreError`) 시 목록 하단에 인라인 재시도 버튼 표시
 - 북마크 로드 실패(loadErrorMessage) 시 EmptyStateView에 에러 메시지와 재시도 버튼 표시
 - 결과 없음(빈 배열)과 실제 오류를 구분해서 보여주도록 구성
 
@@ -209,5 +209,5 @@ KakaoImageSearch/
     ├── Main/                   # MainView, MainViewModel
     ├── Search/                 # SearchView, SearchViewModel, SearchResultItemView
     ├── Bookmark/               # BookmarkView, BookmarkViewModel
-    └── Components/             # SearchBar, BookmarkButton, EmptyStateView
+    └── Components/             # SearchBar, BookmarkButton, EmptyStateView, ToastView
 ```

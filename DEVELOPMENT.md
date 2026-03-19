@@ -35,7 +35,7 @@ UI 구현은 SwiftUI 중심으로 구성했지만, 앱 진입 구조는 `AppDele
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
 - **유닛 테스트**: Swift Testing Framework, 103개 케이스, Domain + ViewModel + BookmarkStore 중심 검증 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 45개 케이스, NetworkService / BookmarkStorage / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
-- **UI 테스트**: XCUITest, 25개 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
+- **UI 테스트**: XCUITest, 25개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성
 - **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
 - **VoiceOver 접근성**: 주요 인터랙티브 컴포넌트에 `accessibilityLabel`/`accessibilityHint` 적용, 접근성 문자열도 ko/en/ja 3개 언어 지원
@@ -51,13 +51,13 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
 페이지네이션과 오류 상황에서의 사용자 피드백을 함께 고려했습니다.
 
-- **무한 스크롤**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, `isEnd` 플래그로 완료 판별. API 페이지 제한(15페이지) 도달 시 실제 결과 소진과 구분해 안내 문구를 다르게 표시.
+- **페이지네이션**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, 응답의 `isEnd` 값으로 완료 판별. API 페이지 제한(15페이지) 도달 시 실제 결과 소진과 구분해 안내 문구를 다르게 표시.
 - **재시도 UX**: 검색 실패 / 추가 로드 실패 / 북마크 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공.
 - **에러 vs 결과없음 구분**: 검색(`SearchState.error`/`.empty`)과 북마크(`loadErrorMessage`) 모두 상태 기반으로 UX 분기를 통일.
 - **이미지 에러 분류**: 재시도 가능 에러(일시적 서버 오류)와 불가 에러(포맷·크기)를 구분해, 불가 에러는 즉시 영구 실패 처리.
 - **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 toastMessage로 분리해 하단 Toast로 표시, 지속 시간은 생성자 주입으로 제어해 테스트에서는 즉시 완료.
 
-무한 스크롤, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 과제에서도 비슷한 관점으로 정리했습니다.
+페이지네이션, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 과제에서도 비슷한 관점으로 정리했습니다.
 
 ### 7. RxSwift 대신 Swift Concurrency
 
@@ -116,7 +116,7 @@ AI는 초안 작성과 반복 작업에 활용했고, 아키텍처 선택과 품
 | **Swift 6 전략** | `@preconcurrency` 대신 명시적 격리 적용, `nonisolated` 직접 선언 방식 채택 |
 | **기술적 트레이드오프** | `actor` vs `final class`, `UserDefaults` vs `FileManager` 등 |
 | **AI 제안 코드 검토** | 생성된 코드를 직접 읽고 이해한 후 채택 여부 결정 / 수정 |
-| **디버깅** | 런타임 크래시(DTO 디코딩, Main.storyboard) 원인 파악 및 수정 |
+| **디버깅** | 런타임 크래시(DTO 디코딩, Main.storyboard 제거 후 Info.plist 설정 누락) 원인 파악 및 수정 |
 | **테스트 케이스 엣지 케이스 판단** | 커버리지 분석 후 추가 필요한 엣지 케이스 직접 식별 |
 
 ### AI 활용에 대한 입장
