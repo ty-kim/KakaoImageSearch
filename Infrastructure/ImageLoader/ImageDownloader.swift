@@ -46,7 +46,7 @@ protocol ImageDownloading: Sendable {
 /// actor 기반 자체 이미지 다운로더.
 /// - 메모리/디스크 캐시 우선 조회
 /// - 동일 URL 중복 요청 dedup 처리
-/// - Content-Type image/* 검증, 최대 10 MB 제한
+/// - Content-Type image/* 검증, 최대 20 MB 제한
 actor ImageDownloader: ImagePrefetcher, ImageDownloading {
 
     static let shared = ImageDownloader()
