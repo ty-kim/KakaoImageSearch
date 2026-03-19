@@ -60,10 +60,10 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 | 컴포넌트 | 구현 내용 |
 |----------|-----------|
 | **NetworkService** | `actor` 기반 Generic URLSession 래퍼, snake_case 자동 변환 |
-| **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시, in-flight 중복 요청 dedup(호출자 취소 내성), Content-Type·크기 검증(Content-Length 사전 검사 + 스트리밍 중 조기 중단), prefetch 병렬도 제한(최대 6), URLSession 주입 가능 |
+| **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시(`.completeFileProtection`), in-flight 중복 요청 dedup(호출자 취소 내성), Content-Type·크기 검증(Content-Length 사전 검사 + 스트리밍 중 조기 중단), prefetch 병렬도 제한(최대 6), URLSession 주입 가능 |
 | **CachedAsyncImage** | `.task(id:)` 기반 이미지 로더 — 뷰 수명과 Task 수명 일치, URL 변경 시 이전 상태를 정리하고 새 이미지를 로드, 로드 실패 시 셀 탭으로 재시도(최대 3회, 초과 시 영구 실패 표시), 재시도 불가 에러(포맷·크기)는 즉시 영구 실패 처리 |
 | **AppAssembler** | Composition Root 패턴, 주요 의존성은 AppAssembler에서 조립하도록 구성했습니다. |
-| **BookmarkStorage** | FileManager + JSON 파일 기반 영속성, `.atomic` 쓰기 |
+| **BookmarkStorage** | FileManager + JSON 파일 기반 영속성, `.atomic` + `.completeFileProtection` 쓰기 |
 
 ### 검색 Debounce 및 취소 처리
 - `Task.sleep(for: .seconds(1.0))` + `Task.cancel()` 조합으로 1.0초 debounce 구현
