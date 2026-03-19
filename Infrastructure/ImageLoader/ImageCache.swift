@@ -76,8 +76,12 @@ actor ImageCache {
                 return image
             } else {
                 // 데이터는 읽혔지만 이미지 디코딩 실패 → 손상된 파일 삭제해 반복 미스 방지
-                try? fileManager.removeItem(at: diskURL)
-                Logger.imageLoader.errorPrint("Corrupt disk cache removed: \(diskURL.lastPathComponent)")
+                do {
+                    try fileManager.removeItem(at: diskURL)
+                    Logger.imageLoader.errorPrint("Corrupt disk cache removed: \(diskURL.lastPathComponent)")
+                } catch {
+                    Logger.imageLoader.errorPrint("Failed to remove corrupt cache: \(error)")
+                }
             }
         }
 
