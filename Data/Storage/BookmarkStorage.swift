@@ -67,7 +67,13 @@ actor BookmarkStorage {
         try fetchAll().contains { $0.id == id }
     }
 
+    private func ensureDirectory() throws {
+        let directory = fileURL.deletingLastPathComponent()
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    }
+
     private func persist(_ items: [ImageItem]) throws {
+        try ensureDirectory()
         encoder.outputFormatting = .prettyPrinted
         let data = try encoder.encode(items)
         try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
