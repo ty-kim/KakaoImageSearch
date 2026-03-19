@@ -32,7 +32,7 @@ Clean Architecture + MVVM을 기반으로 4개 레이어로 구성했습니다.
 KakaoImageSearch
 ├── Domain          # 비즈니스 규칙 (Entity, UseCase, Repository/Service Protocol)
 ├── Data            # 외부 데이터 (DTO, Repository 구현체, Storage)
-├── Infrastructure  # 인프라 (Network, ImageLoader, OSLog Logger)
+├── Infrastructure  # 인프라 (Network, ImageLoader)
 ├── Presentation    # UI (View, ViewModel, L10n)
 └── App             # Composition Root (DI 조립, Environment 정의)
 ```
@@ -170,17 +170,19 @@ KakaoImageSearch/
 ├── Data/
 │   ├── API/                    # KakaoImageSearchEndpoint
 │   ├── DTO/                    # KakaoSearchResponseDTO
+│   ├── Logger/                 # DataLogger (OSLog Bookmark 카테고리)
 │   ├── Repository/             # DefaultImageSearchRepository, DefaultBookmarkRepository
 │   └── Storage/                # BookmarkStorage
 ├── Infrastructure/
 │   ├── ImageLoader/            # ImageDownloader, ImageCache
-│   ├── Logger/                 # AppLogger (OSLog extension)
-│   └── Network/                # NetworkService, NetworkError, APIEndpoint
+│   ├── Logger/                 # AppLogger (OSLog Network·ImageLoader 카테고리)
+│   └── Network/                # NetworkService, NetworkError, APIEndpoint extension
 └── Presentation/
     ├── Store/                  # BookmarkStore (Presentation 레이어 공유 상태)
     ├── Main/                   # MainView, MainViewModel
     ├── Search/                 # SearchView, SearchViewModel, SearchResultItemView
     ├── Bookmark/               # BookmarkView, BookmarkViewModel
     ├── Components/             # SearchBar, BookmarkButton, CachedAsyncImage, EmptyStateView, ToastView
+    ├── Logger/                 # PresentationLogger (OSLog Presentation 카테고리)
     └── L10n.swift              # 다국어 헬퍼
 ```

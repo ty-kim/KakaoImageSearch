@@ -120,7 +120,7 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 - 접근성 문자열은 `L10n.Accessibility`에서 관리하며, 한국어/영어/일본어를 지원합니다.
 
 #### OSLog 기반 로깅
-- `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리
+- `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리 (각 카테고리는 사용하는 레이어에 정의)
 - `debugPrint` / `errorPrint` 헬퍼로 `OS_ACTIVITY_MODE=disable` 환경에서도 Xcode 콘솔 출력 보장
 
 
