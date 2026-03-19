@@ -42,51 +42,48 @@ struct SearchViewModelTests {
         return (sut, searchRepo, bookmarkRepo, imagePrefetcher)
     }
 
-    @Test("검색 성공 시 items 설정, isLoading = false")
-    func search_success_setsItemsAndStopsLoading() async throws {
+    @Test("검색 성공 시 items 설정, loaded 상태")
+    func search_success_setsItemsAndLoaded() async throws {
         let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
         let (sut, _, _, _) = makeSUT(searchItems: items)
 
         await sut.submitSearch(query: "cat").value
 
         #expect(sut.items.count == 2)
-        #expect(sut.isLoading == false)
-        #expect(sut.errorMessage == nil)
-        #expect(sut.hasSearched == true)
+        #expect(sut.searchState == .loaded(.idle))
     }
 
-    @Test("검색 결과가 비어있으면 errorMessage 설정")
-    func search_emptyResult_setsErrorMessage() async throws {
+    @Test("검색 결과가 비어있으면 empty 상태")
+    func search_emptyResult_setsEmpty() async throws {
         let (sut, _, _, _) = makeSUT(searchItems: [])
 
         await sut.submitSearch(query: "zzz").value
 
         #expect(sut.items.isEmpty)
-        #expect(sut.errorMessage != nil)
+        #expect(sut.searchState == .empty)
     }
 
-    @Test("검색 실패 시 items 비우고 errorMessage 설정")
-    func search_failure_clearsItemsAndSetsErrorMessage() async throws {
+    @Test("검색 실패 시 items 비우고 error 상태")
+    func search_failure_clearsItemsAndSetsError() async throws {
         let (sut, _, _, _) = makeSUT(searchError: TestError.stub)
 
         await sut.submitSearch(query: "cat").value
 
         #expect(sut.items.isEmpty)
-        #expect(sut.errorMessage != nil)
-        #expect(sut.isLoading == false)
+        if case .error = sut.searchState {} else { Issue.record("expected .error") }
     }
 
-    @Test("검색 실패 시 hasError = true")
-    func search_failure_setsHasError() async {
+    @Test("검색 실패 시 error 상태")
+    func search_failure_setsError() async {
         let (sut, _, _, _) = makeSUT(searchError: TestError.stub)
 
         await sut.submitSearch(query: "cat").value
 
-        #expect(sut.hasError == true)
+        if case .error = sut.searchState {} else { Issue.record("expected .error") }
     }
 
-    @Test("검색 성공 시 hasError 초기화")
-    func search_success_clearsHasError() async {
+    @Test("검색 성공 시 error 상태 해제")
+    func search_success_clearsError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchError: TestError.stub)
         await sut.submitSearch(query: "cat").value
 
@@ -94,17 +91,16 @@ struct SearchViewModelTests {
         searchRepo.stubbedResult = [ImageItem.fixture()]
         await sut.submitSearch(query: "cat").value
 
-        #expect(sut.hasError == false)
+        #expect(sut.searchState == .loaded(.idle))
     }
 
-    @Test("결과 없음은 hasError = false 유지")
-    func search_emptyResult_doesNotSetHasError() async {
+    @Test("결과 없음은 empty 상태 (error 아님)")
+    func search_emptyResult_setsEmptyNotError() async {
         let (sut, _, _, _) = makeSUT(searchItems: [])
 
         await sut.submitSearch(query: "zzz").value
 
-        #expect(sut.hasError == false)
-        #expect(sut.errorMessage != nil)
+        #expect(sut.searchState == .empty)
     }
 
     @Test("retry 호출 시 동일 쿼리로 재검색")
@@ -118,11 +114,11 @@ struct SearchViewModelTests {
 
         #expect(searchRepo.lastQuery == "고양이")
         #expect(searchRepo.searchCallCount == 2)
-        #expect(sut.hasError == false)
+        #expect(sut.searchState == .loaded(.idle))
     }
 
-    @Test("loadMore 실패 시 hasLoadMoreError = true, 기존 결과 유지")
-    func loadMore_failure_setsHasLoadMoreError() async {
+    @Test("loadMore 실패 시 loadMoreError 상태, 기존 결과 유지")
+    func loadMore_failure_setsLoadMoreError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
@@ -130,11 +126,11 @@ struct SearchViewModelTests {
         searchRepo.stubbedError = TestError.stub
         await sut.loadMore()?.value
 
-        #expect(sut.hasLoadMoreError == true)
+        #expect(sut.searchState == .loaded(.loadMoreError))
         #expect(sut.items.count == 1)
     }
 
-    @Test("retryLoadMore 호출 시 hasLoadMoreError 초기화 후 추가 로드")
+    @Test("retryLoadMore 호출 시 loadMoreError 해제 후 추가 로드")
     func retryLoadMore_resetsErrorAndAppendsItems() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
@@ -142,29 +138,29 @@ struct SearchViewModelTests {
 
         searchRepo.stubbedError = TestError.stub
         await sut.loadMore()?.value
-        #expect(sut.hasLoadMoreError == true)
+        #expect(sut.searchState == .loaded(.loadMoreError))
 
         searchRepo.stubbedError = nil
         searchRepo.stubbedResult = [ImageItem.fixture(id: "b")]
         await sut.retryLoadMore()?.value
 
-        #expect(sut.hasLoadMoreError == false)
+        #expect(sut.searchState == .loaded(.idle))
         #expect(sut.items.count == 2)
     }
 
-    @Test("재검색 시 hasLoadMoreError 초기화")
-    func search_clearsHasLoadMoreError() async {
+    @Test("재검색 시 loadMoreError 초기화")
+    func search_clearsLoadMoreError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture()])
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
         searchRepo.stubbedError = TestError.stub
         await sut.loadMore()?.value
-        #expect(sut.hasLoadMoreError == true)
+        #expect(sut.searchState == .loaded(.loadMoreError))
 
         searchRepo.stubbedError = nil
         await sut.submitSearch(query: "cat").value
 
-        #expect(sut.hasLoadMoreError == false)
+        #expect(sut.searchState == .loaded(.idle))
     }
 
     @Test("currentQuery 없을 때 retry 호출 시 검색 미실행")
@@ -185,26 +181,24 @@ struct SearchViewModelTests {
         sut.cancelSearchAndClear()
 
         #expect(sut.items.isEmpty)
-        #expect(sut.errorMessage == nil)
-        #expect(sut.hasSearched == false)
+        #expect(sut.searchState == .idle)
     }
 
-    @Test("새 검색 시작 시 진행 중인 loadMore의 isLoadingMore 즉시 리셋")
-    func newSearch_whileLoadMoreInProgress_resetsIsLoadingMore() async {
+    @Test("새 검색 시작 시 진행 중인 loadMore 상태를 loading으로 전환")
+    func newSearch_whileLoadMoreInProgress_setsLoading() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
 
-        // loadMore Task를 시작하되 완료 전에 새 검색 진행
         let loadMoreTask = sut.loadMore()
-        sut.submitSearch(query: "dog")  // beginSearch에서 loadMoreTask.cancel() + isLoadingMore = false
+        sut.submitSearch(query: "dog")
 
-        #expect(sut.isLoadingMore == false)
-        _ = await loadMoreTask?.value  // task 정리
+        #expect(sut.searchState == .loading)
+        _ = await loadMoreTask?.value
     }
 
-    @Test("cancelSearchAndClear 시 진행 중인 loadMore의 isLoadingMore 리셋")
-    func cancelSearchAndClear_whileLoadMoreInProgress_resetsIsLoadingMore() async {
+    @Test("cancelSearchAndClear 시 진행 중인 loadMore 상태를 idle로 전환")
+    func cancelSearchAndClear_whileLoadMoreInProgress_setsIdle() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
@@ -212,7 +206,7 @@ struct SearchViewModelTests {
         let loadMoreTask = sut.loadMore()
         sut.cancelSearchAndClear()
 
-        #expect(sut.isLoadingMore == false)
+        #expect(sut.searchState == .idle)
         _ = await loadMoreTask?.value
     }
 
@@ -239,8 +233,8 @@ struct SearchViewModelTests {
         #expect(sut.toastMessage != nil)
     }
 
-    @Test("toggleBookmark 실패해도 errorMessage 변경 없음")
-    func toggleBookmark_failure_doesNotSetErrorMessage() async throws {
+    @Test("toggleBookmark 실패해도 searchState 변경 없음")
+    func toggleBookmark_failure_doesNotChangeSearchState() async throws {
         let item = ImageItem.fixture(id: "a")
         let (sut, _, bookmarkRepo, _) = makeSUT(searchItems: [item])
         await sut.submitSearch(query: "cat").value
@@ -248,7 +242,7 @@ struct SearchViewModelTests {
 
         await sut.toggleBookmark(for: sut.items[0])
 
-        #expect(sut.errorMessage == nil)
+        #expect(sut.searchState == .loaded(.idle))
     }
 
     @Test("toggleBookmark 실패해도 기존 검색 결과 유지")
@@ -355,8 +349,8 @@ struct SearchViewModelTests {
         // cancelled stream에서 yield됐으면 취소 전파 확인
     }
 
-    @Test("isEnd = true이면 loadMore가 실행되지 않는다")
-    func loadMore_whenIsEnd_doesNotExecute() async {
+    @Test("exhausted 상태이면 loadMore가 실행되지 않는다")
+    func loadMore_whenExhausted_doesNotExecute() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = true
         await sut.submitSearch(query: "cat").value
@@ -365,9 +359,10 @@ struct SearchViewModelTests {
 
         #expect(task == nil)
         #expect(searchRepo.searchCallCount == 1)
+        #expect(sut.searchState == .loaded(.exhausted))
     }
 
-    @Test("page 15 도달 시 isEnd = false여도 isEnd = true, isApiLimitReached = true")
+    @Test("page 15 도달 시 isEnd = false여도 apiLimitReached 상태")
     func loadMore_page15_setsApiLimitReached() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
@@ -378,13 +373,12 @@ struct SearchViewModelTests {
             await sut.loadMore()?.value
         }
 
-        #expect(sut.isEnd == true)
-        #expect(sut.isApiLimitReached == true)
-        #expect(sut.loadMore() == nil) // 추가 요청 차단
+        #expect(sut.searchState == .loaded(.apiLimitReached))
+        #expect(sut.loadMore() == nil)
     }
 
-    @Test("API가 isEnd = true 반환 시 isApiLimitReached = false")
-    func loadMore_apiReturnsIsEnd_doesNotSetApiLimitReached() async {
+    @Test("API가 isEnd = true 반환 시 exhausted 상태 (apiLimitReached 아님)")
+    func loadMore_apiReturnsIsEnd_setsExhausted() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
         await sut.submitSearch(query: "cat").value
@@ -393,11 +387,10 @@ struct SearchViewModelTests {
         searchRepo.stubbedIsEnd = true
         await sut.loadMore()?.value
 
-        #expect(sut.isEnd == true)
-        #expect(sut.isApiLimitReached == false)
+        #expect(sut.searchState == .loaded(.exhausted))
     }
 
-    @Test("재검색 시 isApiLimitReached 초기화")
+    @Test("재검색 시 apiLimitReached 초기화")
     func newSearch_clearsApiLimitReached() async {
         let (sut, searchRepo, _, _) = makeSUT(searchItems: [ImageItem.fixture(id: "a")])
         searchRepo.stubbedIsEnd = false
@@ -407,12 +400,12 @@ struct SearchViewModelTests {
             searchRepo.stubbedResult = [ImageItem.fixture(id: "p\(i)")]
             await sut.loadMore()?.value
         }
-        #expect(sut.isApiLimitReached == true)
+        #expect(sut.searchState == .loaded(.apiLimitReached))
 
         searchRepo.stubbedResult = [ImageItem.fixture(id: "new")]
         await sut.submitSearch(query: "dog").value
 
-        #expect(sut.isApiLimitReached == false)
+        #expect(sut.searchState == .loaded(.idle))
     }
 
     @Test("cancelSearchAndClear 시 진행 중인 prefetch Task가 취소된다")
@@ -641,7 +634,7 @@ struct MainViewModelTests {
         sut.onSearchTextChanged("")
 
         #expect(sut.searchViewModel.items.isEmpty)
-        #expect(sut.searchViewModel.hasSearched == false)
+        #expect(sut.searchViewModel.searchState == .idle)
     }
 
     @Test("공백만 입력 시 검색 결과 초기화")
@@ -651,7 +644,7 @@ struct MainViewModelTests {
         sut.onSearchTextChanged("   ")
 
         #expect(sut.searchViewModel.items.isEmpty)
-        #expect(sut.searchViewModel.hasSearched == false)
+        #expect(sut.searchViewModel.searchState == .idle)
     }
 
     @Test("유효한 쿼리 입력 시 debounce 대기 중 hasSearched = false")
@@ -660,7 +653,7 @@ struct MainViewModelTests {
 
         sut.onSearchTextChanged("cat")
 
-        #expect(sut.searchViewModel.hasSearched == false)
+        #expect(sut.searchViewModel.searchState == .idle)
     }
 
     @Test("연속 입력 시 이전 debounce 취소 후 마지막 쿼리만 검색")

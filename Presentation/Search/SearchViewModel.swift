@@ -9,20 +9,29 @@ import Foundation
 import Observation
 import OSLog
 
+enum SearchState: Equatable {
+    case idle
+    case loading
+    case loaded(PaginationState)
+    case empty
+    case error(message: String)
+}
+
+enum PaginationState: Equatable {
+    case idle
+    case loadingMore
+    case loadMoreError
+    case exhausted
+    case apiLimitReached
+}
+
 @Observable
 @MainActor
 final class SearchViewModel {
 
     private(set) var items: [ImageItem] = []
     private var rawItems: [ImageItem] = []
-    private(set) var isLoading: Bool = false
-    private(set) var isLoadingMore: Bool = false
-    private(set) var isEnd: Bool = false
-    private(set) var isApiLimitReached: Bool = false
-    private(set) var hasError: Bool = false
-    private(set) var hasLoadMoreError: Bool = false
-    private(set) var errorMessage: String? = nil
-    private(set) var hasSearched: Bool = false
+    private(set) var searchState: SearchState = .idle
     private(set) var toastMessage: String? = nil
     private(set) var inFlightBookmarkIDs: Set<String> = []
 
@@ -101,15 +110,7 @@ final class SearchViewModel {
 
         currentQuery = query
         currentPage = 1
-        isEnd = false
-        isApiLimitReached = false
-
-        isLoading = true
-        isLoadingMore = false
-        errorMessage = nil
-        hasError = false
-        hasLoadMoreError = false
-        hasSearched = true
+        searchState = .loading
 
         return searchID
     }
@@ -119,7 +120,6 @@ final class SearchViewModel {
 
         defer {
             if activeSearchID == searchID {
-                isLoading = false
                 searchTask = nil
             }
         }
@@ -131,15 +131,15 @@ final class SearchViewModel {
 
             rawItems = result.items
             rebuildItems()
-            updateEndState(isEnd: result.isEnd, page: 1)
-
-            Logger.presentation.debugPrint("Search completed: \(result.items.count) results, isEnd: \(self.isEnd)")
 
             if result.items.isEmpty {
-                errorMessage = L10n.Search.emptyNoResults
+                searchState = .empty
             } else {
+                searchState = .loaded(paginationState(isEnd: result.isEnd, page: 1))
                 prefetch(result.items)
             }
+
+            Logger.presentation.debugPrint("Search completed: \(result.items.count) results, isEnd: \(result.isEnd)")
         } catch is CancellationError {
             Logger.presentation.debugPrint("Search cancelled: \"\(query)\"")
         } catch {
@@ -147,8 +147,7 @@ final class SearchViewModel {
 
             rawItems = []
             items = []
-            errorMessage = L10n.Search.error(error.localizedDescription)
-            hasError = true
+            searchState = .error(message: L10n.Search.error(error.localizedDescription))
 
             Logger.presentation.errorPrint("Search failed: \(error)")
         }
@@ -163,15 +162,14 @@ final class SearchViewModel {
     // @discardableResult로 반환된 Task를 무시하거나, 테스트에서 .value로 await 가능 (submitSearch와 동일 패턴)
     @discardableResult
     func loadMore() -> Task<Void, Never>? {
-        // loadMore 실패 후에는 자동 재시도 루프를 막고 버튼으로만 재시도
-        guard !isEnd, !isLoading, !isLoadingMore, !hasLoadMoreError else { return nil }
+        // loaded(.idle) 상태에서만 추가 로드 허용
+        guard case .loaded(.idle) = searchState else { return nil }
 
         let queryAtRequestTime = currentQuery
         let searchIDAtRequestTime = activeSearchID
         let nextPage = currentPage + 1
 
-        hasLoadMoreError = false
-        isLoadingMore = true
+        searchState = .loaded(.loadingMore)
 
         Logger.presentation.debugPrint("Loading more: page \(nextPage)")
 
@@ -188,14 +186,6 @@ final class SearchViewModel {
     }
 
     private func performLoadMore(query: String, searchID: UUID?, page: Int) async {
-        defer {
-            // 아직 활성 요청인 경우에만 isLoadingMore 해제.
-            // 새 검색/clear 시에는 beginSearch/cancelSearchAndClear에서 직접 처리.
-            if searchID == activeSearchID, query == currentQuery {
-                isLoadingMore = false
-            }
-        }
-
         do {
             let result = try await searchImageUseCase.execute(query: query, page: page)
 
@@ -206,10 +196,10 @@ final class SearchViewModel {
 
             rawItems += result.items
             rebuildItems()
-            updateEndState(isEnd: result.isEnd, page: page)
+            searchState = .loaded(paginationState(isEnd: result.isEnd, page: page))
             currentPage = page
 
-            Logger.presentation.debugPrint("Loaded \(result.items.count) more, isEnd: \(isEnd)")
+            Logger.presentation.debugPrint("Loaded \(result.items.count) more, page: \(page)")
 
             prefetch(result.items)
         } catch is CancellationError {
@@ -217,14 +207,14 @@ final class SearchViewModel {
         } catch {
             guard searchID == activeSearchID, query == currentQuery else { return }
 
-            hasLoadMoreError = true
+            searchState = .loaded(.loadMoreError)
             Logger.presentation.errorPrint("Load more failed: \(error)")
         }
     }
 
     @discardableResult
     func retryLoadMore() -> Task<Void, Never>? {
-        hasLoadMoreError = false
+        searchState = .loaded(.idle)
         return loadMore()
     }
 
@@ -250,9 +240,10 @@ final class SearchViewModel {
         }
     }
 
-    private func updateEndState(isEnd: Bool, page: Int) {
-        isApiLimitReached = !isEnd && page >= maxPage
-        self.isEnd = isEnd || page >= maxPage
+    private func paginationState(isEnd: Bool, page: Int) -> PaginationState {
+        if !isEnd && page >= maxPage { return .apiLimitReached }
+        if isEnd || page >= maxPage { return .exhausted }
+        return .idle
     }
 
     private func showToast(_ message: String) {
@@ -277,14 +268,7 @@ final class SearchViewModel {
 
         rawItems = []
         items = []
-        errorMessage = nil
-        hasError = false
-        hasLoadMoreError = false
-        hasSearched = false
-        isLoading = false
-        isLoadingMore = false
-        isEnd = false
-        isApiLimitReached = false
+        searchState = .idle
 
         currentQuery = ""
         currentPage = 1

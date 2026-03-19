@@ -15,23 +15,30 @@ struct SearchView: View {
     var body: some View {
         GeometryReader { geometry in
             Group {
-                if viewModel.isLoading {
+                switch viewModel.searchState {
+                case .loading:
                     ProgressView()
                         .frame(maxWidth: .infinity, maxHeight: .infinity)
                         .accessibilityLabel(L10n.Accessibility.loading)
                         .accessibilityIdentifier("searchView.loadingIndicator")
 
-                } else if let message = viewModel.errorMessage {
+                case .error(let message):
                     EmptyStateView(
                         message: message,
                         accessibilityID: "searchView.emptyState",
-                        retryAction: viewModel.hasError ? { Task { await viewModel.retry() } } : nil
+                        retryAction: { viewModel.retry() }
                     )
 
-                } else if !viewModel.hasSearched {
+                case .empty:
+                    EmptyStateView(
+                        message: L10n.Search.emptyNoResults,
+                        accessibilityID: "searchView.emptyState"
+                    )
+
+                case .idle:
                     EmptyStateView(message: L10n.Search.emptyInitial, accessibilityID: "searchView.emptyState")
 
-                } else {
+                case .loaded(let paginationState):
                     let horizontalPadding: CGFloat = 20
                     let columnSpacing: CGFloat = 20
                     let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
@@ -50,26 +57,27 @@ struct SearchView: View {
                                 .accessibilityIdentifier("searchResultItem.\(item.id)")
                                 .onAppear {
                                     if item.id == viewModel.items.last?.id {
-                                        Task { await viewModel.loadMore() }
+                                        viewModel.loadMore()
                                     }
                                 }
                             }
                         }
                         .padding(.horizontal, horizontalPadding)
 
-                        if viewModel.isLoadingMore {
+                        switch paginationState {
+                        case .loadingMore:
                             ProgressView()
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 20)
                                 .accessibilityIdentifier("searchView.loadingMore")
-                        } else if viewModel.isApiLimitReached {
+                        case .apiLimitReached:
                             Text(L10n.Search.apiLimitReached)
                                 .font(.footnote)
                                 .foregroundStyle(.secondary)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                                 .accessibilityIdentifier("searchView.apiLimitReached")
-                        } else if viewModel.hasLoadMoreError {
+                        case .loadMoreError:
                             Button {
                                 viewModel.retryLoadMore()
                             } label: {
@@ -85,6 +93,8 @@ struct SearchView: View {
                             .padding(.vertical, 12)
                             .accessibilityHint(L10n.Accessibility.loadMoreRetryHint)
                             .accessibilityIdentifier("searchView.loadMoreRetryButton")
+                        case .idle, .exhausted:
+                            EmptyView()
                         }
                     }
                     .accessibilityIdentifier("searchView.resultsList")
