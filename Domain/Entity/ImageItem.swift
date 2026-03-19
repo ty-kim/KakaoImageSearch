@@ -17,7 +17,7 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
 
     /// full-width 표시 시 높이 계산에 사용 (height / width)
     var aspectRatio: Double {
-        guard let width, let height, width > 0 else { return 1 }
+        guard let width, let height, width > 0, height > 0 else { return 1 }
         return Double(height) / Double(width)
     }
     
