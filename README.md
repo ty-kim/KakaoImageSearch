@@ -99,7 +99,7 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 
 ### iPad 적응형 레이아웃
 - `horizontalSizeClass` 기반으로 iPhone / iPad 레이아웃 분기
-- **iPhone (compact)**: 기존 `TabView` 유지
+- **iPhone (compact)**: 기존 `TabView` 유지, 북마크 탭에서 검색 submit 시 검색 탭으로 자동 전환
 - **iPad (regular)**: `NavigationSplitView`로 검색(사이드바) + 북마크(디테일) 동시 표시
 - 이미지 목록: `LazyVGrid` 2열, 좌우 패딩 20pt, 컬럼 간격 20pt
 

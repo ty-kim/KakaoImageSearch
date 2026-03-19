@@ -29,7 +29,9 @@ struct MainView: View {
 
     private var iPhoneLayout: some View {
         VStack(spacing: 0) {
-            SearchBar(text: $viewModel.searchText)
+            SearchBar(text: $viewModel.searchText) {
+                    viewModel.selectedTab = .search
+                }
                 .onChange(of: viewModel.searchText) { _, newValue in
                     viewModel.onSearchTextChanged(newValue)
                 }

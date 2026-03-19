@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchBar: View {
 
     @Binding var text: String
+    var onSubmit: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 8) {
@@ -21,6 +22,7 @@ struct SearchBar: View {
                 .autocorrectionDisabled()
                 .textInputAutocapitalization(.never)
                 .submitLabel(.search)
+                .onSubmit { onSubmit?() }
                 .accessibilityHint(L10n.Accessibility.searchFieldHint)
                 .accessibilityIdentifier("searchBar.textField")
 
