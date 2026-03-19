@@ -6,6 +6,8 @@ debounce 검색, 페이지네이션, 북마크 영속화, 이미지 캐싱, iPad
 외부 라이브러리 없이 핵심 컴포넌트를 직접 구현했고 테스트 코드로 주요 동작을 검증했습니다.  
 프로젝트 문서에는 실행 방법, 설계 의도, 예외 처리, 개선 방향을 정리했습니다.
 
+기능 확장보다 상태 분리, 실패 복구, 테스트 가능성을 우선했습니다.
+
 ---
 
 
@@ -28,10 +30,11 @@ Clean Architecture + MVVM을 기반으로 4개 레이어로 구성했습니다.
 
 ```
 KakaoImageSearch
-├── Domain          # 비즈니스 규칙 (Entity, UseCase, Repository Protocol)
+├── Domain          # 비즈니스 규칙 (Entity, UseCase, Repository/Service Protocol)
 ├── Data            # 외부 데이터 (DTO, Repository 구현체, Storage)
-├── Infrastructure  # 인프라 (Network, ImageLoader, L10n, OSLog Logger)
-└── Presentation    # UI (View, ViewModel)
+├── Infrastructure  # 인프라 (Network, ImageLoader, OSLog Logger)
+├── Presentation    # UI (View, ViewModel, L10n)
+└── App             # Composition Root (DI 조립, Environment 정의)
 ```
 
 ### 레이어 의존 방향
@@ -40,11 +43,11 @@ KakaoImageSearch
 graph TD
     Presentation --> Domain
     Data --> Domain
-    Presentation --> Infrastructure
-    Data --> Infrastructure
+    Infrastructure --> Domain
 ```
 
-Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 Infrastructure의 인터페이스에 의존합니다.
+Domain은 외부에 의존하지 않으며, 나머지 레이어는 Domain의 프로토콜에만 의존합니다.
+App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다.
 
 ---
 
@@ -88,43 +91,11 @@ Domain은 외부에 의존하지 않으며, Data와 Presentation이 Domain과 In
 - 북마크 로드 실패 시 EmptyStateView에 재시도 버튼 표시
 - 북마크 토글 실패 시 목록을 유지한 채 하단 Toast로 표시 (3초 후 자동 소멸, 슬라이드 인/아웃 애니메이션)
 
-### ATS 예외 설정
-- 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않고, 실제 이미지 호스트도 여러 서브도메인으로 분산되어 있어 `daum.net`, `naver.net` 계열 도메인에 ATS 예외를 적용했습니다.
-- 이 예외는 검색 결과 이미지 로딩에만 사용하며, API 통신이나 민감 정보 전송에는 적용하지 않습니다. 현재 과제 범위에서는 호스트 구성이 다양해 이 방식이 가장 현실적이었고, 사용 호스트를 더 좁힐 수 있다면 예외 범위도 함께 축소할 수 있습니다.
-
-### BookmarkStore (공유 상태 관리)
-- `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
-- `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
-- `SearchViewModel` / `BookmarkViewModel` 이 동일 인스턴스를 참조해 양쪽 탭에서 같은 북마크 상태를 참조하도록 구성했습니다.
-
-### iPad 적응형 레이아웃
-- `horizontalSizeClass` 기반으로 iPhone / iPad 레이아웃 분기
-- **iPhone (compact)**: 기존 `TabView` 유지, 북마크 탭에서 검색 submit 시 검색 탭으로 자동 전환
-- **iPad (regular)**: `NavigationSplitView`로 검색(사이드바) + 북마크(디테일) 동시 표시
-- 이미지 목록: `LazyVGrid` 2열, 좌우 패딩 20pt, 컬럼 간격 20pt
-
-### 다국어 지원 (ko / en / ja)
-- `.xcstrings` String Catalog 기반
-- `L10n` 헬퍼를 사용해 문자열 접근을 정리했습니다
-
-### VoiceOver 접근성
-- `BookmarkButton`: 북마크 상태에 따라 `accessibilityLabel`과 `accessibilityHint`를 분기 적용
-- `SearchBar`: 텍스트필드에 debounce 안내 `accessibilityHint`, 지우기 버튼에 `accessibilityLabel` 적용
-- `SearchResultItemView`: 이미지 크기 정보를 포함한 `accessibilityLabel` 적용
-- `EmptyStateView`: 메시지 영역에 `accessibilityLabel`, 재시도 버튼에 `accessibilityHint` 적용
-- `ToastView`: 등장 시 `AccessibilityNotification.Announcement`로 VoiceOver 자동 안내
-- `ProgressView`: 검색/북마크 로딩 상태에 `accessibilityLabel` 적용
-- 탭(검색/북마크): `accessibilityHint`로 탭 전환 시 역할 안내
-- 추가 로드 재시도 버튼: `accessibilityHint` 적용
-- 접근성 문자열은 `L10n.Accessibility`에서 관리하며, 한국어/영어/일본어를 지원합니다.
-
-### OSLog 기반 로깅
-- `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리
-- `debugPrint` / `errorPrint` 헬퍼로 `OS_ACTIVITY_MODE=disable` 환경에서도 Xcode 콘솔 출력 보장
-
 ---
 
 ## 테스트
+
+테스트는 검색 취소/stale response, 페이지네이션, 북마크 동기화, 이미지 캐시/복구 같은 회귀 위험이 큰 흐름 중심으로 구성했습니다.
 
 ### 유닛 테스트
 
@@ -190,25 +161,26 @@ enum KakaoAPIKey {
 
 ```
 KakaoImageSearch/
-├── App/                        # AppAssembler (Composition Root)
-├── Infrastructure/
-│   ├── ImageLoader/            # ImageDownloader, ImageCache, CachedAsyncImage
-│   ├── Logger/                 # AppLogger (OSLog extension)
-│   ├── Network/                # NetworkService, NetworkError, APIEndpoint
-│   └── L10n.swift              # 다국어 헬퍼
+├── App/                        # AppAssembler (Composition Root), ImageDownloaderEnvironment
 ├── Domain/
 │   ├── Entity/                 # ImageItem
 │   ├── Repository/             # ImageSearchRepository, BookmarkRepository (Protocol)
+│   ├── Service/                # NetworkServiceProtocol, APIEndpoint, ImagePrefetcher, ImageDownloading (Protocol)
 │   └── UseCase/                # SearchImageUseCase, ManageBookmarkUseCase
 ├── Data/
 │   ├── API/                    # KakaoImageSearchEndpoint
 │   ├── DTO/                    # KakaoSearchResponseDTO
 │   ├── Repository/             # DefaultImageSearchRepository, DefaultBookmarkRepository
 │   └── Storage/                # BookmarkStorage
+├── Infrastructure/
+│   ├── ImageLoader/            # ImageDownloader, ImageCache
+│   ├── Logger/                 # AppLogger (OSLog extension)
+│   └── Network/                # NetworkService, NetworkError, APIEndpoint
 └── Presentation/
     ├── Store/                  # BookmarkStore (Presentation 레이어 공유 상태)
     ├── Main/                   # MainView, MainViewModel
     ├── Search/                 # SearchView, SearchViewModel, SearchResultItemView
     ├── Bookmark/               # BookmarkView, BookmarkViewModel
-    └── Components/             # SearchBar, BookmarkButton, EmptyStateView, ToastView
+    ├── Components/             # SearchBar, BookmarkButton, CachedAsyncImage, EmptyStateView, ToastView
+    └── L10n.swift              # 다국어 헬퍼
 ```

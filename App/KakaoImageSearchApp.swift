@@ -73,7 +73,8 @@ enum AppAssembler {
 
         return MainViewModel(
             searchImageUseCase: searchUseCase,
-            manageBookmarkUseCase: bookmarkUseCase
+            manageBookmarkUseCase: bookmarkUseCase,
+            imagePrefetcher: ImageDownloader.shared
         )
     }
 }

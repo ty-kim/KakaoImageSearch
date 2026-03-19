@@ -8,41 +8,6 @@
 import UIKit
 import OSLog
 
-enum ImageDownloadError: Error, LocalizedError {
-    case invalidResponse
-    case invalidData
-    case notImageContentType
-    case contentLengthExceeded
-
-    var isRetryable: Bool {
-        switch self {
-        case .invalidResponse:       return true
-        case .invalidData:           return false
-        case .notImageContentType:   return false
-        case .contentLengthExceeded: return false
-        }
-    }
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidResponse:       return L10n.ImageDownload.invalidResponse
-        case .invalidData:           return L10n.ImageDownload.invalidData
-        case .notImageContentType:   return L10n.ImageDownload.notImageContentType
-        case .contentLengthExceeded: return L10n.ImageDownload.contentLengthExceeded
-        }
-    }
-}
-
-/// 이미지 선수 다운로드 추상화. 테스트에서 Mock으로 교체 가능합니다.
-protocol ImagePrefetcher: Sendable {
-    func prefetch(urls: [URL]) async
-}
-
-/// 단일 이미지 다운로드 추상화. CachedAsyncImage의 @Environment 주입에 사용됩니다.
-protocol ImageDownloading: Sendable {
-    func download(from url: URL) async throws -> UIImage
-}
-
 /// actor 기반 자체 이미지 다운로더.
 /// - 메모리/디스크 캐시 우선 조회
 /// - 동일 URL 중복 요청 dedup 처리

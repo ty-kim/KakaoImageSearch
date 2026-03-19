@@ -53,7 +53,7 @@ final class SearchViewModel {
     init(
         searchImageUseCase: SearchImageUseCase,
         bookmarkStore: BookmarkStore,
-        imagePrefetcher: any ImagePrefetcher = ImageDownloader.shared,
+        imagePrefetcher: any ImagePrefetcher,
         toastDuration: Duration = .seconds(3)
     ) {
         self.searchImageUseCase = searchImageUseCase

@@ -22,12 +22,6 @@ extension Logger {
 
     /// 이미지 다운로드 및 캐시
     nonisolated static let imageLoader  = Logger(subsystem: subsystem, category: "ImageLoader")
-
-    /// 북마크 저장/불러오기
-    nonisolated static let bookmark     = Logger(subsystem: subsystem, category: "Bookmark")
-
-    /// ViewModel 상태 변화
-    nonisolated static let presentation = Logger(subsystem: subsystem, category: "Presentation")
 }
 
 // MARK: - Debug Console 출력 보조

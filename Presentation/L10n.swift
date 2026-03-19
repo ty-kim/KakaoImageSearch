@@ -10,24 +10,6 @@ import Foundation
 
 nonisolated enum L10n {
 
-    enum Network {
-        static var invalidURL: String {
-            String(localized: "network.error.invalid_url")
-        }
-        static var invalidResponse: String {
-            String(localized: "network.error.invalid_response")
-        }
-        static func httpError(_ code: Int) -> String {
-            String(localized: "network.error.http_error \(code)")
-        }
-        static func decodingError(_ description: String) -> String {
-            String(localized: "network.error.decoding_error \(description)")
-        }
-        static func unknown(_ description: String) -> String {
-            String(localized: "network.error.unknown \(description)")
-        }
-    }
-
     enum Search {
         static var placeholder: String {
             String(localized: "search.bar.placeholder")
@@ -58,21 +40,6 @@ nonisolated enum L10n {
         }
         static var bookmark: String {
             String(localized: "tab.bookmark")
-        }
-    }
-
-    enum ImageDownload {
-        static var invalidResponse: String {
-            String(localized: "image_download.error.invalid_response")
-        }
-        static var invalidData: String {
-            String(localized: "image_download.error.invalid_data")
-        }
-        static var notImageContentType: String {
-            String(localized: "image_download.error.not_image_content_type")
-        }
-        static var contentLengthExceeded: String {
-            String(localized: "image_download.error.content_length_exceeded")
         }
     }
 

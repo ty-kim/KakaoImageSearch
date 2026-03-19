@@ -629,7 +629,8 @@ struct MainViewModelTests {
             searchImageUseCase: SearchImageUseCase(
                 imageSearchRepository: searchRepo
             ),
-            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
+            imagePrefetcher: MockImagePrefetcher()
         )
     }
 
@@ -670,7 +671,8 @@ struct MainViewModelTests {
             searchImageUseCase: SearchImageUseCase(
                 imageSearchRepository: searchRepo
             ),
-            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
+            imagePrefetcher: MockImagePrefetcher()
         )
 
         sut.onSearchTextChanged("a")

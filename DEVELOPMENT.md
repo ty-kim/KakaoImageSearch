@@ -2,6 +2,16 @@
 
 ---
 
+## 이번 구현에서 우선한 것
+
+이번 구현에서는 기능 확장보다 다음 세 가지를 우선했습니다.
+
+- 검색/북마크 핵심 사용자 흐름의 안정성
+- 비동기 상태 전이와 실패 복구의 명확성
+- 테스트 가능성과 문서 정합성
+
+반대로 상세 뷰어, 검색 히스토리, 오프라인 감지처럼 확장 가능한 기능은 이번 구현에서 제외했습니다.
+
 ## 개발 방향
 
 ### 1. 외부 라이브러리 없이 필요한 기능 직접 구현
@@ -89,6 +99,31 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 
 특히 동시성 관련 제약을 컴파일 단계에서 확인할 수 있다는 점이 이번 구현에서는 장점이라고 판단했습니다.
 
+#### ATS 예외 설정
+일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않고, 실제 이미지 호스트도 여러 서브도메인으로 분산되어 있어 `daum.net`, `naver.net` 계열 도메인에 ATS 예외를 적용했습니다.
+이 예외는 검색 결과 이미지 로딩에만 사용하며, API 통신이나 민감 정보 전송에는 적용하지 않습니다. 현재 과제 범위에서는 호스트 구성이 다양해 이 방식이 가장 현실적이었고, 사용 호스트를 더 좁힐 수 있다면 예외 범위도 함께 축소할 수 있습니다.
+
+#### BookmarkStore (공유 상태 관리)
+- `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
+- `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
+- `SearchViewModel` / `BookmarkViewModel` 이 동일 인스턴스를 참조해 양쪽 탭에서 같은 북마크 상태를 참조하도록 구성했습니다.
+
+#### VoiceOver 접근성
+- `BookmarkButton`: 북마크 상태에 따라 `accessibilityLabel`과 `accessibilityHint`를 분기 적용
+- `SearchBar`: 텍스트필드에 debounce 안내 `accessibilityHint`, 지우기 버튼에 `accessibilityLabel` 적용
+- `SearchResultItemView`: 이미지 크기 정보를 포함한 `accessibilityLabel` 적용
+- `EmptyStateView`: 메시지 영역에 `accessibilityLabel`, 재시도 버튼에 `accessibilityHint` 적용
+- `ToastView`: 등장 시 `AccessibilityNotification.Announcement`로 VoiceOver 자동 안내
+- `ProgressView`: 검색/북마크 로딩 상태에 `accessibilityLabel` 적용
+- 탭(검색/북마크): `accessibilityHint`로 탭 전환 시 역할 안내
+- 추가 로드 재시도 버튼: `accessibilityHint` 적용
+- 접근성 문자열은 `L10n.Accessibility`에서 관리하며, 한국어/영어/일본어를 지원합니다.
+
+#### OSLog 기반 로깅
+- `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리
+- `debugPrint` / `errorPrint` 헬퍼로 `OS_ACTIVITY_MODE=disable` 환경에서도 Xcode 콘솔 출력 보장
+
+
 ---
 
 ## AI 활용 범위
@@ -98,32 +133,9 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 구조 선택, 채택 여부 판단, 최종 검증은 직접 수행했습니다.
 AI는 초안 작성과 반복 작업에 활용했고, 아키텍처 선택과 품질 판단은 직접 진행했습니다.
 
-### AI가 도운 것
+### AI가 도운 것: 초안, 반복 작업, 테스트 케이스 아이디어
 
-| 영역 | 내용 |
-|---|---|
-| **보일러플레이트 작성** | DTO `nonisolated init(from:)`, Repository 구현체, Mock 클래스 등 반복적인 코드 |
-| **Swift 6 오류 메시지 해석** | 컴파일러 에러 원인 분석 및 수정 방향 제시 |
-| **테스트 케이스 초안** | 테스트 구조와 케이스 목록 초안 생성 |
-| **커밋 메시지 작성** | Conventional Commits 형식의 메시지 초안 |
-| **문서 작성** | README, DEVELOPMENT.md 초안 작성 |
-
-### 직접 판단하고 결정한 것
-
-| 영역 | 내용 |
-|---|---|
-| **아키텍처 설계** | Clean Architecture + MVVM 레이어 구조 및 의존 방향 결정 |
-| **Swift 6 전략** | `@preconcurrency` 대신 명시적 격리 적용, `nonisolated` 직접 선언 방식 채택 |
-| **기술적 트레이드오프** | `actor` vs `final class`, `UserDefaults` vs `FileManager` 등 |
-| **AI 제안 코드 검토** | 생성된 코드를 직접 읽고 이해한 후 채택 여부 결정 / 수정 |
-| **디버깅** | 런타임 크래시(DTO 디코딩, Main.storyboard 제거 후 Info.plist 설정 누락) 원인 파악 및 수정 |
-| **테스트 케이스 엣지 케이스 판단** | 커버리지 분석 후 추가 필요한 엣지 케이스 직접 식별 |
-
-### AI 활용에 대한 입장
-
-AI는 빠른 초안 생성과 반복 작업 자동화에 강점이 있습니다.
-하지만 "왜 이렇게 설계하는가", "이 트레이드오프가 맞는가"에 대한 판단은 직접 검토가 필요하다고 봤습니다.
-이 프로젝트에서 AI는 초안 작성과 반복 작업을 줄이는 데 도움이 됐고, 아키텍처 선택과 품질 검토는 직접 진행했습니다.
+### 직접 판단한 것: 구조, 트레이드오프, 최종 검증
 
 ---
 

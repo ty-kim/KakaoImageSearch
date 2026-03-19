@@ -28,14 +28,16 @@ final class MainViewModel {
 
     init(
         searchImageUseCase: SearchImageUseCase,
-        manageBookmarkUseCase: ManageBookmarkUseCase
+        manageBookmarkUseCase: ManageBookmarkUseCase,
+        imagePrefetcher: any ImagePrefetcher
     ) {
         let bookmarkStore = BookmarkStore(manageBookmarkUseCase: manageBookmarkUseCase)
 
         self.bookmarkStore = bookmarkStore
         self.searchViewModel = SearchViewModel(
             searchImageUseCase: searchImageUseCase,
-            bookmarkStore: bookmarkStore
+            bookmarkStore: bookmarkStore,
+            imagePrefetcher: imagePrefetcher
         )
         self.bookmarkViewModel = BookmarkViewModel(
             bookmarkStore: bookmarkStore

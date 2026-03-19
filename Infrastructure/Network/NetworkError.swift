@@ -17,15 +17,15 @@ enum NetworkError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .invalidURL:
-            return L10n.Network.invalidURL
+            return String(localized: "network.error.invalid_url")
         case .invalidResponse:
-            return L10n.Network.invalidResponse
+            return String(localized: "network.error.invalid_response")
         case .httpError(let code):
-            return L10n.Network.httpError(code)
+            return String(localized: "network.error.http_error \(code)")
         case .decodingError(let error):
-            return L10n.Network.decodingError(error.localizedDescription)
+            return String(localized: "network.error.decoding_error \(error.localizedDescription)")
         case .unknown(let error):
-            return L10n.Network.unknown(error.localizedDescription)
+            return String(localized: "network.error.unknown \(error.localizedDescription)")
         }
     }
 }

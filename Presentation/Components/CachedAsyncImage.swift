@@ -6,17 +6,7 @@
 //
 
 import SwiftUI
-
-private struct ImageDownloaderKey: EnvironmentKey {
-    static let defaultValue: any ImageDownloading = ImageDownloader.shared
-}
-
-extension EnvironmentValues {
-    var imageDownloader: any ImageDownloading {
-        get { self[ImageDownloaderKey.self] }
-        set { self[ImageDownloaderKey.self] = newValue }
-    }
-}
+import UIKit
 
 // MARK: - ViewModel
 
@@ -39,7 +29,7 @@ final class CachedAsyncImageViewModel {
 
     private(set) var phase: Phase = .idle
     private(set) var retryCount = 0
-    private var downloader: any ImageDownloading = ImageDownloader.shared
+    private var downloader: (any ImageDownloading)?
 
     func configure(downloader: any ImageDownloading) {
         self.downloader = downloader
@@ -53,6 +43,10 @@ final class CachedAsyncImageViewModel {
         phase = .loading
 
         do {
+            guard let downloader else {
+                phase = .idle
+                return
+            }
             let image = try await downloader.download(from: url)
             phase = .success(image)
         } catch is CancellationError {

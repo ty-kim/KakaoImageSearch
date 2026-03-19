@@ -9,9 +9,9 @@ import Foundation
 
 final class DefaultImageSearchRepository: ImageSearchRepository {
 
-    private let networkService: NetworkService
+    private let networkService: any NetworkServiceProtocol
 
-    init(networkService: NetworkService) {
+    init(networkService: any NetworkServiceProtocol) {
         self.networkService = networkService
     }
 
