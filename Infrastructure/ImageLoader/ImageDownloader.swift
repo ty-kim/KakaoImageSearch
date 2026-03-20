@@ -148,7 +148,7 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
                 throw ImageDownloadError.invalidData
             }
 
-            await cache.set(image, for: secureURL)
+            await cache.set(image, data: data, for: secureURL)
             Logger.imageLoader.debugPrint("Downloaded & cached: \(secureURL.lastPathComponent) (\(data.count) bytes)")
             return image
         }

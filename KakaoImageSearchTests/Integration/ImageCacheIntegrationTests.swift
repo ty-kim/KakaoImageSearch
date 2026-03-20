@@ -55,7 +55,8 @@ struct ImageCacheIntegrationTests {
 
         let validImage = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
             .image { _ in }
-        await sut.set(validImage, for: imageURL)
+        let validData = validImage.pngData()!
+        await sut.set(validImage, data: validData, for: imageURL)
 
         let result = await sut.get(for: imageURL)
         #expect(result != nil)
@@ -80,7 +81,8 @@ struct ImageCacheIntegrationTests {
     func cleanupExpiredFiles_keepsValidFiles() async {
         let sut = makeSUT(ttl: 3600)
         let image = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1)).image { _ in }
-        await sut.set(image, for: imageURL)
+        let imageData = image.pngData()!
+        await sut.set(image, data: imageData, for: imageURL)
 
         await sut.cleanupExpiredFiles()
 

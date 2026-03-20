@@ -90,17 +90,15 @@ actor ImageCache {
         return nil
     }
 
-    func set(_ image: UIImage, for url: URL) {
+    func set(_ image: UIImage, data: Data, for url: URL) {
         let key = cacheKey(for: url)
         memoryCache.setObject(image, forKey: key as NSString, cost: estimatedCost(of: image))
 
         let diskURL = diskCacheURL.appendingPathComponent(key)
-        if let data = image.jpegData(compressionQuality: 0.8) {
-            do {
-                try data.write(to: diskURL, options: [.atomic, .completeFileProtection])
-            } catch {
-                Logger.imageLoader.errorPrint("Failed to write disk cache: \(error)")
-            }
+        do {
+            try data.write(to: diskURL, options: [.atomic, .completeFileProtection])
+        } catch {
+            Logger.imageLoader.errorPrint("Failed to write disk cache: \(error)")
         }
     }
 
