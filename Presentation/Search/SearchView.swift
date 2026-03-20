@@ -17,8 +17,8 @@ struct SearchView: View {
             Group {
                 switch viewModel.searchState {
                 case .loading:
-                    let horizontalPadding: CGFloat = 20
-                    let columnSpacing: CGFloat = 20
+                    let horizontalPadding: CGFloat = columns == 1 ? 0 : 20
+                    let columnSpacing: CGFloat = columns == 1 ? 0 : 20
                     let skeletonWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
                     let skeletonColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
 
@@ -50,8 +50,8 @@ struct SearchView: View {
                     EmptyStateView(message: L10n.Search.emptyInitial, accessibilityID: "searchView.emptyState")
 
                 case .loaded(let paginationState):
-                    let horizontalPadding: CGFloat = 20
-                    let columnSpacing: CGFloat = 20
+                    let horizontalPadding: CGFloat = columns == 1 ? 0 : 20
+                    let columnSpacing: CGFloat = columns == 1 ? 0 : 20
                     let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
                     let gridColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
 

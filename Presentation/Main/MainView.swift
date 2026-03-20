@@ -10,11 +10,11 @@ import SwiftUI
 struct MainView: View {
 
     @State var viewModel: MainViewModel
-    @Environment(\.horizontalSizeClass) private var sizeClass
+    private var isIPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
 
     var body: some View {
         Group {
-            if sizeClass == .regular {
+            if isIPad {
                 iPadLayout
             } else {
                 iPhoneLayout
