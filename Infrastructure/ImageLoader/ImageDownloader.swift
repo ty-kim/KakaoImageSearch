@@ -64,13 +64,25 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         try await download(from: url, priority: .userInitiated)
     }
 
+    /// Info.plist의 ATS 예외 도메인 목록을 런타임에 읽어 HTTP 허용 호스트로 사용합니다.
+    /// Info.plist가 단일 소스가 되므로, ATS 예외 변경 시 코드 수정이 불필요합니다.
+    nonisolated private static let httpExemptHosts: [String] = {
+        guard let ats = Bundle.main.object(forInfoDictionaryKey: "NSAppTransportSecurity") as? [String: Any],
+              let domains = ats["NSExceptionDomains"] as? [String: Any] else {
+            return []
+        }
+        return domains.keys.filter { domain in
+            guard let config = domains[domain] as? [String: Any] else { return false }
+            return config["NSExceptionAllowsInsecureHTTPLoads"] as? Bool == true
+        }
+    }()
+
     func download(from url: URL, priority: TaskPriority = .userInitiated) async throws -> UIImage {
-        // http → https 변환 (daum.net / naver.net 은 ATS 예외로 처리하므로 제외)
+        // http → https 변환 (ATS 예외 도메인은 HTTP 그대로 유지)
         let secureURL: URL
-        let httpExemptHosts = ["daum.net", "naver.net"]
         if url.scheme == "http",
            let host = url.host,
-           !httpExemptHosts.contains(where: { host == $0 || host.hasSuffix(".\($0)") }),
+           !Self.httpExemptHosts.contains(where: { host == $0 || host.hasSuffix(".\($0)") }),
            var components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
             components.scheme = "https"
             secureURL = components.url ?? url
