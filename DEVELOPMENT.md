@@ -40,8 +40,8 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 113개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel 중심 검증 (`Unit/`)
-- **통합 테스트**: Swift Testing Framework, 43개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
+- **유닛 테스트**: Swift Testing Framework, 124개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO 보안 검증 중심 (`Unit/`)
+- **통합 테스트**: Swift Testing Framework, 44개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
 - **UI 테스트**: XCUITest, 25개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성
 - **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
@@ -67,7 +67,26 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
 페이지네이션, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 과제에서도 비슷한 관점으로 정리했습니다.
 
-### 7. RxSwift 대신 Swift Concurrency
+#### 이미지 상세 뷰어
+
+이미지 탭 시 `fullScreenCover`로 전체 화면 뷰어를 표시합니다.
+`MagnifyGesture` 핀치 확대/축소(1x~5x), 더블탭 줌 토글, 확대 시 드래그 패닝을 지원하며, 기존 `ImageDownloader` 캐시를 활용해 이미 다운로드된 이미지는 즉시 표시됩니다.
+
+### 7. 보안 경계면 방어
+
+외부 API 응답을 그대로 신뢰하지 않고, 이미지 URL과 응답 데이터에 대해 다층 검증을 적용했습니다.
+
+| 방어 지점 | 구현 | 이유 |
+|---|---|---|
+| URL 스킴 검증 | `http`/`https`만 허용, `javascript:`/`file:` 등 차단 | XSS·로컬 파일 접근 방지 |
+| SSRF 방어 | `localhost`, `127.0.0.0/8`, `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16` 차단 | API 응답 변조 시 내부 네트워크 프로빙 차단 |
+| Content-Type 검증 | `image/*` MIME 타입만 허용 | 비이미지 파일(HTML, 실행 파일 등) 로드 방지 |
+| Content-Length 제한 | 헤더 사전 검사 + 스트리밍 바이트 단위 누적 검사 (20MB) | 비정상 파일에 의한 메모리 과다 사용 방지 |
+| HTTP → HTTPS 자동 승격 | ATS 예외 도메인 외 HTTP URL을 HTTPS로 변환 | 평문 전송 최소화 |
+
+스킴 검증과 SSRF 방어는 `toImageItem()` 변환 시점에 적용해, 검증을 통과하지 못한 URL은 `ImageItem`으로 변환되지 않습니다. 이미지 다운로드 단계의 검증은 `ImageDownloader` actor 내부에서 수행합니다.
+
+### 8. RxSwift 대신 Swift Concurrency
 
 이번 과제에서는 외부 의존성을 두지 않는 조건에 맞춰, Swift Concurrency로 반응형 흐름을 구성했습니다.
 
@@ -77,11 +96,6 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 | `BehaviorRelay` / `Driver` | `@Observable` + `@MainActor` |
 | `DisposeBag` | `Task` 명시적 취소 (`searchTask?.cancel()`) |
 | `flatMapLatest` | `searchTask` 재생성 + `activeSearchID` stale 결과 무시로 이전 요청 취소 |
-
-#### 이미지 상세 뷰어
-
- 이미지 탭 시 `fullScreenCover`로 전체 화면 뷰어를 표시합니다.
- `MagnifyGesture` 핀치 확대/축소(1x~5x), 더블탭 줌 토글, 확대 시 드래그 패닝을 지원하며, 기존 `ImageDownloader` 캐시를 활용해 이미 다운로드된 이미지는 즉시 표시됩니다.
 
 #### 네트워크 상태 감지
 
@@ -104,6 +118,8 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 `SearchViewModel.items`는 computed property 대신 stored property로 캐싱합니다.
 `BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuildItems()`를 한 번만 실행합니다.
 외부 객체 상태 변화에 반응하도록 구성했습니다.
+
+이 패턴은 `onChange`가 1회성이라 콜백 내에서 재등록을 반복해야 합니다. Combine의 `sink`처럼 한 번 구독으로 지속 관찰하는 방식보다 직관적이지 않지만, WWDC23에서 소개된 `@Observable`의 공식 패턴이며 외부 의존성 없이 ViewModel 간 상태 동기화를 구현할 수 있어 이 방식을 택했습니다.
 
 특히 동시성 관련 제약을 컴파일 단계에서 확인할 수 있다는 점이 이번 구현에서는 장점이라고 판단했습니다.
 
