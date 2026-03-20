@@ -6,76 +6,53 @@
 //
 
 import Foundation
+import SwiftData
 import OSLog
 
-/// FileManager + JSON 파일 기반 북마크 영속성 저장소.
-/// actor로 선언해 Swift 6 동시성 안전성을 보장합니다.
-/// 저장 경로: <Application Support>/bookmarks.json
+/// SwiftData 기반 북마크 영속성 저장소.
+/// @ModelActor로 선언해 Swift 6 동시성 안전성을 보장합니다.
+@ModelActor
 actor BookmarkStorage {
 
-    private let fileURL: URL
-    private let encoder = JSONEncoder()
-    private let decoder = JSONDecoder()
-
-    init() {
-        let appSupport = FileManager.default
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        let directory = appSupport.appendingPathComponent("KakaoImageSearch", isDirectory: true)
-        do {
-            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-        } catch {
-            Logger.bookmark.errorPrint("Failed to create bookmark directory: \(error)")
-        }
-        self.fileURL = directory.appendingPathComponent("bookmarks.json")
-    }
-
-    /// 테스트용: 임의의 파일 경로를 지정할 수 있는 이니셜라이저
-    init(fileURL: URL) {
-        self.fileURL = fileURL
-    }
-
     func save(_ item: ImageItem) throws {
-        var items = try fetchAll()
-        guard !items.contains(where: { $0.id == item.id }) else {
+        let id = item.id
+        let descriptor = FetchDescriptor<BookmarkEntity>(
+            predicate: #Predicate { $0.id == id }
+        )
+        guard try modelContext.fetchCount(descriptor) == 0 else {
             Logger.bookmark.debugPrint("Already bookmarked: \(item.id)")
             return
         }
-        items.append(item)
-        try persist(items)
-        Logger.bookmark.debugPrint("Saved bookmark: \(item.id) (total: \(items.count))")
+        modelContext.insert(BookmarkEntity(from: item))
+        try modelContext.save()
+        Logger.bookmark.debugPrint("Saved bookmark: \(item.id)")
     }
 
     func delete(id: String) throws {
-        var items = try fetchAll()
-        items.removeAll { $0.id == id }
-        try persist(items)
-        Logger.bookmark.debugPrint("Deleted bookmark: \(id) (total: \(items.count))")
+        let descriptor = FetchDescriptor<BookmarkEntity>(
+            predicate: #Predicate { $0.id == id }
+        )
+        let entities = try modelContext.fetch(descriptor)
+        for entity in entities {
+            modelContext.delete(entity)
+        }
+        try modelContext.save()
+        Logger.bookmark.debugPrint("Deleted bookmark: \(id)")
     }
 
     func fetchAll() throws -> [ImageItem] {
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            Logger.bookmark.debugPrint("Bookmark file not found — first launch or cleared")
-            return []
-        }
-        let data = try Data(contentsOf: fileURL)
-        let items = try decoder.decode([ImageItem].self, from: data)
-        Logger.bookmark.debugPrint("Fetched \(items.count) bookmarks")
-        return items
+        let descriptor = FetchDescriptor<BookmarkEntity>(
+            sortBy: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+        let entities = try modelContext.fetch(descriptor)
+        Logger.bookmark.debugPrint("Fetched \(entities.count) bookmarks")
+        return entities.map { $0.toImageItem() }
     }
 
     func isBookmarked(id: String) throws -> Bool {
-        try fetchAll().contains { $0.id == id }
-    }
-
-    private func ensureDirectory() throws {
-        let directory = fileURL.deletingLastPathComponent()
-        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
-    }
-
-    private func persist(_ items: [ImageItem]) throws {
-        try ensureDirectory()
-        encoder.outputFormatting = .prettyPrinted
-        let data = try encoder.encode(items)
-        try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
+        let descriptor = FetchDescriptor<BookmarkEntity>(
+            predicate: #Predicate { $0.id == id }
+        )
+        return try modelContext.fetchCount(descriptor) > 0
     }
 }

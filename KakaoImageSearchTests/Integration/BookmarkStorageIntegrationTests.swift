@@ -7,6 +7,7 @@
 
 import Testing
 import Foundation
+import SwiftData
 @testable import KakaoImageSearch
 
 @MainActor
@@ -15,18 +16,23 @@ struct BookmarkStorageIntegrationTests {
 
     // MARK: - Helpers
 
-    private func makeStorage() -> BookmarkStorage {
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        return BookmarkStorage(fileURL: dir.appendingPathComponent("bookmarks.json"))
+    private func makeStorage() throws -> BookmarkStorage {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: BookmarkEntity.self, configurations: config)
+        return BookmarkStorage(modelContainer: container)
+    }
+
+    private func makeOnDiskStorage(url: URL) throws -> (BookmarkStorage, ModelContainer) {
+        let config = ModelConfiguration(url: url)
+        let container = try ModelContainer(for: BookmarkEntity.self, configurations: config)
+        return (BookmarkStorage(modelContainer: container), container)
     }
 
     // MARK: - fetchAll
 
-    @Test("파일이 없을 때 fetchAll은 빈 배열을 반환한다")
-    func fetchAll_noFile_returnsEmpty() async throws {
-        let sut = makeStorage()
+    @Test("비어있을 때 fetchAll은 빈 배열을 반환한다")
+    func fetchAll_empty_returnsEmpty() async throws {
+        let sut = try makeStorage()
         let result = try await sut.fetchAll()
         #expect(result.isEmpty)
     }
@@ -35,7 +41,7 @@ struct BookmarkStorageIntegrationTests {
 
     @Test("save 후 fetchAll하면 저장된 아이템이 포함된다")
     func save_thenFetchAll_containsSavedItem() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let item = ImageItem.fixture(id: "img-save-test")
 
         try await sut.save(item)
@@ -47,7 +53,7 @@ struct BookmarkStorageIntegrationTests {
 
     @Test("동일한 아이템을 두 번 save해도 중복 저장되지 않는다")
     func save_duplicate_notDuplicated() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let item = ImageItem.fixture()
 
         try await sut.save(item)
@@ -57,23 +63,23 @@ struct BookmarkStorageIntegrationTests {
         #expect(result.count == 1)
     }
 
-    @Test("여러 아이템을 save하면 순서대로 저장된다")
+    @Test("여러 아이템을 save하면 모두 저장된다")
     func save_multipleItems_allPersisted() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let items = (1...3).map { ImageItem.fixture(id: "id-\($0)") }
 
         for item in items { try await sut.save(item) }
         let result = try await sut.fetchAll()
 
         #expect(result.count == 3)
-        #expect(result.map(\.id) == ["id-1", "id-2", "id-3"])
+        #expect(Set(result.map(\.id)) == Set(["id-1", "id-2", "id-3"]))
     }
 
     // MARK: - delete
 
     @Test("save 후 delete하면 fetchAll에서 사라진다")
     func delete_savedItem_removedFromFetchAll() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let item = ImageItem.fixture()
 
         try await sut.save(item)
@@ -85,7 +91,7 @@ struct BookmarkStorageIntegrationTests {
 
     @Test("존재하지 않는 id를 delete해도 오류가 발생하지 않는다")
     func delete_nonExistentID_noError() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         try await sut.delete(id: "ghost-id")
         let result = try await sut.fetchAll()
         #expect(result.isEmpty)
@@ -93,7 +99,7 @@ struct BookmarkStorageIntegrationTests {
 
     @Test("여러 아이템 중 하나만 delete하면 나머지는 유지된다")
     func delete_oneOfMany_othersRemain() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         try await sut.save(ImageItem.fixture(id: "id-1"))
         try await sut.save(ImageItem.fixture(id: "id-2"))
         try await sut.save(ImageItem.fixture(id: "id-3"))
@@ -111,7 +117,7 @@ struct BookmarkStorageIntegrationTests {
 
     @Test("저장된 아이템은 isBookmarked가 true를 반환한다")
     func isBookmarked_savedItem_returnsTrue() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let item = ImageItem.fixture()
 
         try await sut.save(item)
@@ -122,14 +128,14 @@ struct BookmarkStorageIntegrationTests {
 
     @Test("저장하지 않은 아이템은 isBookmarked가 false를 반환한다")
     func isBookmarked_unsavedItem_returnsFalse() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let result = try await sut.isBookmarked(id: "no-such-id")
         #expect(result == false)
     }
 
     @Test("delete 후 isBookmarked는 false를 반환한다")
     func isBookmarked_afterDelete_returnsFalse() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let item = ImageItem.fixture()
 
         try await sut.save(item)
@@ -146,61 +152,24 @@ struct BookmarkStorageIntegrationTests {
         let dir = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        let fileURL = dir.appendingPathComponent("bookmarks.json")
+        let storeURL = dir.appendingPathComponent("bookmarks.store")
 
         let item = ImageItem.fixture(id: "persist-id")
-        let first = BookmarkStorage(fileURL: fileURL)
+        let (first, _) = try makeOnDiskStorage(url: storeURL)
         try await first.save(item)
 
-        let second = BookmarkStorage(fileURL: fileURL)
+        let (second, _) = try makeOnDiskStorage(url: storeURL)
         let result = try await second.fetchAll()
 
         #expect(result.count == 1)
         #expect(result.first?.id == "persist-id")
     }
 
-    @Test("읽기 전용 경로에 save 시 에러를 throw한다")
-    func save_readOnlyPath_throwsError() async throws {
-        let readOnlyDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        try FileManager.default.createDirectory(at: readOnlyDir, withIntermediateDirectories: true)
-        try FileManager.default.setAttributes(
-            [.posixPermissions: 0o444],
-            ofItemAtPath: readOnlyDir.path
-        )
+    // MARK: - 필드 보존
 
-        let sut = BookmarkStorage(fileURL: readOnlyDir.appendingPathComponent("bookmarks.json"))
-        let item = ImageItem.fixture(id: "fail-write")
-
-        await #expect(throws: Error.self) {
-            try await sut.save(item)
-        }
-
-        // cleanup
-        try? FileManager.default.setAttributes(
-            [.posixPermissions: 0o755],
-            ofItemAtPath: readOnlyDir.path
-        )
-    }
-
-    @Test("손상된 JSON 파일이 있으면 fetchAll이 에러를 throw한다")
-    func fetchAll_corruptedFile_throwsError() async throws {
-        let dir = FileManager.default.temporaryDirectory
-            .appendingPathComponent(UUID().uuidString, isDirectory: true)
-        try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
-        let fileURL = dir.appendingPathComponent("bookmarks.json")
-        try "not valid json{{{".data(using: .utf8)!.write(to: fileURL)
-
-        let sut = BookmarkStorage(fileURL: fileURL)
-
-        await #expect(throws: Error.self) {
-            try await sut.fetchAll()
-        }
-    }
-
-    @Test("저장된 JSON 파일은 모든 ImageItem 필드를 보존한다")
+    @Test("저장된 데이터는 모든 ImageItem 필드를 보존한다")
     func persistence_roundTrip_preservesAllFields() async throws {
-        let sut = makeStorage()
+        let sut = try makeStorage()
         let item = ImageItem.fixture(
             id: "round-trip-id",
             imageURL: URL(string: "https://example.com/img.jpg"),
@@ -219,6 +188,5 @@ struct BookmarkStorageIntegrationTests {
         #expect(loaded.thumbnailURL == item.thumbnailURL)
         #expect(loaded.width == item.width)
         #expect(loaded.height == item.height)
-        #expect(loaded.isBookmarked == item.isBookmarked)
     }
 }

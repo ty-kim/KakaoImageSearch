@@ -17,6 +17,7 @@ debounce 검색, 페이지네이션, 북마크 영속화, 이미지 캐싱, iPad
 |------|------|
 | **언어** | Swift 6.0 (Strict Concurrency) |
 | **UI** | SwiftUI |
+| **영속성** | SwiftData |
 | **최소 타겟** | iOS 17.0 |
 | **외부 라이브러리** | 없음 (Zero dependency) |
 | **테스트** | Swift Testing Framework |
@@ -55,7 +56,8 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 
 ### Swift 6 Strict Concurrency
 - `SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor` 설정으로 전체 타입 기본 격리
-- `actor`: NetworkService, BookmarkStorage, ImageDownloader, ImageCache
+- `actor`: NetworkService, ImageDownloader, ImageCache
+- `@ModelActor`: BookmarkStorage (SwiftData)
 - `@Observable @MainActor final class`: 모든 ViewModel
 - `nonisolated`: actor 격리가 필요하지 않은 APIEndpoint, OSLog Logger, DTO 초기화, L10n 등에 명시적으로 적용
 
@@ -66,7 +68,7 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 | **ImageDownloader** | 메모리(NSCache) + 디스크 2단계 캐시(`.completeFileProtection`), in-flight 중복 요청 dedup(호출자 취소 내성), Content-Type·크기 검증(Content-Length 사전 검사 + 스트리밍 중 조기 중단), prefetch 병렬도 제한(최대 6), URLSession 주입 가능 |
 | **CachedAsyncImage** | `.task(id:)` 기반 이미지 로더 — 상태 전이 로직을 ViewModel로 분리해 테스트 가능하게 구성, 뷰 수명과 Task 수명 일치, URL 변경 시 이전 상태를 정리하고 새 이미지를 로드, 로드 실패 시 셀 탭으로 재시도(최대 3회, 초과 시 영구 실패 표시), 재시도 불가 에러(포맷·크기)는 즉시 영구 실패 처리 |
 | **AppAssembler** | Composition Root 패턴, 주요 의존성은 AppAssembler에서 조립하도록 구성했습니다. |
-| **BookmarkStorage** | FileManager + JSON 파일 기반 영속성, `.atomic` + `.completeFileProtection` 쓰기 |
+| **BookmarkStorage** | SwiftData `@ModelActor` 기반 영속성, in-memory 테스트 가능, `@Attribute(.unique)` 중복 방지 |
 
 ### 검색 Debounce 및 취소 처리
 - `Task.sleep(for: .seconds(1.0))` + `Task.cancel()` 조합으로 1.0초 debounce 구현
@@ -96,7 +98,7 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 - `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
 - `SearchViewModel` / `BookmarkViewModel`이 동일 인스턴스를 참조해 양쪽 탭에서 같은 북마크 상태를 공유
 - 비즈니스 로직은 `ManageBookmarkUseCase`에 위임하고, UseCase 결과를 UI 상태(배열)로 변환하는 역할만 담당
-- `ManageBookmarkUseCase` → `BookmarkRepository`(Protocol, Domain) → `DefaultBookmarkRepository` → `BookmarkStorage`(actor) 순서로 데이터가 흐름
+- `ManageBookmarkUseCase` → `BookmarkRepository`(Protocol, Domain) → `DefaultBookmarkRepository` → `BookmarkStorage`(`@ModelActor`, SwiftData) 순서로 데이터가 흐름
 
 ---
 
@@ -125,12 +127,12 @@ Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 45개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 43개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
 | `NetworkServiceIntegrationTests` | 9 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑, 타임아웃 |
-| `BookmarkStorageIntegrationTests` | 14 | 실제 FileManager 파일 I/O, 저장/조회/삭제, 읽기전용 경로 에러, 손상 JSON 에러, 앱 재시작 영속성 |
+| `BookmarkStorageIntegrationTests` | 12 | SwiftData in-memory 기반 저장/조회/삭제, 중복 방지, 앱 재시작 영속성, 필드 보존 라운드트립 |
 | `ImageDownloaderIntegrationTests` | 16 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup(호출자 취소 내성), prefetch 병렬도 제한·부분 실패, Content-Type 검증, Content-Length 사전 검사·스트리밍 크기 제한, http→https 변환 |
 | `ImageCacheIntegrationTests` | 6 | 손상 파일 자동 삭제 후 nil 반환, 재캐싱 복구, TTL 초과 파일 삭제, TTL 유효 파일 유지, 디스크 용량 초과 시 LRU 삭제, 용량 이하 시 유지 |
 
@@ -179,7 +181,7 @@ KakaoImageSearch/
 │   ├── DTO/                    # KakaoSearchResponseDTO
 │   ├── Logger/                 # DataLogger (OSLog Bookmark 카테고리)
 │   ├── Repository/             # DefaultImageSearchRepository, DefaultBookmarkRepository
-│   └── Storage/                # BookmarkStorage
+│   └── Storage/                # BookmarkEntity, BookmarkStorage (SwiftData)
 ├── Infrastructure/
 │   ├── ImageLoader/            # ImageDownloader, ImageCache
 │   ├── Logger/                 # AppLogger (OSLog Network·ImageLoader 카테고리)

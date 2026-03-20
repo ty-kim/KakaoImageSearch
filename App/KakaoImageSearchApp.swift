@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 #if DEBUG
 // MARK: - UI 테스트용 Stub
@@ -54,17 +55,24 @@ struct KakaoImageSearchApp: App {
 @MainActor
 enum AppAssembler {
 
+    private static let modelContainer: ModelContainer = {
+        do {
+            return try ModelContainer(for: BookmarkEntity.self)
+        } catch {
+            fatalError("Failed to create ModelContainer: \(error)")
+        }
+    }()
+
     static func makeMainViewModel() -> MainViewModel {
         #if DEBUG
         if CommandLine.arguments.contains("--resetBookmarks") {
-            let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-            let url = appSupport.appendingPathComponent("KakaoImageSearch/bookmarks.json")
-            try? FileManager.default.removeItem(at: url)
+            try? modelContainer.mainContext.delete(model: BookmarkEntity.self)
+            try? modelContainer.mainContext.save()
         }
         #endif
 
         let networkService = NetworkService()
-        let bookmarkStorage = BookmarkStorage()
+        let bookmarkStorage = BookmarkStorage(modelContainer: modelContainer)
 
         let imageSearchRepo: any ImageSearchRepository
         #if DEBUG
