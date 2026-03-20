@@ -38,6 +38,8 @@ struct ImageDetailView: View {
                     .offset(offset)
                     .gesture(magnifyGesture)
                     .gesture(dragGesture)
+                    // 더블탭: 확대↔원본 토글.
+                    // 축소 시 offset도 리셋 — 확대 상태에서 패닝한 위치가 원본에서는 무의미.
                     .onTapGesture(count: 2) {
                         withAnimation(.easeInOut(duration: 0.3)) {
                             if scale > minScale {
@@ -99,6 +101,8 @@ struct ImageDetailView: View {
                 scale = min(max(newScale, minScale), maxScale)
             }
             .onEnded { _ in
+                // onChanged에서 클램핑하지만, 제스처 관성으로 범위 밖 값이 남을 수 있어 재클램핑.
+                // 1배 이하로 복귀하면 패닝 위치도 리셋하여 이미지를 중앙에 정렬.
                 withAnimation(.easeOut(duration: 0.2)) {
                     scale = min(max(scale, minScale), maxScale)
                     if scale <= minScale {
@@ -110,6 +114,7 @@ struct ImageDetailView: View {
             }
     }
 
+    // 원본 크기(1배)에서는 드래그 무시 — 이미지가 화면 밖으로 벗어나는 것을 방지.
     private var dragGesture: some Gesture {
         DragGesture()
             .onChanged { value in
