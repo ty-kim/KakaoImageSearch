@@ -72,7 +72,7 @@ actor ImageCache {
         let diskURL = diskCacheURL.appendingPathComponent(key)
         if let data = try? Data(contentsOf: diskURL) {
             if let image = UIImage(data: data) {
-                memoryCache.setObject(image, forKey: key as NSString)
+                memoryCache.setObject(image, forKey: key as NSString, cost: estimatedCost(of: image))
                 return image
             } else {
                 // 데이터는 읽혔지만 이미지 디코딩 실패 → 손상된 파일 삭제해 반복 미스 방지
@@ -90,7 +90,7 @@ actor ImageCache {
 
     func set(_ image: UIImage, for url: URL) {
         let key = cacheKey(for: url)
-        memoryCache.setObject(image, forKey: key as NSString)
+        memoryCache.setObject(image, forKey: key as NSString, cost: estimatedCost(of: image))
 
         let diskURL = diskCacheURL.appendingPathComponent(key)
         if let data = image.jpegData(compressionQuality: 0.8) {
@@ -150,6 +150,11 @@ actor ImageCache {
         if removedCount > 0 {
             Logger.imageLoader.debugPrint("Disk cache cleanup: \(removedCount) files removed, \(totalSize) bytes remaining")
         }
+    }
+
+    /// 비트맵 기준 메모리 바이트 수를 추정합니다. NSCache의 totalCostLimit 적용에 사용됩니다.
+    private nonisolated func estimatedCost(of image: UIImage) -> Int {
+        Int(image.size.width * image.size.height * image.scale * image.scale * 4)
     }
 
     private func cacheKey(for url: URL) -> String {
