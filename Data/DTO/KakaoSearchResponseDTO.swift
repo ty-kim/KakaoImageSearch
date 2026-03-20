@@ -69,6 +69,11 @@ struct KakaoSearchResponseDTO: Sendable {
     }
 }
 
+struct KakaoErrorResponseDTO: Decodable, Sendable {
+    let errorType: String
+    let message: String
+}
+
 extension KakaoSearchResponseDTO: Decodable {}
 extension KakaoSearchResponseDTO.Meta: Decodable {}
 extension KakaoSearchResponseDTO.Document: Decodable {}

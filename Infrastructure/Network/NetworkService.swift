@@ -49,8 +49,13 @@ actor NetworkService: NetworkServiceProtocol {
         Logger.network.debugPrint("← \(httpResponse.statusCode) (\(data.count) bytes)")
 
         guard (200..<300).contains(httpResponse.statusCode) else {
+            let body = String(data: data, encoding: .utf8)
+            #if DEBUG
+            Logger.network.errorPrint("HTTP \(httpResponse.statusCode) body: \(body ?? "empty")")
+            #else
             Logger.network.errorPrint("HTTP \(httpResponse.statusCode)")
-            throw NetworkError.httpError(statusCode: httpResponse.statusCode)
+            #endif
+            throw NetworkError.httpError(statusCode: httpResponse.statusCode, responseBody: body)
         }
 
         do {

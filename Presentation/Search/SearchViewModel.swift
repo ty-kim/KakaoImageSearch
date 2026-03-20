@@ -157,7 +157,7 @@ final class SearchViewModel {
 
             rawItems = []
             items = []
-            searchState = .error(message: L10n.Search.error(error.localizedDescription))
+            searchState = .error(message: L10n.Search.error(serverMessage(from: error)))
 
             Logger.presentation.errorPrint("Search failed: \(error)")
         }
@@ -266,6 +266,15 @@ final class SearchViewModel {
             guard !Task.isCancelled else { return }
             toastMessage = nil
         }
+    }
+
+    private func serverMessage(from error: Error) -> String {
+        if case NetworkError.httpError(_, let body) = error,
+           let data = body?.data(using: .utf8),
+           let dto = try? JSONDecoder().decode(KakaoErrorResponseDTO.self, from: data) {
+            return dto.message
+        }
+        return error.localizedDescription
     }
 
     func cancelSearchAndClear() {

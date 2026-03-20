@@ -10,7 +10,7 @@ import Foundation
 enum NetworkError: Error, LocalizedError {
     case invalidURL
     case invalidResponse
-    case httpError(statusCode: Int)
+    case httpError(statusCode: Int, responseBody: String?)
     case decodingError(Error)
     case unknown(Error)
 
@@ -20,7 +20,7 @@ enum NetworkError: Error, LocalizedError {
             return String(localized: "network.error.invalid_url")
         case .invalidResponse:
             return String(localized: "network.error.invalid_response")
-        case .httpError(let code):
+        case .httpError(let code, _):
             return String(localized: "network.error.http_error \(code)")
         case .decodingError(let error):
             return String(localized: "network.error.decoding_error \(error.localizedDescription)")

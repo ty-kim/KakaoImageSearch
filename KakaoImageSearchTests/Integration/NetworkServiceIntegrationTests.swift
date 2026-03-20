@@ -123,6 +123,30 @@ struct NetworkServiceIntegrationTests {
         }
     }
 
+    @Test("HTTP 오류 응답에 responseBody가 포함된다")
+    func request_httpError_containsResponseBody() async throws {
+        let sut = makeService()
+        defer { MockURLProtocol.requestHandler = nil }
+        let errorJSON = #"{"errorType":"InvalidArgument","message":"page is more than max"}"#
+        MockURLProtocol.requestHandler = { req in
+            (HTTPURLResponse(url: req.url!, statusCode: 400, httpVersion: nil, headerFields: nil)!,
+             errorJSON.data(using: .utf8)!)
+        }
+
+        let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 99)
+        do {
+            let _: KakaoSearchResponseDTO = try await sut.request(endpoint)
+            Issue.record("Expected NetworkError.httpError to be thrown")
+        } catch let error as NetworkError {
+            guard case .httpError(let statusCode, let responseBody) = error else {
+                Issue.record("Expected httpError, got \(error)")
+                return
+            }
+            #expect(statusCode == 400)
+            #expect(responseBody == errorJSON)
+        }
+    }
+
     @Test("500 응답은 NetworkError를 던진다")
     func request_500_throwsNetworkError() async throws {
         let sut = makeService()

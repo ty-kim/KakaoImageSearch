@@ -84,6 +84,23 @@ struct SearchViewModelTests {
         if case .error = sut.searchState {} else { Issue.record("expected .error") }
     }
 
+    @Test("HTTP 에러 응답의 서버 메시지가 error 상태에 반영된다")
+    func search_httpError_showsServerMessage() async {
+        let serverMessage = "page is more than max"
+        let body = #"{"errorType":"InvalidArgument","message":"\#(serverMessage)"}"#
+        let (sut, _, _, _) = makeSUT(
+            searchError: NetworkError.httpError(statusCode: 400, responseBody: body)
+        )
+
+        await sut.submitSearch(query: "cat").value
+
+        guard case .error(let message) = sut.searchState else {
+            Issue.record("expected .error state")
+            return
+        }
+        #expect(message.contains(serverMessage))
+    }
+
     @Test("검색 성공 시 error 상태 해제")
     func search_success_clearsError() async {
         let (sut, searchRepo, _, _) = makeSUT(searchError: TestError.stub)

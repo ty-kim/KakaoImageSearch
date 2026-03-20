@@ -227,6 +227,21 @@ struct KakaoSearchResponseDTOTests {
         #expect(item != nil)
     }
 
+    // MARK: - KakaoErrorResponseDTO
+
+    @Test("에러 응답 JSON에서 errorType과 message를 디코딩한다")
+    func decodeErrorResponse_fullFields() throws {
+        let json = """
+        {"errorType":"InvalidArgument","message":"page is more than max"}
+        """.data(using: .utf8)!
+
+        let dto = try JSONDecoder().decode(KakaoErrorResponseDTO.self, from: json)
+        #expect(dto.errorType == "InvalidArgument")
+        #expect(dto.message == "page is more than max")
+    }
+
+    // MARK: - Document → ImageItem 변환 (스킴 검증)
+
     @Test("javascript: 스킴의 thumbnailUrl은 nil로 처리된다")
     func toImageItem_javascriptThumbnail_returnsNilThumbnail() throws {
         let json = """
