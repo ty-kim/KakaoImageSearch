@@ -19,7 +19,8 @@ struct SearchViewModelTests {
         searchItems: [ImageItem] = [],
         bookmarkedItems: [ImageItem] = [],
         searchError: Error? = nil,
-        imagePrefetcher: any ImagePrefetcher = MockImagePrefetcher()
+        imagePrefetcher: any ImagePrefetcher = MockImagePrefetcher(),
+        networkMonitor: MockNetworkMonitor = MockNetworkMonitor()
     ) -> (sut: SearchViewModel, searchRepo: MockImageSearchRepository, bookmarkRepo: MockBookmarkRepository, prefetcher: any ImagePrefetcher) {
         let searchRepo = MockImageSearchRepository()
         searchRepo.stubbedResult = searchItems
@@ -37,6 +38,7 @@ struct SearchViewModelTests {
             ),
             bookmarkStore: bookmarkStore,
             imagePrefetcher: imagePrefetcher,
+            networkMonitor: networkMonitor,
             toastDuration: .zero
         )
         return (sut, searchRepo, bookmarkRepo, imagePrefetcher)
@@ -419,6 +421,23 @@ struct SearchViewModelTests {
         sut.cancelSearchAndClear()
         _ = await blockingPrefetcher.cancelled.first(where: { @Sendable _ in true })
     }
+
+    @Test("오프라인 상태에서 검색 시 error 상태로 전환")
+    func search_offline_setsErrorState() async {
+        let offlineMonitor = MockNetworkMonitor()
+        offlineMonitor.isConnected = false
+        let (sut, _, _, _) = makeSUT(
+            searchItems: [ImageItem.fixture(id: "a")],
+            networkMonitor: offlineMonitor
+        )
+
+        await sut.submitSearch(query: "cat").value
+
+        guard case .error = sut.searchState else {
+            Issue.record("Expected .error state but got \(sut.searchState)")
+            return
+        }
+    }
 }
 
 // MARK: - BookmarkViewModel
@@ -645,7 +664,8 @@ struct MainViewModelTests {
                 imageSearchRepository: searchRepo
             ),
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
-            imagePrefetcher: MockImagePrefetcher()
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
         )
     }
 
@@ -687,7 +707,8 @@ struct MainViewModelTests {
                 imageSearchRepository: searchRepo
             ),
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
-            imagePrefetcher: MockImagePrefetcher()
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
         )
 
         sut.onSearchTextChanged("a")

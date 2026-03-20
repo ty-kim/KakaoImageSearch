@@ -29,3 +29,8 @@ extension APIEndpoint {
 protocol NetworkServiceProtocol: Sendable {
     func request<T: Decodable & Sendable>(_ endpoint: some APIEndpoint) async throws -> T
 }
+
+/// 네트워크 연결 상태 감지 추상화.
+protocol NetworkMonitoring: Sendable {
+    var isConnected: Bool { get }
+}

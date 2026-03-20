@@ -32,6 +32,9 @@ nonisolated enum L10n {
         static var apiLimitReached: String {
             String(localized: "search.api_limit_reached")
         }
+        static var offline: String {
+            String(localized: "search.error.offline")
+        }
     }
 
     enum Tab {

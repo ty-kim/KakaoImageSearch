@@ -254,6 +254,29 @@
         }
       }
     },
+    "search.error.offline" : {
+      "comment" : "Error message when device is offline",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No internet connection. Please check your network and try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インターネットに接続されていません。ネットワークを確認して再試行してください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "인터넷에 연결되어 있지 않습니다. 네트워크를 확인하고 다시 시도해주세요."
+          }
+        }
+      }
+    },
     "search.error.generic %@" : {
       "comment" : "Generic search error with description",
       "localizations" : {

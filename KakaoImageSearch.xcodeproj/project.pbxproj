@@ -53,6 +53,7 @@
 		FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */; };
 		FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203312F7C000400A90DC0 /* ImageDetailView.swift */; };
 		FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */; };
+		FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +124,7 @@
 		FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonItemView.swift; sourceTree = "<group>"; };
 		FC3203312F7C000400A90DC0 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEntity.swift; sourceTree = "<group>"; };
+		FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -234,6 +236,7 @@
 			children = (
 				FC75FCFA2F6A9C4E00A90DC0 /* APIEndpoint.swift */,
 				FC75FCFB2F6A9C4E00A90DC0 /* NetworkError.swift */,
+				FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */,
 				FC75FCFC2F6A9C4E00A90DC0 /* NetworkService.swift */,
 			);
 			path = Network;
@@ -608,6 +611,7 @@
 				FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */,
 				FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */,
 				FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */,
+				FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

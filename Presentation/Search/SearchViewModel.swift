@@ -50,16 +50,19 @@ final class SearchViewModel {
     private let searchImageUseCase: SearchImageUseCase
     private let bookmarkStore: BookmarkStore
     private let imagePrefetcher: any ImagePrefetcher
+    private let networkMonitor: any NetworkMonitoring
 
     init(
         searchImageUseCase: SearchImageUseCase,
         bookmarkStore: BookmarkStore,
         imagePrefetcher: any ImagePrefetcher,
+        networkMonitor: any NetworkMonitoring,
         toastDuration: Duration = .seconds(3)
     ) {
         self.searchImageUseCase = searchImageUseCase
         self.bookmarkStore = bookmarkStore
         self.imagePrefetcher = imagePrefetcher
+        self.networkMonitor = networkMonitor
         self.toastDuration = toastDuration
         observeBookmarkStore()
     }
@@ -117,6 +120,12 @@ final class SearchViewModel {
     }
 
     private func performSearch(query: String, searchID: UUID) async {
+        guard networkMonitor.isConnected else {
+            searchState = .error(message: L10n.Search.offline)
+            Logger.presentation.debugPrint("Search skipped (offline): \"\(query)\"")
+            return
+        }
+
         Logger.presentation.debugPrint("Search started: \"\(query)\"")
 
         defer {

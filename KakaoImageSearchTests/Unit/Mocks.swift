@@ -130,6 +130,12 @@ final class MockImageDownloader: ImageDownloading, @unchecked Sendable {
     }
 }
 
+// MARK: - MockNetworkMonitor
+
+final class MockNetworkMonitor: NetworkMonitoring, @unchecked Sendable {
+    var isConnected: Bool = true
+}
+
 // MARK: - TestError
 
 enum TestError: Error {

@@ -29,7 +29,8 @@ final class MainViewModel {
     init(
         searchImageUseCase: SearchImageUseCase,
         manageBookmarkUseCase: ManageBookmarkUseCase,
-        imagePrefetcher: any ImagePrefetcher
+        imagePrefetcher: any ImagePrefetcher,
+        networkMonitor: any NetworkMonitoring
     ) {
         let bookmarkStore = BookmarkStore(manageBookmarkUseCase: manageBookmarkUseCase)
 
@@ -37,7 +38,8 @@ final class MainViewModel {
         self.searchViewModel = SearchViewModel(
             searchImageUseCase: searchImageUseCase,
             bookmarkStore: bookmarkStore,
-            imagePrefetcher: imagePrefetcher
+            imagePrefetcher: imagePrefetcher,
+            networkMonitor: networkMonitor
         )
         self.bookmarkViewModel = BookmarkViewModel(
             bookmarkStore: bookmarkStore
