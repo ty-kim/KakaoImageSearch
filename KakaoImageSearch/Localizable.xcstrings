@@ -277,6 +277,29 @@
         }
       }
     },
+    "search.error.image_load_failed" : {
+      "comment" : "Error message when image failed to load in detail viewer",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Failed to load image."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を読み込めませんでした。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지를 불러올 수 없습니다."
+          }
+        }
+      }
+    },
     "search.error.generic %@" : {
       "comment" : "Generic search error with description",
       "localizations" : {

@@ -16,6 +16,7 @@ struct ImageDetailView: View {
     @Environment(\.imageDownloader) private var downloader
 
     @State private var image: UIImage?
+    @State private var loadFailed = false
     @State private var scale: CGFloat = 1
     @State private var lastScale: CGFloat = 1
     @State private var offset: CGSize = .zero
@@ -50,6 +51,15 @@ struct ImageDetailView: View {
                             }
                         }
                     }
+            } else if loadFailed {
+                VStack(spacing: 12) {
+                    Image(systemName: "exclamationmark.triangle")
+                        .font(.largeTitle)
+                        .foregroundStyle(.white.opacity(0.6))
+                    Text(L10n.Search.imageLoadFailed)
+                        .font(.callout)
+                        .foregroundStyle(.white.opacity(0.6))
+                }
             } else {
                 ProgressView()
                     .tint(.white)
@@ -67,8 +77,15 @@ struct ImageDetailView: View {
             .padding(16)
         }
         .task {
-            guard let url else { return }
-            image = try? await downloader.download(from: url)
+            guard let url else {
+                loadFailed = true
+                return
+            }
+            do {
+                image = try await downloader.download(from: url)
+            } catch {
+                loadFailed = true
+            }
         }
         .statusBarHidden()
     }

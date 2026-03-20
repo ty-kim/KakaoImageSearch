@@ -35,6 +35,9 @@ nonisolated enum L10n {
         static var offline: String {
             String(localized: "search.error.offline")
         }
+        static var imageLoadFailed: String {
+            String(localized: "search.error.image_load_failed")
+        }
     }
 
     enum Tab {
