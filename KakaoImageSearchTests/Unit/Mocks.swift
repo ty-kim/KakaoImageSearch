@@ -134,6 +134,7 @@ final class MockImageDownloader: ImageDownloading, @unchecked Sendable {
 
 final class MockNetworkMonitor: NetworkMonitoring, @unchecked Sendable {
     var isConnected: Bool = true
+    var isExpensive: Bool = false
 }
 
 // MARK: - TestError

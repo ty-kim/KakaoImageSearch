@@ -243,6 +243,7 @@ final class SearchViewModel {
     }
 
     private func prefetch(_ items: [ImageItem]) {
+        guard !networkMonitor.isExpensive else { return }
         let urls = items.compactMap(\.displayURL)
         prefetchTask?.cancel()
         prefetchTask = Task(priority: .background) { [weak self] in

@@ -438,6 +438,23 @@ struct SearchViewModelTests {
             return
         }
     }
+
+    @Test("셀룰러 환경에서 prefetch가 실행되지 않는다")
+    func prefetch_onExpensiveNetwork_skipped() async {
+        let expensiveMonitor = MockNetworkMonitor()
+        expensiveMonitor.isExpensive = true
+        let prefetcher = MockImagePrefetcher()
+        let items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
+        let (sut, _, _, _) = makeSUT(
+            searchItems: items,
+            imagePrefetcher: prefetcher,
+            networkMonitor: expensiveMonitor
+        )
+
+        await sut.submitSearch(query: "cat").value
+
+        #expect(prefetcher.prefetchedURLs.isEmpty)
+    }
 }
 
 // MARK: - BookmarkViewModel

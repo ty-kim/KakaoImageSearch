@@ -33,4 +33,6 @@ protocol NetworkServiceProtocol: Sendable {
 /// 네트워크 연결 상태 감지 추상화.
 protocol NetworkMonitoring: Sendable {
     var isConnected: Bool { get }
+    /// 셀룰러 등 데이터 요금이 발생할 수 있는 네트워크인지 여부 (NWPath.isExpensive 기반)
+    var isExpensive: Bool { get }
 }

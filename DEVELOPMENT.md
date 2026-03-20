@@ -10,7 +10,7 @@
 - 비동기 상태 전이와 실패 복구의 명확성
 - 테스트 가능성과 문서 정합성
 
-반대로 검색 히스토리, 네트워크 상태에 따른 retry로직이나 prefetch 제어처럼 확장 가능한 기능은 이번 구현에서 제외했습니다.
+반대로 검색 히스토리처럼 확장 가능한 기능은 이번 구현에서 제외했습니다.
 
 ## 개발 방향
 
@@ -40,7 +40,7 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 112개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel 중심 검증 (`Unit/`)
+- **유닛 테스트**: Swift Testing Framework, 113개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel 중심 검증 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 43개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
 - **UI 테스트**: XCUITest, 25개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성
@@ -82,6 +82,11 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 
  이미지 탭 시 `fullScreenCover`로 전체 화면 뷰어를 표시합니다.
  `MagnifyGesture` 핀치 확대/축소(1x~5x), 더블탭 줌 토글, 확대 시 드래그 패닝을 지원하며, 기존 `ImageDownloader` 캐시를 활용해 이미 다운로드된 이미지는 즉시 표시됩니다.
+
+#### 네트워크 상태 감지
+
+`NWPathMonitor` 기반 `NetworkMonitor`로 연결 상태와 네트워크 비용(`isExpensive`)을 감지합니다.
+오프라인 상태에서 검색 시 요청 전에 사전 안내 메시지를 표시하고, 셀룰러 환경에서는 원본 이미지 prefetch를 억제해 데이터 사용을 줄입니다.
 
 #### API 설계 — 테스트 가능성을 고려한 반환 타입
 
@@ -145,5 +150,4 @@ AI는 초안 작성과 반복 작업에 활용했고, 아키텍처 선택과 품
 ## 아쉬운 점 / 추가하고 싶었던 것
 
 - **검색 히스토리**: 최근 검색어 저장 기능도 추가 후보로 생각했습니다. 현재 북마크 저장 구조와 유사한 방식으로 확장할 수 있다고 봤습니다.
-- **네트워크 상태 감지**: `NWPathMonitor` 기반 `NetworkMonitor`로 오프라인 상태를 감지해 검색 시 사전 안내합니다. 향후 오프라인→온라인 전환 시 자동 재시도나 셀룰러 환경에서 prefetch 억제 등의 확장을 고려할 수 있습니다.
 - **Certificate Pinning**: 현재 API 통신(`dapi.kakao.com`)은 HTTPS로 보호되지만, 인증서 검증을 시스템 기본 동작에 위임하고 있습니다. 프로덕션 환경에서는 MITM 방어를 위해 `URLSessionDelegate`에서 서버 공개키를 직접 검증하는 방식을 고려할 수 있습니다. 이미지 CDN(`daum.net`, `naver.net`)은 HTTP 통신이라 pinning 대상이 아니며, CDN이 HTTPS를 지원하게 되면 ATS 예외 제거와 함께 pinning을 고려할 수 있습니다.
