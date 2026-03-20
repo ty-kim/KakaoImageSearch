@@ -91,6 +91,13 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 - 북마크 로드 실패 시 EmptyStateView에 재시도 버튼 표시
 - 북마크 토글 실패 시 목록을 유지한 채 하단 Toast로 표시 (3초 후 자동 소멸, 슬라이드 인/아웃 애니메이션)
 
+### BookmarkStore (공유 상태 관리)
+- `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
+- `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
+- `SearchViewModel` / `BookmarkViewModel`이 동일 인스턴스를 참조해 양쪽 탭에서 같은 북마크 상태를 공유
+- 비즈니스 로직은 `ManageBookmarkUseCase`에 위임하고, UseCase 결과를 UI 상태(배열)로 변환하는 역할만 담당
+- `ManageBookmarkUseCase` → `BookmarkRepository`(Protocol, Domain) → `DefaultBookmarkRepository` → `BookmarkStorage`(actor) 순서로 데이터가 흐름
+
 ---
 
 ## 테스트
