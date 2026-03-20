@@ -5,7 +5,7 @@
 //  Created by tykim on 3/16/26.
 //
 
-import Foundation
+import SwiftUI
 
 #if DEBUG
 // MARK: - UI 테스트용 Stub
@@ -35,8 +35,22 @@ private final class FixtureImageSearchRepository: ImageSearchRepository, @unchec
 
 // MARK: - DI 조립
 
+// MARK: - SwiftUI App
+
+@main
+struct KakaoImageSearchApp: App {
+    @State private var viewModel = AppAssembler.makeMainViewModel()
+
+    var body: some Scene {
+        WindowGroup {
+            MainView(viewModel: viewModel)
+        }
+    }
+}
+
+// MARK: - DI 조립
+
 /// Composition Root. 모든 의존성을 생성자 주입으로 조립하는 단일 진입점.
-/// SceneDelegate에서 MainActor.assumeIsolated 내에 호출됩니다.
 @MainActor
 enum AppAssembler {
 
