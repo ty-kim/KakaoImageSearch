@@ -42,6 +42,7 @@ actor ImageCache {
             for await _ in NotificationCenter.default.notifications(named: UIApplication.didReceiveMemoryWarningNotification) {
                 guard let self else { return }
                 await self.clearMemoryCache()
+                await self.cleanupExpiredFiles()
             }
         }
 
