@@ -29,10 +29,12 @@ final class CachedAsyncImageViewModel {
 
     private(set) var phase: Phase = .idle
     private(set) var retryCount = 0
-    private var downloader: any ImageDownloading
+    private let downloader: any ImageDownloading
+    private let backoffBase: Double
 
-    init(downloader: any ImageDownloading) {
+    init(downloader: any ImageDownloading, backoffBase: Double = 2.0) {
         self.downloader = downloader
+        self.backoffBase = backoffBase
     }
 
     func load(url: URL?) async {
@@ -51,7 +53,13 @@ final class CachedAsyncImageViewModel {
             phase = .permanentFailure
         } catch {
             retryCount += 1
-            phase = retryCount > Self.maxRetryCount ? .permanentFailure : .failure
+            if retryCount > Self.maxRetryCount {
+                phase = .permanentFailure
+            } else {
+                let delay = pow(backoffBase, Double(retryCount - 1))
+                try? await Task.sleep(for: .seconds(delay))
+                phase = Task.isCancelled ? .idle : .failure
+            }
         }
     }
 

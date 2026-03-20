@@ -31,7 +31,7 @@ struct CachedAsyncImageViewModelTests {
     private let testURL = URL(string: "https://example.com/image.jpg")!
 
     private func makeViewModel(downloader: MockImageDownloader = MockImageDownloader()) -> CachedAsyncImageViewModel {
-        CachedAsyncImageViewModel(downloader: downloader)
+        CachedAsyncImageViewModel(downloader: downloader, backoffBase: 0)
     }
 
     // MARK: - Phase 상태 전이
@@ -109,5 +109,48 @@ struct CachedAsyncImageViewModelTests {
 
         vm.resetRetry()
         #expect(vm.retryCount == 0)
+    }
+
+    // MARK: - Exponential Backoff
+
+    @Test("재시도 시 backoff 대기 후 failure 상태가 된다")
+    func retryableError_backsOffBeforeFailure() async {
+        let mock = MockImageDownloader()
+        mock.stubbedResult = .failure(ImageDownloadError.invalidResponse)
+        let vm = CachedAsyncImageViewModel(downloader: mock, backoffBase: 0)
+
+        await vm.load(url: testURL)
+        #expect(vm.phase.label == "failure")
+        #expect(vm.retryCount == 1)
+    }
+
+    @Test("backoff 대기 중 Task 취소 시 idle로 복귀한다")
+    func retryableError_cancelDuringBackoff_becomesIdle() async {
+        let mock = MockImageDownloader()
+        mock.stubbedResult = .failure(ImageDownloadError.invalidResponse)
+        // backoffBase를 크게 설정해서 sleep 중 취소를 보장
+        let vm = CachedAsyncImageViewModel(downloader: mock, backoffBase: 100)
+
+        let task = Task {
+            await vm.load(url: testURL)
+        }
+        // 다운로드 실패 후 sleep에 진입할 시간을 줌
+        try? await Task.sleep(for: .milliseconds(50))
+        task.cancel()
+        await task.value
+
+        #expect(vm.phase.label == "idle")
+    }
+
+    @Test("maxRetryCount 초과 시 대기 없이 즉시 permanentFailure")
+    func retryExhausted_noBackoff_permanentFailure() async {
+        let mock = MockImageDownloader()
+        mock.stubbedResult = .failure(ImageDownloadError.invalidResponse)
+        let vm = CachedAsyncImageViewModel(downloader: mock, backoffBase: 0)
+
+        for _ in 0...CachedAsyncImageViewModel.maxRetryCount {
+            await vm.load(url: testURL)
+        }
+        #expect(vm.phase.label == "permanentFailure")
     }
 }
