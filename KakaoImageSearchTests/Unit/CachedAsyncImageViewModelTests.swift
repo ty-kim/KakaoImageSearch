@@ -31,9 +31,7 @@ struct CachedAsyncImageViewModelTests {
     private let testURL = URL(string: "https://example.com/image.jpg")!
 
     private func makeViewModel(downloader: MockImageDownloader = MockImageDownloader()) -> CachedAsyncImageViewModel {
-        let vm = CachedAsyncImageViewModel()
-        vm.configure(downloader: downloader)
-        return vm
+        CachedAsyncImageViewModel(downloader: downloader)
     }
 
     // MARK: - Phase 상태 전이

@@ -29,9 +29,9 @@ final class CachedAsyncImageViewModel {
 
     private(set) var phase: Phase = .idle
     private(set) var retryCount = 0
-    private var downloader: (any ImageDownloading)?
+    private var downloader: any ImageDownloading
 
-    func configure(downloader: any ImageDownloading) {
+    init(downloader: any ImageDownloading) {
         self.downloader = downloader
     }
 
@@ -43,10 +43,6 @@ final class CachedAsyncImageViewModel {
         phase = .loading
 
         do {
-            guard let downloader else {
-                phase = .idle
-                return
-            }
             let image = try await downloader.download(from: url)
             phase = .success(image)
         } catch is CancellationError {
@@ -72,13 +68,13 @@ struct CachedAsyncImage: View {
     let url: URL?
 
     @Environment(\.imageDownloader) private var downloader
-    @State private var viewModel = CachedAsyncImageViewModel()
+    @State private var viewModel: CachedAsyncImageViewModel?
     /// URL 변경 또는 실패 후 탭 시 값이 바뀌어 .task를 재실행한다.
     @State private var loadTrigger = UUID()
 
     var body: some View {
         Group {
-            switch viewModel.phase {
+            switch viewModel?.phase ?? .idle {
             case .idle:
                 placeholder(systemName: "photo")
 
@@ -101,11 +97,13 @@ struct CachedAsyncImage: View {
             }
         }
         .task(id: loadTrigger) {
-            viewModel.configure(downloader: downloader)
-            await viewModel.load(url: url)
+            if viewModel == nil {
+                viewModel = CachedAsyncImageViewModel(downloader: downloader)
+            }
+            await viewModel?.load(url: url)
         }
         .onChange(of: url) {
-            viewModel.resetRetry()
+            viewModel?.resetRetry()
             loadTrigger = UUID()
         }
     }
