@@ -120,8 +120,11 @@ actor ImageCache {
                   let size = values.fileSize else { continue }
 
             if modDate < expiredBefore {
-                if (try? fileManager.removeItem(at: fileURL)) != nil {
+                do {
+                    try fileManager.removeItem(at: fileURL)
                     removedCount += 1
+                } catch {
+                    Logger.imageLoader.errorPrint("Failed to remove expired cache: \(error)")
                 }
             } else {
                 surviving.append((fileURL, modDate, size))
@@ -134,9 +137,12 @@ actor ImageCache {
             surviving.sort { $0.date < $1.date }
             for file in surviving {
                 guard totalSize > maxDiskBytes else { break }
-                if (try? fileManager.removeItem(at: file.url)) != nil {
+                do {
+                    try fileManager.removeItem(at: file.url)
                     totalSize -= file.size
                     removedCount += 1
+                } catch {
+                    Logger.imageLoader.errorPrint("Failed to remove LRU cache: \(error)")
                 }
             }
         }
