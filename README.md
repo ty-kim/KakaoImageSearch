@@ -189,7 +189,7 @@ KakaoImageSearch/
     ├── Main/                   # MainView, MainViewModel
     ├── Search/                 # SearchView, SearchViewModel, SearchResultItemView
     ├── Bookmark/               # BookmarkView, BookmarkViewModel
-    ├── Components/             # SearchBar, BookmarkButton, CachedAsyncImage, EmptyStateView, ToastView
+    ├── Components/             # SearchBar, BookmarkButton, CachedAsyncImage, ImageDetailView, SkeletonItemView, EmptyStateView, ToastView
     ├── Logger/                 # PresentationLogger (OSLog Presentation 카테고리)
     └── L10n.swift              # 다국어 헬퍼
 ```

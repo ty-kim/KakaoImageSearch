@@ -1,0 +1,109 @@
+//
+//  ImageDetailView.swift
+//  KakaoImageSearch
+//
+//  Created by tykim on 3/20/26.
+//
+
+import SwiftUI
+import UIKit
+
+/// 전체 화면 이미지 뷰어. 핀치 확대/축소, 드래그 이동, 더블탭 줌을 지원합니다.
+struct ImageDetailView: View {
+
+    let url: URL?
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.imageDownloader) private var downloader
+
+    @State private var image: UIImage?
+    @State private var scale: CGFloat = 1
+    @State private var lastScale: CGFloat = 1
+    @State private var offset: CGSize = .zero
+    @State private var lastOffset: CGSize = .zero
+
+    private let minScale: CGFloat = 1
+    private let maxScale: CGFloat = 5
+    private let doubleTapScale: CGFloat = 3
+
+    var body: some View {
+        ZStack {
+            Color.black.ignoresSafeArea()
+
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .scaleEffect(scale)
+                    .offset(offset)
+                    .gesture(magnifyGesture)
+                    .gesture(dragGesture)
+                    .onTapGesture(count: 2) {
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            if scale > minScale {
+                                scale = minScale
+                                lastScale = minScale
+                                offset = .zero
+                                lastOffset = .zero
+                            } else {
+                                scale = doubleTapScale
+                                lastScale = doubleTapScale
+                            }
+                        }
+                    }
+            } else {
+                ProgressView()
+                    .tint(.white)
+            }
+        }
+        .overlay(alignment: .topTrailing) {
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(.white, .white.opacity(0.3))
+            }
+            .padding(16)
+        }
+        .task {
+            guard let url else { return }
+            image = try? await downloader.download(from: url)
+        }
+        .statusBarHidden()
+    }
+
+    // MARK: - Gestures
+
+    private var magnifyGesture: some Gesture {
+        MagnifyGesture()
+            .onChanged { value in
+                let newScale = lastScale * value.magnification
+                scale = min(max(newScale, minScale), maxScale)
+            }
+            .onEnded { _ in
+                withAnimation(.easeOut(duration: 0.2)) {
+                    scale = min(max(scale, minScale), maxScale)
+                    if scale <= minScale {
+                        offset = .zero
+                        lastOffset = .zero
+                    }
+                }
+                lastScale = scale
+            }
+    }
+
+    private var dragGesture: some Gesture {
+        DragGesture()
+            .onChanged { value in
+                guard scale > minScale else { return }
+                offset = CGSize(
+                    width: lastOffset.width + value.translation.width,
+                    height: lastOffset.height + value.translation.height
+                )
+            }
+            .onEnded { _ in
+                lastOffset = offset
+            }
+    }
+}

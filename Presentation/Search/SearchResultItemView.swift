@@ -14,6 +14,8 @@ struct SearchResultItemView: View {
     var isBookmarkInFlight: Bool = false
     let onBookmarkToggle: () -> Void
 
+    @State private var showDetail = false
+
     var body: some View {
         ZStack(alignment: .topTrailing) {
             CachedAsyncImage(url: item.displayURL)
@@ -22,6 +24,7 @@ struct SearchResultItemView: View {
                     height: screenWidth * item.aspectRatio
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 15))
+                .onTapGesture { showDetail = true }
 
             BookmarkButton(isBookmarked: item.isBookmarked, action: onBookmarkToggle)
                 .disabled(isBookmarkInFlight)
@@ -29,5 +32,8 @@ struct SearchResultItemView: View {
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(L10n.Accessibility.imageItem(width: item.width, height: item.height))
+        .fullScreenCover(isPresented: $showDetail) {
+            ImageDetailView(url: item.imageURL ?? item.thumbnailURL)
+        }
     }
 }
