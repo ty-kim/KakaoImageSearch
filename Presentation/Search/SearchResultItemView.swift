@@ -17,15 +17,18 @@ struct SearchResultItemView: View {
     @State private var showDetail = false
 
     var body: some View {
-        ZStack(alignment: .topTrailing) {
+        Button {
+            showDetail = true
+        } label: {
             CachedAsyncImage(url: item.displayURL)
                 .frame(
                     width: screenWidth,
                     height: screenWidth * item.aspectRatio
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 15))
-                .onTapGesture { showDetail = true }
-
+        }
+        .buttonStyle(.plain)
+        .overlay(alignment: .topTrailing) {
             BookmarkButton(isBookmarked: item.isBookmarked, action: onBookmarkToggle)
                 .disabled(isBookmarkInFlight)
                 .padding(12)

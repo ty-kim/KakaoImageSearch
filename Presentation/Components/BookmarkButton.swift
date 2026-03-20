@@ -19,6 +19,8 @@ struct BookmarkButton: View {
                 .foregroundStyle(isBookmarked ? Color.yellow : Color.white)
                 .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
                 .contentTransition(.symbolEffect(.replace))
+                .frame(width: 44, height: 44)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
         .accessibilityLabel(isBookmarked ? L10n.Accessibility.bookmarkRemove : L10n.Accessibility.bookmarkAdd)
