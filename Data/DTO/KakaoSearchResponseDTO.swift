@@ -82,17 +82,42 @@ extension KakaoSearchResponseDTO.Document {
 
     private static let allowedSchemes: Set<String> = ["http", "https"]
 
+    private static let blockedHosts: Set<String> = ["localhost"]
+
+    private static func isSafeURL(_ url: URL) -> Bool {
+        guard let scheme = url.scheme?.lowercased(),
+              allowedSchemes.contains(scheme),
+              let host = url.host()?.lowercased(),
+              !blockedHosts.contains(host),
+              !isPrivateIP(host) else {
+            return false
+        }
+        return true
+    }
+
+    private static func isPrivateIP(_ host: String) -> Bool {
+        let parts = host.split(separator: ".").compactMap { UInt8($0) }
+        guard parts.count == 4 else { return false }
+        switch parts[0] {
+        case 10: return true                                    // 10.0.0.0/8
+        case 127: return true                                   // 127.0.0.0/8
+        case 172: return (16...31).contains(parts[1])           // 172.16.0.0/12
+        case 192: return parts[1] == 168                        // 192.168.0.0/16
+        case 169: return parts[1] == 254                        // 169.254.0.0/16 (link-local)
+        default: return false
+        }
+    }
+
     func toImageItem() -> ImageItem? {
         guard let imageUrl,
               let imageURL = URL(string: imageUrl),
-              let scheme = imageURL.scheme?.lowercased(),
-              Self.allowedSchemes.contains(scheme) else {
+              Self.isSafeURL(imageURL) else {
             return nil
         }
 
         let thumbnailURL = thumbnailUrl
             .flatMap { URL(string: $0) }
-            .flatMap { Self.allowedSchemes.contains($0.scheme?.lowercased() ?? "") ? $0 : nil }
+            .flatMap { Self.isSafeURL($0) ? $0 : nil }
 
         return ImageItem(
             id: imageUrl,
