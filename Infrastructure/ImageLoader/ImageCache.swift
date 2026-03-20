@@ -7,6 +7,7 @@
 
 import UIKit
 import OSLog
+import CryptoKit
 
 /// 메모리(NSCache) + 디스크 2단계 이미지 캐시.
 /// actor로 선언해 Swift 6 기본 MainActor 격리 충돌을 방지하고 스레드 안전성을 보장합니다.
@@ -162,8 +163,8 @@ actor ImageCache {
     }
 
     private func cacheKey(for url: URL) -> String {
-        url.absoluteString
-            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)
-            ?? url.lastPathComponent
+        SHA256.hash(data: Data(url.absoluteString.utf8))
+            .map { String(format: "%02x", $0) }
+            .joined()
     }
 }

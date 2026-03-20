@@ -7,6 +7,7 @@
 
 import Testing
 import UIKit
+import CryptoKit
 @testable import KakaoImageSearch
 
 @Suite("ImageCache 통합 테스트")
@@ -27,9 +28,9 @@ struct ImageCacheIntegrationTests {
 
     /// cacheKey(for:) private 메서드와 동일한 로직
     private func cacheKey(for url: URL) -> String {
-        url.absoluteString
-            .addingPercentEncoding(withAllowedCharacters: .alphanumerics)
-            ?? url.lastPathComponent
+        SHA256.hash(data: Data(url.absoluteString.utf8))
+            .map { String(format: "%02x", $0) }
+            .joined()
     }
 
     @Test("손상된 디스크 캐시 파일 읽기 시 파일 삭제 후 nil 반환")
