@@ -614,6 +614,21 @@ struct BookmarkStoreTests {
         #expect(sut.isBookmarked("a") == true)
         #expect(sut.isBookmarked("z") == false)
     }
+
+    @Test("같은 아이템을 연속 toggle 시 add→remove로 최종 상태 일관")
+    func toggle_sameTwice_addsAndRemoves() async throws {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, _) = makeSUT()
+
+        let first = try await sut.toggle(item)
+        #expect(first == true)
+        #expect(sut.bookmarkedIDs.contains("a"))
+
+        let second = try await sut.toggle(item)
+        #expect(second == false)
+        #expect(!sut.bookmarkedIDs.contains("a"))
+        #expect(sut.bookmarkedItems.isEmpty)
+    }
 }
 
 // MARK: - MainViewModel
