@@ -150,4 +150,5 @@ AI는 초안 작성과 반복 작업에 활용했고, 아키텍처 선택과 품
 ## 아쉬운 점 / 추가하고 싶었던 것
 
 - **검색 히스토리**: 최근 검색어 저장 기능도 추가 후보로 생각했습니다. 현재 북마크 저장 구조와 유사한 방식으로 확장할 수 있다고 봤습니다.
+- **SwiftData 마이그레이션**: 현재 `BookmarkEntity`는 초기 스키마(v1)로 `VersionedSchema`를 적용하지 않았습니다. 필드 추가/변경 시점에 `VersionedSchema` + `MigrationPlan`을 도입할 예정입니다.
 - **Certificate Pinning**: 현재 API 통신(`dapi.kakao.com`)은 HTTPS로 보호되지만, 인증서 검증을 시스템 기본 동작에 위임하고 있습니다. 프로덕션 환경에서는 MITM 방어를 위해 `URLSessionDelegate`에서 서버 공개키를 직접 검증하는 방식을 고려할 수 있습니다. 이미지 CDN(`daum.net`, `naver.net`)은 HTTP 통신이라 pinning 대상이 아니며, CDN이 HTTPS를 지원하게 되면 ATS 예외 제거와 함께 pinning을 고려할 수 있습니다.
