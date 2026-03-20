@@ -96,7 +96,11 @@ actor ImageCache {
 
         let diskURL = diskCacheURL.appendingPathComponent(key)
         if let data = image.jpegData(compressionQuality: 0.8) {
-            try? data.write(to: diskURL, options: [.atomic, .completeFileProtection])
+            do {
+                try data.write(to: diskURL, options: [.atomic, .completeFileProtection])
+            } catch {
+                Logger.imageLoader.errorPrint("Failed to write disk cache: \(error)")
+            }
         }
     }
 
