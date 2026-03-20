@@ -52,6 +52,7 @@
 		FC3203262F7C000100A90DC0 /* NetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */; };
 		FC3203282F7C000200A90DC0 /* DataLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203292F7C000200A90DC0 /* DataLogger.swift */; };
 		FC32032A2F7C000200A90DC0 /* PresentationLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */; };
+		FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -121,6 +122,7 @@
 		FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProtocol.swift; sourceTree = "<group>"; };
 		FC3203292F7C000200A90DC0 /* DataLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLogger.swift; sourceTree = "<group>"; };
 		FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationLogger.swift; sourceTree = "<group>"; };
+		FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -176,6 +178,7 @@
 				FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */,
 				FC1E8A002F6826B2008CAC25 /* EmptyStateView.swift */,
 				FC1E8A012F6826B2008CAC25 /* SearchBar.swift */,
+				FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */,
 				FCCC21262F699A0000363054 /* ToastView.swift */,
 			);
 			path = Components;
@@ -604,6 +607,7 @@
 				FC3203262F7C000100A90DC0 /* NetworkProtocol.swift in Sources */,
 				FC3203282F7C000200A90DC0 /* DataLogger.swift in Sources */,
 				FC32032A2F7C000200A90DC0 /* PresentationLogger.swift in Sources */,
+				FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

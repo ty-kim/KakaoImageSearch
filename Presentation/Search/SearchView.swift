@@ -17,10 +17,21 @@ struct SearchView: View {
             Group {
                 switch viewModel.searchState {
                 case .loading:
-                    ProgressView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .accessibilityLabel(L10n.Accessibility.loading)
-                        .accessibilityIdentifier("searchView.loadingIndicator")
+                    let horizontalPadding: CGFloat = 20
+                    let columnSpacing: CGFloat = 20
+                    let skeletonWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
+                    let skeletonColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
+
+                    ScrollView {
+                        LazyVGrid(columns: skeletonColumns, spacing: 20) {
+                            ForEach(0..<6, id: \.self) { _ in
+                                SkeletonItemView(width: skeletonWidth)
+                            }
+                        }
+                        .padding(.horizontal, horizontalPadding)
+                    }
+                    .accessibilityLabel(L10n.Accessibility.loading)
+                    .accessibilityIdentifier("searchView.loadingIndicator")
 
                 case .error(let message):
                     EmptyStateView(
