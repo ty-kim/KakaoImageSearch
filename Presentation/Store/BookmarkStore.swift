@@ -17,7 +17,10 @@ import OSLog
 final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
-    private(set) var bookmarkedIDs: Set<String> = []
+
+    var bookmarkedIDs: Set<String> {
+        Set(bookmarkedItems.map(\.id))
+    }
 
     private let manageBookmarkUseCase: ManageBookmarkUseCase
 
@@ -28,7 +31,6 @@ final class BookmarkStore {
     func load() async throws {
         let fetched = try await manageBookmarkUseCase.fetchAll()
         bookmarkedItems = fetched
-        bookmarkedIDs = Set(fetched.map(\.id))
         Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
     }
 
@@ -50,10 +52,8 @@ final class BookmarkStore {
                 bookmarkedItems.append(updated)
             }
 
-            bookmarkedIDs.insert(item.id)
         } else {
             bookmarkedItems.removeAll { $0.id == item.id }
-            bookmarkedIDs.remove(item.id)
         }
 
         Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
