@@ -16,7 +16,7 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
 
     static let shared = ImageDownloader()
 
-    /// 이미지 최대 허용 크기 (20 MB)
+    /// 이미지 최대 허용 크기 (20 MB). 일반 CDN 썸네일/원본 기준 충분하며, 비정상 파일 조기 차단 목적
     nonisolated static let maxContentLength: Int64 = 20 * 1024 * 1024
 
     private let cache = ImageCache()
@@ -27,7 +27,7 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         self.session = session
     }
 
-    /// prefetch 최대 동시 다운로드 수
+    /// prefetch 최대 동시 다운로드 수. URLSession 기본 호스트당 커넥션 풀(6)에 맞춤
     private nonisolated static let maxConcurrentPrefetches = 6
 
     /// 다음 페이지 썸네일을 백그라운드에서 병렬 선수 다운로드합니다.

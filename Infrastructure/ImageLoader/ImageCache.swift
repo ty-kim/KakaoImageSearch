@@ -21,6 +21,7 @@ actor ImageCache {
     // 실제 데이터 레이스 없으므로 nonisolated(unsafe) 선언.
     nonisolated(unsafe) private var memoryWarningTask: Task<Void, Never>?
 
+    /// - ttl: 디스크 캐시 만료 기간 (기본 7일 — 이미지 CDN URL이 변경되지 않는 일반적 수명 기준)
     /// - maxDiskBytes: 디스크 캐시 최대 용량 (기본 200 MB)
     init(diskCacheURL: URL? = nil, ttl: TimeInterval = 7 * 24 * 60 * 60, maxDiskBytes: Int = 200 * 1024 * 1024) {
         let caches = fileManager.urls(for: .cachesDirectory, in: .userDomainMask)[0]

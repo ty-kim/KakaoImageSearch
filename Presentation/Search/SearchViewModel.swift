@@ -45,6 +45,7 @@ final class SearchViewModel {
     private var prefetchTask: Task<Void, Never>? = nil
     private var activeSearchID: UUID? = nil
 
+    /// Kakao API 페이지 파라미터 허용 범위 상한 (1~15)
     private let maxPage = 15
     private let searchImageUseCase: SearchImageUseCase
     private let bookmarkStore: BookmarkStore
