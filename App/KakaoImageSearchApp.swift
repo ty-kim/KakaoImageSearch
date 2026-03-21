@@ -69,6 +69,21 @@ enum AppAssembler {
             try? modelContainer.mainContext.delete(model: BookmarkEntity.self)
             try? modelContainer.mainContext.save()
         }
+
+        if CommandLine.arguments.contains("--useFixtureBookmarks") {
+            let context = modelContainer.mainContext
+            for i in 1...3 {
+                let entity = BookmarkEntity(
+                    id: "bookmark-\(i)",
+                    imageURL: "https://picsum.photos/seed/bm\(i)/800/600",
+                    thumbnailURL: "https://picsum.photos/seed/bm\(i)/200/150",
+                    width: 800,
+                    height: 600
+                )
+                context.insert(entity)
+            }
+            try? context.save()
+        }
         #endif
 
         let networkService = NetworkService()
