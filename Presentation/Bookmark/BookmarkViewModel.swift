@@ -31,7 +31,7 @@ final class BookmarkViewModel {
         bookmarkStore.bookmarkedItems
     }
 
-    init(bookmarkStore: BookmarkStore, toastDuration: Duration = .seconds(3)) {
+    init(bookmarkStore: BookmarkStore, toastDuration: Duration = ToastView.defaultDuration) {
         self.bookmarkStore = bookmarkStore
         self.toastDuration = toastDuration
     }
