@@ -33,8 +33,8 @@ struct BookmarkView: View {
                     EmptyStateView(message: L10n.Bookmark.empty, accessibilityID: "bookmarkView.emptyState")
 
                 case .loaded:
-                    let horizontalPadding: CGFloat = 20
-                    let columnSpacing: CGFloat = 20
+                    let horizontalPadding: CGFloat = columns == 1 ? 0 : 20
+                    let columnSpacing: CGFloat = columns == 1 ? 0 : 20
                     let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
                     let gridColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
 
