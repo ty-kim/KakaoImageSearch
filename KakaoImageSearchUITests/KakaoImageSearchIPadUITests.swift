@@ -9,25 +9,15 @@ import XCTest
 
 // MARK: - iPad 일반 (NavigationSplitView 레이아웃)
 
+final class KakaoImageSearchIPadUITests: BaseUITestCase {
+    override func setUp() async throws {
+        try await super.setUp()
+        try await launchAppOnIPad(arguments: ["--resetBookmarks", "--useFixtureData"])
+    }
+}
+
 @MainActor
-final class KakaoImageSearchIPadUITests: XCTestCase {
-
-    nonisolated(unsafe) private var app: XCUIApplication!
-
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-        try XCTSkipIf(!isIPad, "iPad 전용 테스트입니다. iPad 시뮬레이터에서 실행하세요.")
-        continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments += ["--resetBookmarks", "--useFixtureData"]
-        app.launch()
-    }
-
-    override func tearDown() {
-        app = nil
-        super.tearDown()
-    }
+extension KakaoImageSearchIPadUITests {
 
     // MARK: - 앱 실행
 
@@ -94,25 +84,15 @@ final class KakaoImageSearchIPadUITests: XCTestCase {
 
 // MARK: - iPad 에러 / 재시도 UX (네트워크 에러 시뮬레이션)
 
+final class KakaoImageSearchIPadRetryUITests: BaseUITestCase {
+    override func setUp() async throws {
+        try await super.setUp()
+        try await launchAppOnIPad(arguments: ["--resetBookmarks", "--simulateNetworkError"])
+    }
+}
+
 @MainActor
-final class KakaoImageSearchIPadRetryUITests: XCTestCase {
-
-    nonisolated(unsafe) private var app: XCUIApplication!
-
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-        try XCTSkipIf(!isIPad, "iPad 전용 테스트입니다. iPad 시뮬레이터에서 실행하세요.")
-        continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments += ["--resetBookmarks", "--simulateNetworkError"]
-        app.launch()
-    }
-
-    override func tearDown() {
-        app = nil
-        super.tearDown()
-    }
+extension KakaoImageSearchIPadRetryUITests {
 
     // MARK: - 재시도 버튼 노출
 

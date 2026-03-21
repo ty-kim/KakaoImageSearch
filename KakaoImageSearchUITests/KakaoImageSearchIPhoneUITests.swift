@@ -9,25 +9,15 @@ import XCTest
 
 // MARK: - iPhone 일반 (TabView 레이아웃)
 
+final class KakaoImageSearchIPhoneUITests: BaseUITestCase {
+    override func setUp() async throws {
+        try await super.setUp()
+        try await launchApp(arguments: ["--resetBookmarks", "--useFixtureData"])
+    }
+}
+
 @MainActor
-final class KakaoImageSearchIPhoneUITests: XCTestCase {
-
-    nonisolated(unsafe) private var app: XCUIApplication!
-
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-        try XCTSkipIf(isIPad, "iPhone 전용 테스트입니다. iPhone 시뮬레이터에서 실행하세요.")
-        continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments += ["--resetBookmarks", "--useFixtureData"]
-        app.launch()
-    }
-
-    override func tearDown() {
-        app = nil
-        super.tearDown()
-    }
+extension KakaoImageSearchIPhoneUITests {
 
     // MARK: - 앱 실행
 
@@ -146,25 +136,15 @@ final class KakaoImageSearchIPhoneUITests: XCTestCase {
 
 // MARK: - iPhone 에러 / 재시도 UX (네트워크 에러 시뮬레이션)
 
+final class KakaoImageSearchIPhoneRetryUITests: BaseUITestCase {
+    override func setUp() async throws {
+        try await super.setUp()
+        try await launchApp(arguments: ["--resetBookmarks", "--simulateNetworkError"])
+    }
+}
+
 @MainActor
-final class KakaoImageSearchIPhoneRetryUITests: XCTestCase {
-
-    nonisolated(unsafe) private var app: XCUIApplication!
-
-    override func setUpWithError() throws {
-        try super.setUpWithError()
-        let isIPad = UIDevice.current.userInterfaceIdiom == .pad
-        try XCTSkipIf(isIPad, "iPhone 전용 테스트입니다. iPhone 시뮬레이터에서 실행하세요.")
-        continueAfterFailure = false
-        app = XCUIApplication()
-        app.launchArguments += ["--resetBookmarks", "--simulateNetworkError"]
-        app.launch()
-    }
-
-    override func tearDown() {
-        app = nil
-        super.tearDown()
-    }
+extension KakaoImageSearchIPhoneRetryUITests {
 
     // MARK: - 재시도 버튼 노출
 

@@ -22,6 +22,15 @@
 		FC1E8A0F2F682768008CAC25 /* SearchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A0E2F682768008CAC25 /* SearchView.swift */; };
 		FC1E8A112F68276E008CAC25 /* SearchResultItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A102F68276E008CAC25 /* SearchResultItemView.swift */; };
 		FC1E8A132F6827B0008CAC25 /* BookmarkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC1E8A122F6827B0008CAC25 /* BookmarkView.swift */; };
+		FC3203202F7C000000A90DC0 /* ImageLoadingProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203212F7C000000A90DC0 /* ImageLoadingProtocol.swift */; };
+		FC3203222F7C000000A90DC0 /* ImageDownloaderEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203232F7C000000A90DC0 /* ImageDownloaderEnvironment.swift */; };
+		FC3203262F7C000100A90DC0 /* NetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */; };
+		FC3203282F7C000200A90DC0 /* DataLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203292F7C000200A90DC0 /* DataLogger.swift */; };
+		FC32032A2F7C000200A90DC0 /* PresentationLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */; };
+		FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */; };
+		FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203312F7C000400A90DC0 /* ImageDetailView.swift */; };
+		FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */; };
+		FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */; };
 		FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */; };
 		FC75FD002F6A9C4E00A90DC0 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */; };
 		FC75FD012F6A9C4E00A90DC0 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF82F6A9C4E00A90DC0 /* AppLogger.swift */; };
@@ -45,15 +54,6 @@
 		FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */; };
 		FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
 		FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77072F680E070081FC81 /* Assets.xcassets */; };
-		FC3203202F7C000000A90DC0 /* ImageLoadingProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203212F7C000000A90DC0 /* ImageLoadingProtocol.swift */; };
-		FC3203222F7C000000A90DC0 /* ImageDownloaderEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203232F7C000000A90DC0 /* ImageDownloaderEnvironment.swift */; };
-		FC3203262F7C000100A90DC0 /* NetworkProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */; };
-		FC3203282F7C000200A90DC0 /* DataLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203292F7C000200A90DC0 /* DataLogger.swift */; };
-		FC32032A2F7C000200A90DC0 /* PresentationLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */; };
-		FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */; };
-		FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203312F7C000400A90DC0 /* ImageDetailView.swift */; };
-		FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */; };
-		FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -89,6 +89,15 @@
 		FC1E8A0E2F682768008CAC25 /* SearchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchView.swift; sourceTree = "<group>"; };
 		FC1E8A102F68276E008CAC25 /* SearchResultItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchResultItemView.swift; sourceTree = "<group>"; };
 		FC1E8A122F6827B0008CAC25 /* BookmarkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkView.swift; sourceTree = "<group>"; };
+		FC3203212F7C000000A90DC0 /* ImageLoadingProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingProtocol.swift; sourceTree = "<group>"; };
+		FC3203232F7C000000A90DC0 /* ImageDownloaderEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloaderEnvironment.swift; sourceTree = "<group>"; };
+		FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProtocol.swift; sourceTree = "<group>"; };
+		FC3203292F7C000200A90DC0 /* DataLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLogger.swift; sourceTree = "<group>"; };
+		FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationLogger.swift; sourceTree = "<group>"; };
+		FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonItemView.swift; sourceTree = "<group>"; };
+		FC3203312F7C000400A90DC0 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
+		FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEntity.swift; sourceTree = "<group>"; };
+		FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
 		FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		FC75FCF52F6A9C4E00A90DC0 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
@@ -116,15 +125,6 @@
 		FCCD77072F680E070081FC81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCCD77082F680E070081FC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FCCD77092F680E070081FC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		FC3203212F7C000000A90DC0 /* ImageLoadingProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoadingProtocol.swift; sourceTree = "<group>"; };
-		FC3203232F7C000000A90DC0 /* ImageDownloaderEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDownloaderEnvironment.swift; sourceTree = "<group>"; };
-		FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkProtocol.swift; sourceTree = "<group>"; };
-		FC3203292F7C000200A90DC0 /* DataLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataLogger.swift; sourceTree = "<group>"; };
-		FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresentationLogger.swift; sourceTree = "<group>"; };
-		FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SkeletonItemView.swift; sourceTree = "<group>"; };
-		FC3203312F7C000400A90DC0 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
-		FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEntity.swift; sourceTree = "<group>"; };
-		FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -206,6 +206,31 @@
 			path = Search;
 			sourceTree = "<group>";
 		};
+		FC3203252F7C000000A90DC0 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				FC3203212F7C000000A90DC0 /* ImageLoadingProtocol.swift */,
+				FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */,
+			);
+			path = Service;
+			sourceTree = "<group>";
+		};
+		FC32032C2F7C000200A90DC0 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				FC3203292F7C000200A90DC0 /* DataLogger.swift */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
+		FC32032D2F7C000200A90DC0 /* Logger */ = {
+			isa = PBXGroup;
+			children = (
+				FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */,
+			);
+			path = Logger;
+			sourceTree = "<group>";
+		};
 		FC75FCDE2F6A9BA400A90DC0 /* Store */ = {
 			isa = PBXGroup;
 			children = (
@@ -281,14 +306,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		FC32032C2F7C000200A90DC0 /* Logger */ = {
-			isa = PBXGroup;
-			children = (
-				FC3203292F7C000200A90DC0 /* DataLogger.swift */,
-			);
-			path = Logger;
-			sourceTree = "<group>";
-		};
 		FCCD76A52F680ACB0081FC81 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -325,14 +342,6 @@
 				FCCD76DB2F680CB20081FC81 /* BookmarkStorage.swift */,
 			);
 			path = Storage;
-			sourceTree = "<group>";
-		};
-		FC32032D2F7C000200A90DC0 /* Logger */ = {
-			isa = PBXGroup;
-			children = (
-				FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */,
-			);
-			path = Logger;
 			sourceTree = "<group>";
 		};
 		FCCD76DE2F680CE20081FC81 /* Presentation */ = {
@@ -382,15 +391,6 @@
 				FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */,
 			);
 			path = UseCase;
-			sourceTree = "<group>";
-		};
-		FC3203252F7C000000A90DC0 /* Service */ = {
-			isa = PBXGroup;
-			children = (
-				FC3203212F7C000000A90DC0 /* ImageLoadingProtocol.swift */,
-				FC3203272F7C000100A90DC0 /* NetworkProtocol.swift */,
-			);
-			path = Service;
 			sourceTree = "<group>";
 		};
 		FCCD76EA2F680D710081FC81 /* Domain */ = {
