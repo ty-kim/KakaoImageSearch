@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Background: Blue rounded square -->
+  <rect width="1024" height="1024" rx="220" ry="220" fill="#0F4BB9"/>
+
+  <!-- Photo frame: white rounded rect -->
+  <rect x="200" y="230" width="480" height="420" rx="40" ry="40" fill="none" stroke="#FFFFFF" stroke-width="42" stroke-linejoin="round"/>
+
+  <!-- Mountain (triangle) -->
+  <polygon points="280,580 440,410 540,530 600,460 640,580" fill="#FFFFFF"/>
+
+  <!-- Sun (circle) -->
+  <circle cx="340" cy="340" r="45" fill="#FFFFFF"/>
+
+  <!-- Magnifying glass circle -->
+  <circle cx="640" cy="560" r="130" fill="none" stroke="#FFFFFF" stroke-width="42"/>
+  <!-- Inner circle for glass effect -->
+  <circle cx="640" cy="560" r="130" fill="#0F4BB9"/>
+  <circle cx="640" cy="560" r="130" fill="none" stroke="#FFFFFF" stroke-width="42"/>
+
+  <!-- Mountain peek inside magnifier -->
+  <clipPath id="lens">
+    <circle cx="640" cy="560" r="109"/>
+  </clipPath>
+  <polygon points="560,640 640,520 720,640" fill="#FFFFFF" clip-path="url(#lens)"/>
+
+  <!-- Magnifying glass handle -->
+  <line x1="732" y1="652" x2="840" y2="760" stroke="#FFFFFF" stroke-width="46" stroke-linecap="round"/>
+</svg>
