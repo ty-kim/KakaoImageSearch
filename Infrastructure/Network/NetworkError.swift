@@ -12,6 +12,7 @@ enum NetworkError: Error, LocalizedError {
     case invalidResponse
     case httpError(statusCode: Int, responseBody: String?)
     case decodingError(Error)
+    case timeout
     case unknown(Error)
 
     var errorDescription: String? {
@@ -24,6 +25,8 @@ enum NetworkError: Error, LocalizedError {
             return String(localized: "network.error.http_error \(code)")
         case .decodingError(let error):
             return String(localized: "network.error.decoding_error \(error.localizedDescription)")
+        case .timeout:
+            return String(localized: "network.error.timeout")
         case .unknown(let error):
             return String(localized: "network.error.unknown \(error.localizedDescription)")
         }

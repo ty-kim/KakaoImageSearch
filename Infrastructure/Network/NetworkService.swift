@@ -36,6 +36,9 @@ actor NetworkService: NetworkServiceProtocol {
         } catch let error as URLError where error.code == .cancelled {
             Logger.network.debugPrint("Request cancelled: \(error)")
             throw CancellationError()
+        } catch let error as URLError where error.code == .timedOut {
+            Logger.network.errorPrint("Request timed out")
+            throw NetworkError.timeout
         } catch {
             Logger.network.errorPrint("Request failed: \(error)")
             throw NetworkError.unknown(error)
