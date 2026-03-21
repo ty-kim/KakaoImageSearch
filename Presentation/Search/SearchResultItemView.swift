@@ -7,6 +7,14 @@
 
 import SwiftUI
 
+private struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
+            .animation(.easeInOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
 struct SearchResultItemView: View {
 
     let item: ImageItem
@@ -27,7 +35,7 @@ struct SearchResultItemView: View {
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 15))
         }
-        .buttonStyle(.plain)
+        .buttonStyle(ScaleButtonStyle())
         .overlay(alignment: .topTrailing) {
             BookmarkButton(isBookmarked: item.isBookmarked, action: onBookmarkToggle)
                 .disabled(isBookmarkInFlight)
