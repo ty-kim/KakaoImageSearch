@@ -76,6 +76,7 @@ struct ImageDetailView: View {
                     .symbolRenderingMode(.palette)
                     .foregroundStyle(AppColors.detailCloseButton, AppColors.detailCloseButtonShadow)
             }
+            .accessibilityLabel(L10n.Accessibility.detailClose)
             .padding(16)
         }
         .task {

@@ -783,6 +783,29 @@
         }
       }
     },
+    "accessibility.detail.close" : {
+      "comment" : "VoiceOver label for image detail close button",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Close image"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "画像を閉じる"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "이미지 닫기"
+          }
+        }
+      }
+    },
     "accessibility.loading" : {
       "comment" : "VoiceOver label for loading indicator",
       "localizations" : {
