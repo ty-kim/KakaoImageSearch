@@ -7,6 +7,10 @@
 
 import SwiftUI
 
+extension ToastView {
+    static let defaultDuration: Duration = .seconds(3)
+}
+
 struct ToastView: View {
 
     let message: String

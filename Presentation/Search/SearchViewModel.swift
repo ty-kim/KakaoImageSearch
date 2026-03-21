@@ -57,7 +57,7 @@ final class SearchViewModel {
         bookmarkStore: BookmarkStore,
         imagePrefetcher: any ImagePrefetcher,
         networkMonitor: any NetworkMonitoring,
-        toastDuration: Duration = .seconds(3)
+        toastDuration: Duration = ToastView.defaultDuration
     ) {
         self.searchImageUseCase = searchImageUseCase
         self.bookmarkStore = bookmarkStore
