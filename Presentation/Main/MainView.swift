@@ -45,6 +45,7 @@ struct MainView: View {
                 .onChange(of: viewModel.searchViewModel.items) {
                     if !viewModel.searchViewModel.items.isEmpty {
                         isSearchFieldFocused = false
+                        viewModel.selectedTab = .search
                     }
                 }
 

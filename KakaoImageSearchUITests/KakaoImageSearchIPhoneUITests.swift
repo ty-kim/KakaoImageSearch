@@ -294,8 +294,8 @@ extension KakaoImageSearchIPhoneRetryUITests {
             .matching(identifier: "emptyStateView.retryButton").firstMatch
         XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
 
-        // Search 키로 키보드 닫기 (탭바가 키보드 뒤에 가려지므로)
-        searchField.typeText("\n")
+        // 에러 영역 탭으로 키보드 dismiss (simultaneousGesture 검증 겸용)
+        retryButton.tap()
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
 
         app.tabBars.firstMatch.buttons.element(boundBy: 1).tap()
