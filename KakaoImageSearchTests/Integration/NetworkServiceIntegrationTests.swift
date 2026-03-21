@@ -210,8 +210,8 @@ struct NetworkServiceIntegrationTests {
         #expect(capturedRequest?.value(forHTTPHeaderField: "Authorization")?.hasPrefix("KakaoAK") == true)
     }
 
-    @Test("타임아웃 시 NetworkError.unknown을 던진다")
-    func request_timeout_throwsUnknownError() async throws {
+    @Test("타임아웃 시 NetworkError.timeout을 던진다")
+    func request_timeout_throwsTimeoutError() async throws {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         config.timeoutIntervalForRequest = 1
@@ -224,8 +224,14 @@ struct NetworkServiceIntegrationTests {
         }
 
         let endpoint = KakaoImageSearchEndpoint.searchImages(query: "cat", page: 1)
-        await #expect(throws: Error.self) {
+        do {
             let _: KakaoSearchResponseDTO = try await sut.request(endpoint)
+            Issue.record("Expected NetworkError.timeout")
+        } catch let error as NetworkError {
+            guard case .timeout = error else {
+                Issue.record("Expected .timeout but got \(error)")
+                return
+            }
         }
     }
 

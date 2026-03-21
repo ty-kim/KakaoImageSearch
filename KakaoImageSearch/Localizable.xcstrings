@@ -93,6 +93,29 @@
         }
       }
     },
+    "network.error.timeout" : {
+      "comment" : "Request timed out",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Request timed out. Please try again."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リクエストがタイムアウトしました。もう一度お試しください。"
+          }
+        },
+        "ko" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "요청 시간이 초과되었습니다. 다시 시도해주세요."
+          }
+        }
+      }
+    },
     "network.error.unknown %@" : {
       "comment" : "Unclassified error with description",
       "localizations" : {
