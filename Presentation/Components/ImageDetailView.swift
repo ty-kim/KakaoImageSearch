@@ -78,6 +78,7 @@ struct ImageDetailView: View {
                     .foregroundStyle(AppColors.detailCloseButton, AppColors.detailCloseButtonShadow)
             }
             .accessibilityLabel(L10n.Accessibility.detailClose)
+            .accessibilityIdentifier("imageDetailView.closeButton")
             .padding(16)
         }
         .task {
