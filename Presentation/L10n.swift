@@ -88,6 +88,9 @@ nonisolated enum L10n {
         static var loading: String {
             String(localized: "accessibility.loading")
         }
+        static var detailClose: String {
+            String(localized: "accessibility.detail.close")
+        }
     }
 
     enum Bookmark {
