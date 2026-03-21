@@ -40,9 +40,9 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 124개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO 보안 검증 중심 (`Unit/`)
+- **유닛 테스트**: Swift Testing Framework, 128개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO 보안 검증 중심 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 44개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
-- **UI 테스트**: XCUITest, 25개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
+- **UI 테스트**: XCUITest, 26개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성
 - **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
 - **VoiceOver 접근성**: 주요 인터랙티브 컴포넌트에 `accessibilityLabel`/`accessibilityHint` 적용, 접근성 문자열도 ko/en/ja 3개 언어 지원
@@ -51,6 +51,7 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 
 과제 안내에 iPad 레이아웃 변경이 가능하다고 되어 있어, iPhone과 iPad에서 레이아웃을 분리해 구현했습니다.
 
+iPhone은 Portrait only로 제한했고, iPad는 4방향 회전을 모두 지원합니다.
 iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitView를 사용해 검색과 북마크를 한 화면에서 볼 수 있도록 했습니다.
 레이아웃 분기는 `UIDevice.current.userInterfaceIdiom`으로 판별합니다. `horizontalSizeClass` 대신 디바이스 idiom을 사용해 대형 iPhone landscape에서 iPad 레이아웃이 표시되는 문제를 방지했습니다.
 이미지 목록은 2열 그리드로 구성했고, 크기 계산은 화면 너비를 기준으로 처리했습니다.
@@ -138,6 +139,7 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 - `SearchResultItemView`: 이미지 크기 정보를 포함한 `accessibilityLabel` 적용
 - `EmptyStateView`: 메시지 영역에 `accessibilityLabel`, 재시도 버튼에 `accessibilityHint` 적용
 - `ToastView`: 등장 시 `AccessibilityNotification.Announcement`로 VoiceOver 자동 안내
+- `ImageDetailView`: 닫기 버튼에 `accessibilityLabel` 적용 ("이미지 닫기")
 - `ProgressView`: 검색/북마크 로딩 상태에 `accessibilityLabel` 적용
 - 탭(검색/북마크): `accessibilityHint`로 탭 전환 시 역할 안내
 - 추가 로드 재시도 버튼: `accessibilityHint` 적용
