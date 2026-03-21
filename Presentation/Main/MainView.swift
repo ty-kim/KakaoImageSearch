@@ -80,7 +80,7 @@ struct MainView: View {
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }
-                SearchView(viewModel: viewModel.searchViewModel, columns: 2)
+                SearchView(viewModel: viewModel.searchViewModel, columns: 1)
             }
             .navigationTitle(L10n.Tab.search)
             .navigationBarTitleDisplayMode(.inline)
