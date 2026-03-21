@@ -32,6 +32,7 @@
 		FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */; };
 		FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */; };
 		FC5768342F6EAE2E007D8364 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5768332F6EAE2E007D8364 /* AppColors.swift */; };
+		FC5768362F6EB2E2007D8364 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC5768352F6EB2E2007D8364 /* InfoPlist.xcstrings */; };
 		FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */; };
 		FC75FD002F6A9C4E00A90DC0 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */; };
 		FC75FD012F6A9C4E00A90DC0 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF82F6A9C4E00A90DC0 /* AppLogger.swift */; };
@@ -100,6 +101,7 @@
 		FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEntity.swift; sourceTree = "<group>"; };
 		FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
 		FC5768332F6EAE2E007D8364 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
+		FC5768352F6EB2E2007D8364 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
 		FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		FC75FCF52F6A9C4E00A90DC0 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 			children = (
 				FCCD77072F680E070081FC81 /* Assets.xcassets */,
 				FCCD77082F680E070081FC81 /* Info.plist */,
+				FC5768352F6EB2E2007D8364 /* InfoPlist.xcstrings */,
 				FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */,
 				FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */,
 			);
@@ -545,6 +548,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				FCCC21242F698EAC00363054 /* KakaoAPIKey.swift.example in Resources */,
+				FC5768362F6EB2E2007D8364 /* InfoPlist.xcstrings in Resources */,
 				FC116B732F69131000111870 /* DEVELOPMENT.md in Resources */,
 				FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */,
 				FC116B752F69131700111870 /* README.md in Resources */,
