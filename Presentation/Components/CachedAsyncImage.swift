@@ -16,12 +16,23 @@ import UIKit
 @MainActor
 final class CachedAsyncImageViewModel {
 
-    enum Phase {
+    enum Phase: Equatable {
         case idle
         case loading
         case success(UIImage)
         case failure
         case permanentFailure
+
+        static func == (lhs: Phase, rhs: Phase) -> Bool {
+            switch (lhs, rhs) {
+            case (.idle, .idle), (.loading, .loading), (.failure, .failure), (.permanentFailure, .permanentFailure):
+                return true
+            case (.success(let a), .success(let b)):
+                return a === b
+            default:
+                return false
+            }
+        }
     }
 
     /// 이미지 로드 최대 재시도 횟수
@@ -94,6 +105,7 @@ struct CachedAsyncImage: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: .fill)
+                    .transition(.opacity)
 
             case .failure:
                 placeholder(systemName: "arrow.clockwise")
@@ -104,6 +116,7 @@ struct CachedAsyncImage: View {
                 placeholder(systemName: "exclamationmark.triangle")
             }
         }
+        .animation(.easeIn(duration: 0.3), value: viewModel?.phase)
         .task(id: loadTrigger) {
             if viewModel == nil {
                 viewModel = CachedAsyncImageViewModel(downloader: downloader)
