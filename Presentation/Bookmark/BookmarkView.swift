@@ -12,6 +12,8 @@ struct BookmarkView: View {
     let viewModel: BookmarkViewModel
     var columns: Int = 1
 
+    private let toastTransitionDuration = 0.3
+
     var body: some View {
         GeometryReader { geometry in
             Group {
@@ -67,6 +69,6 @@ struct BookmarkView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeInOut(duration: 0.3), value: viewModel.toastMessage)
+        .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
     }
 }

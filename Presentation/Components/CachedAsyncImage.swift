@@ -85,6 +85,7 @@ final class CachedAsyncImageViewModel {
 struct CachedAsyncImage: View {
 
     let url: URL?
+    private let fadeInDuration = 0.3
 
     @Environment(\.imageDownloader) private var downloader
     @State private var viewModel: CachedAsyncImageViewModel?
@@ -116,7 +117,7 @@ struct CachedAsyncImage: View {
                 placeholder(systemName: "exclamationmark.triangle")
             }
         }
-        .animation(.easeIn(duration: 0.3), value: viewModel?.phase)
+        .animation(.easeIn(duration: fadeInDuration), value: viewModel?.phase)
         .task(id: loadTrigger) {
             if viewModel == nil {
                 viewModel = CachedAsyncImageViewModel(downloader: downloader)
