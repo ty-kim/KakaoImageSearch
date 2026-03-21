@@ -54,7 +54,7 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 iPhone은 Portrait only로 제한했고, iPad는 4방향 회전을 모두 지원합니다.
 iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitView를 사용해 검색과 북마크를 한 화면에서 볼 수 있도록 했습니다.
 레이아웃 분기는 `UIDevice.current.userInterfaceIdiom`으로 판별합니다. `horizontalSizeClass` 대신 디바이스 idiom을 사용해 대형 iPhone landscape에서 iPad 레이아웃이 표시되는 문제를 방지했습니다.
-이미지 목록은 2열 그리드로 구성했고, 크기 계산은 화면 너비를 기준으로 처리했습니다.
+iPad 검색 패널은 sidebar 폭에 맞춰 1열, 북마크 패널은 2열 그리드로 구성했고, 크기 계산은 화면 너비를 기준으로 처리했습니다.
 
 ### 6. 페이지네이션 & 에러 핸들링 UX
 
@@ -63,7 +63,7 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 - **페이지네이션**: `LazyVGrid` 마지막 아이템 `.onAppear` 트리거, 응답의 `isEnd` 값으로 완료 판별. API 페이지 제한(15페이지) 도달 시 실제 결과 소진과 구분해 안내 문구를 다르게 표시.
 - **재시도 UX**: 검색 실패 / 추가 로드 실패 / 북마크 로드 실패를 구분하여 각 위치에 맞는 재시도 버튼 제공.
 - **에러 vs 결과없음 구분**: 검색(`SearchState.error`/`.empty`)과 북마크(`BookmarkState.error`/`.loaded`) 모두 상태 enum 기반으로 UX 분기를 통일.
-- **이미지 에러 분류**: 재시도 가능 에러(일시적 서버 오류)와 불가 에러(포맷·크기)를 구분해, 불가 에러는 즉시 영구 실패 처리.
+- **이미지 에러 분류**: 재시도 가능 에러(일시적 서버 오류, 손상 데이터)와 불가 에러(포맷·크기)를 구분해, 불가 에러는 즉시 영구 실패 처리.
 - **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 toastMessage로 분리해 하단 Toast로 표시, 지속 시간은 생성자 주입으로 제어해 테스트에서는 즉시 완료.
 
 페이지네이션, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 과제에서도 비슷한 관점으로 정리했습니다.
@@ -85,7 +85,7 @@ iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitVie
 | Content-Length 제한 | 헤더 사전 검사 + 스트리밍 바이트 단위 누적 검사 (20MB) | 비정상 파일에 의한 메모리 과다 사용 방지 |
 | HTTP → HTTPS 자동 승격 | ATS 예외 도메인 외 HTTP URL을 HTTPS로 변환 | 평문 전송 최소화 |
 
-스킴 검증과 SSRF 방어는 `toImageItem()` 변환 시점에 적용해, 검증을 통과하지 못한 URL은 `ImageItem`으로 변환되지 않습니다. 이미지 다운로드 단계의 검증은 `ImageDownloader` actor 내부에서 수행합니다.
+스킴·SSRF 검증은 `toImageItem()` 변환 시점에, Content-Type·크기 검증은 `ImageDownloader` actor 내부에서 수행합니다. SSRF 방어는 표준 IPv4만 검증하며, IPv6·비표준 표기는 API 응답 신뢰를 전제로 미대응입니다.
 
 ### 8. RxSwift 대신 Swift Concurrency
 
