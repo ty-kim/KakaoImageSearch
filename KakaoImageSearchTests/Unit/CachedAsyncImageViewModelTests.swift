@@ -34,6 +34,36 @@ struct CachedAsyncImageViewModelTests {
         CachedAsyncImageViewModel(downloader: downloader, backoffBase: 0)
     }
 
+    // MARK: - Phase Equatable
+
+    @Test("같은 case끼리 동등하다 (idle, loading, failure, permanentFailure)")
+    func phaseEquatable_sameCases() {
+        #expect(CachedAsyncImageViewModel.Phase.idle == .idle)
+        #expect(CachedAsyncImageViewModel.Phase.loading == .loading)
+        #expect(CachedAsyncImageViewModel.Phase.failure == .failure)
+        #expect(CachedAsyncImageViewModel.Phase.permanentFailure == .permanentFailure)
+    }
+
+    @Test("같은 UIImage 인스턴스의 success는 동등하다")
+    func phaseEquatable_sameImageInstance() {
+        let image = UIImage()
+        #expect(CachedAsyncImageViewModel.Phase.success(image) == .success(image))
+    }
+
+    @Test("다른 UIImage 인스턴스의 success는 동등하지 않다")
+    func phaseEquatable_differentImageInstances() {
+        let imageA = UIImage()
+        let imageB = UIImage()
+        #expect(CachedAsyncImageViewModel.Phase.success(imageA) != .success(imageB))
+    }
+
+    @Test("다른 case끼리는 동등하지 않다")
+    func phaseEquatable_differentCases() {
+        #expect(CachedAsyncImageViewModel.Phase.idle != .loading)
+        #expect(CachedAsyncImageViewModel.Phase.failure != .permanentFailure)
+        #expect(CachedAsyncImageViewModel.Phase.idle != .success(UIImage()))
+    }
+
     // MARK: - Phase 상태 전이
 
     @Test("URL nil이면 idle 상태 유지")

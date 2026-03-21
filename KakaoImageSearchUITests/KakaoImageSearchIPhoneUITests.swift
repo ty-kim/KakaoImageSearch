@@ -184,6 +184,24 @@ extension KakaoImageSearchIPhoneUITests {
         XCTAssertTrue(emptyState.waitForExistence(timeout: 3))
     }
 
+    // MARK: - 이미지 상세보기
+
+    func test_imageDetail_closeButton_hasAccessibilityLabel() {
+        let searchField = app.textFields["searchBar.textField"]
+        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
+
+        searchField.tap()
+        searchField.typeText("cat")
+
+        let item = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
+        XCTAssertTrue(item.waitForExistence(timeout: 3))
+        item.tap()
+
+        let closeButton = app.buttons["imageDetailView.closeButton"]
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 3))
+        XCTAssertEqual(closeButton.label, "이미지 닫기")
+    }
+
     // MARK: - 퍼포먼스
 
     func test_launchPerformance() {
