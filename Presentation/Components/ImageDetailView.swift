@@ -41,7 +41,8 @@ struct ImageDetailView: View {
                     // 더블탭: 확대↔원본 토글.
                     // 축소 시 offset도 리셋 — 확대 상태에서 패닝한 위치가 원본에서는 무의미.
                     .onTapGesture(count: 2) {
-                        withAnimation(.easeInOut(duration: 0.3)) {
+                        let zoomToggleDuration = 0.3
+                        withAnimation(.easeInOut(duration: zoomToggleDuration)) {
                             if scale > minScale {
                                 scale = minScale
                                 lastScale = minScale
@@ -104,7 +105,8 @@ struct ImageDetailView: View {
             .onEnded { _ in
                 // onChanged에서 클램핑하지만, 제스처 관성으로 범위 밖 값이 남을 수 있어 재클램핑.
                 // 1배 이하로 복귀하면 패닝 위치도 리셋하여 이미지를 중앙에 정렬.
-                withAnimation(.easeOut(duration: 0.2)) {
+                let snapBackDuration = 0.2
+                withAnimation(.easeOut(duration: snapBackDuration)) {
                     scale = min(max(scale, minScale), maxScale)
                     if scale <= minScale {
                         offset = .zero

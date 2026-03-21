@@ -14,6 +14,7 @@ struct SearchView: View {
 
     var body: some View {
         GeometryReader { geometry in
+            let toastTransitionDuration = 0.3
             Group {
                 switch viewModel.searchState {
                 case .loading:
@@ -118,7 +119,7 @@ struct SearchView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .animation(.easeInOut(duration: 0.3), value: viewModel.toastMessage)
+            .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
         }
     }
 }

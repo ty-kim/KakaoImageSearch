@@ -32,7 +32,8 @@ struct SkeletonItemView: View {
                     .mask(RoundedRectangle(cornerRadius: 15))
             )
             .onAppear {
-                withAnimation(.linear(duration: 1.2).repeatForever(autoreverses: false)) {
+                let skeletonCycleDuration = 1.2
+                withAnimation(.linear(duration: skeletonCycleDuration).repeatForever(autoreverses: false)) {
                     phase = 1
                 }
             }
