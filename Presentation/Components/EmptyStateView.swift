@@ -18,11 +18,11 @@ struct EmptyStateView: View {
             VStack(spacing: 16) {
                 Image(systemName: "photo.stack")
                     .font(.system(size: 52))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.placeholderIcon)
 
                 Text(message)
                     .font(.callout)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.placeholderIcon)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 32)
             }
@@ -36,8 +36,8 @@ struct EmptyStateView: View {
                         .font(.callout.weight(.medium))
                         .padding(.horizontal, 24)
                         .padding(.vertical, 10)
-                        .background(.tint.opacity(0.12))
-                        .foregroundStyle(.tint)
+                        .background(AppColors.retryBackground)
+                        .foregroundStyle(AppColors.retryForeground)
                         .clipShape(Capsule())
                 }
                 .accessibilityHint(L10n.Accessibility.retryHint)

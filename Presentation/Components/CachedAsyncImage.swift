@@ -118,11 +118,11 @@ struct CachedAsyncImage: View {
 
     private func placeholder(systemName: String) -> some View {
         Rectangle()
-            .fill(Color(.systemGray5))
+            .fill(AppColors.placeholderBackground)
             .overlay(
                 Image(systemName: systemName)
                     .font(.title)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppColors.placeholderIcon)
             )
     }
 }

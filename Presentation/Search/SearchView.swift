@@ -84,7 +84,7 @@ struct SearchView: View {
                         case .apiLimitReached:
                             Text(L10n.Search.apiLimitReached)
                                 .font(.footnote)
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(AppColors.placeholderIcon)
                                 .frame(maxWidth: .infinity)
                                 .padding(.vertical, 12)
                                 .accessibilityIdentifier("searchView.apiLimitReached")
@@ -96,8 +96,8 @@ struct SearchView: View {
                                     .font(.callout.weight(.medium))
                                     .padding(.horizontal, 24)
                                     .padding(.vertical, 10)
-                                    .background(.tint.opacity(0.12))
-                                    .foregroundStyle(.tint)
+                                    .background(AppColors.retryBackground)
+                                    .foregroundStyle(AppColors.retryForeground)
                                     .clipShape(Capsule())
                             }
                             .frame(maxWidth: .infinity)

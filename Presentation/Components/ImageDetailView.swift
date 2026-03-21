@@ -28,7 +28,7 @@ struct ImageDetailView: View {
 
     var body: some View {
         ZStack {
-            Color.black.ignoresSafeArea()
+            AppColors.detailBackground.ignoresSafeArea()
 
             if let image {
                 Image(uiImage: image)
@@ -57,14 +57,14 @@ struct ImageDetailView: View {
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.largeTitle)
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(AppColors.detailOverlay)
                     Text(L10n.Search.imageLoadFailed)
                         .font(.callout)
-                        .foregroundStyle(.white.opacity(0.6))
+                        .foregroundStyle(AppColors.detailOverlay)
                 }
             } else {
                 ProgressView()
-                    .tint(.white)
+                    .tint(AppColors.detailCloseButton)
             }
         }
         .overlay(alignment: .topTrailing) {
@@ -74,7 +74,7 @@ struct ImageDetailView: View {
                 Image(systemName: "xmark.circle.fill")
                     .font(.title)
                     .symbolRenderingMode(.palette)
-                    .foregroundStyle(.white, .white.opacity(0.3))
+                    .foregroundStyle(AppColors.detailCloseButton, AppColors.detailCloseButtonShadow)
             }
             .padding(16)
         }

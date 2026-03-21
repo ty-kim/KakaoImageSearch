@@ -25,7 +25,7 @@ struct SkeletonItemView: View {
 
     var body: some View {
         RoundedRectangle(cornerRadius: 15)
-            .fill(Color(.systemGray5))
+            .fill(AppColors.placeholderBackground)
             .frame(width: width, height: width * aspectRatio)
             .overlay(
                 shimmerGradient
@@ -43,7 +43,7 @@ struct SkeletonItemView: View {
             LinearGradient(
                 colors: [
                     .clear,
-                    Color(.systemGray4).opacity(0.5),
+                    AppColors.skeletonShimmer,
                     .clear
                 ],
                 startPoint: .leading,
