@@ -16,7 +16,7 @@ struct SearchBar: View {
     var body: some View {
         HStack(spacing: 8) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
+                .foregroundStyle(AppColors.searchBarIcon)
 
             TextField(L10n.Search.placeholder, text: $text)
                 .textFieldStyle(.plain)
@@ -33,7 +33,7 @@ struct SearchBar: View {
                     text = ""
                 } label: {
                     Image(systemName: "xmark.circle.fill")
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(AppColors.searchBarIcon)
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel(L10n.Accessibility.searchClear)
@@ -42,7 +42,7 @@ struct SearchBar: View {
         }
         .padding(.horizontal, 12)
         .padding(.vertical, 10)
-        .background(Color(.systemGray6))
+        .background(AppColors.searchBarBackground)
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .padding(.horizontal, 16)
         .padding(.vertical, 8)

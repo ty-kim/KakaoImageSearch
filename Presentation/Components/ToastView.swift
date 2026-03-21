@@ -14,10 +14,10 @@ struct ToastView: View {
     var body: some View {
         Text(message)
             .font(.callout)
-            .foregroundStyle(.white)
+            .foregroundStyle(AppColors.toastForeground)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
-            .background(Color.black.opacity(0.75))
+            .background(AppColors.toastBackground)
             .clipShape(Capsule())
             .padding(.horizontal, 24)
             .accessibilityLabel(message)

@@ -16,8 +16,8 @@ struct BookmarkButton: View {
         Button(action: action) {
             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                 .font(.title2)
-                .foregroundStyle(isBookmarked ? Color.yellow : Color.white)
-                .shadow(color: .black.opacity(0.4), radius: 2, x: 0, y: 1)
+                .foregroundStyle(isBookmarked ? AppColors.bookmarkActive : AppColors.bookmarkInactive)
+                .shadow(color: AppColors.bookmarkShadow, radius: 2, x: 0, y: 1)
                 .contentTransition(.symbolEffect(.replace))
                 .frame(width: 44, height: 44)
                 .contentShape(Rectangle())

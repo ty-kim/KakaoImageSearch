@@ -31,6 +31,7 @@
 		FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203312F7C000400A90DC0 /* ImageDetailView.swift */; };
 		FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */; };
 		FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */; };
+		FC5768342F6EAE2E007D8364 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5768332F6EAE2E007D8364 /* AppColors.swift */; };
 		FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */; };
 		FC75FD002F6A9C4E00A90DC0 /* CachedAsyncImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */; };
 		FC75FD012F6A9C4E00A90DC0 /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF82F6A9C4E00A90DC0 /* AppLogger.swift */; };
@@ -98,6 +99,7 @@
 		FC3203312F7C000400A90DC0 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEntity.swift; sourceTree = "<group>"; };
 		FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		FC5768332F6EAE2E007D8364 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
 		FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CachedAsyncImage.swift; sourceTree = "<group>"; };
 		FC75FCF52F6A9C4E00A90DC0 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 		FC1E8A022F6826B2008CAC25 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				FC5768332F6EAE2E007D8364 /* AppColors.swift */,
 				FC1E89FF2F6826B2008CAC25 /* BookmarkButton.swift */,
 				FC75FCF42F6A9C4E00A90DC0 /* CachedAsyncImage.swift */,
 				FC1E8A002F6826B2008CAC25 /* EmptyStateView.swift */,
@@ -610,6 +613,7 @@
 				FC32032A2F7C000200A90DC0 /* PresentationLogger.swift in Sources */,
 				FC32032E2F7C000300A90DC0 /* SkeletonItemView.swift in Sources */,
 				FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */,
+				FC5768342F6EAE2E007D8364 /* AppColors.swift in Sources */,
 				FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */,
 				FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */,
 			);
