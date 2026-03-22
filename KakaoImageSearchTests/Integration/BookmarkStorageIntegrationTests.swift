@@ -176,6 +176,8 @@ struct BookmarkStorageIntegrationTests {
             thumbnailURL: URL(string: "https://example.com/thumb.jpg"),
             width: 1920,
             height: 1080,
+            displaySitename: "Naver Blog",
+            datetime: Date(timeIntervalSince1970: 1704034800),
             isBookmarked: true
         )
 
@@ -188,5 +190,7 @@ struct BookmarkStorageIntegrationTests {
         #expect(loaded.thumbnailURL == item.thumbnailURL)
         #expect(loaded.width == item.width)
         #expect(loaded.height == item.height)
+        #expect(loaded.displaySitename == item.displaySitename)
+        #expect(loaded.datetime == item.datetime)
     }
 }

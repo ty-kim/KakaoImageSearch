@@ -108,6 +108,12 @@ extension KakaoSearchResponseDTO.Document {
         }
     }
 
+    private static let iso8601Formatter: ISO8601DateFormatter = {
+        let f = ISO8601DateFormatter()
+        f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        return f
+    }()
+
     func toImageItem() -> ImageItem? {
         guard let imageUrl,
               let imageURL = URL(string: imageUrl),
@@ -119,12 +125,16 @@ extension KakaoSearchResponseDTO.Document {
             .flatMap { URL(string: $0) }
             .flatMap { Self.isSafeURL($0) ? $0 : nil }
 
+        let parsedDate = datetime.flatMap { Self.iso8601Formatter.date(from: $0) }
+
         return ImageItem(
             id: imageUrl,
             imageURL: imageURL,
             thumbnailURL: thumbnailURL,
             width: width,
             height: height,
+            displaySitename: displaySitename,
+            datetime: parsedDate,
             isBookmarked: false
         )
     }

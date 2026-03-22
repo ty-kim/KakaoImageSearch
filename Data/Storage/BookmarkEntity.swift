@@ -16,14 +16,18 @@ final class BookmarkEntity {
     var thumbnailURL: String?
     var width: Int?
     var height: Int?
+    var displaySitename: String?
+    var datetime: Date?
     var createdAt: Date
 
-    init(id: String, imageURL: String?, thumbnailURL: String?, width: Int?, height: Int?, createdAt: Date = Date()) {
+    init(id: String, imageURL: String?, thumbnailURL: String?, width: Int?, height: Int?, displaySitename: String? = nil, datetime: Date? = nil, createdAt: Date = Date()) {
         self.id = id
         self.imageURL = imageURL
         self.thumbnailURL = thumbnailURL
         self.width = width
         self.height = height
+        self.displaySitename = displaySitename
+        self.datetime = datetime
         self.createdAt = createdAt
     }
 
@@ -33,7 +37,9 @@ final class BookmarkEntity {
             imageURL: item.imageURL?.absoluteString,
             thumbnailURL: item.thumbnailURL?.absoluteString,
             width: item.width,
-            height: item.height
+            height: item.height,
+            displaySitename: item.displaySitename,
+            datetime: item.datetime
         )
     }
 
@@ -44,6 +50,8 @@ final class BookmarkEntity {
             thumbnailURL: thumbnailURL.flatMap { URL(string: $0) },
             width: width,
             height: height,
+            displaySitename: displaySitename,
+            datetime: datetime,
             isBookmarked: true
         )
     }

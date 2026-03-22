@@ -137,6 +137,63 @@ struct KakaoSearchResponseDTOTests {
         #expect(item.isBookmarked == false)
     }
 
+    @Test("toImageItem이 ISO8601 datetime을 Date로 파싱하여 전달한다")
+    func toImageItem_parsesDatetime() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{
+                "image_url": "https://example.com/image.jpg",
+                "datetime": "2024-01-01T00:00:00.000+09:00"
+            }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        let item = try #require(dto.documents[0].toImageItem())
+
+        #expect(item.datetime != nil)
+        // 2024-01-01T00:00:00+09:00 = 2023-12-31T15:00:00Z
+        let expected = Date(timeIntervalSince1970: 1704034800)
+        #expect(item.datetime == expected)
+    }
+
+    @Test("toImageItem이 잘못된 datetime 문자열이면 nil로 처리한다")
+    func toImageItem_invalidDatetime_returnsNil() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{
+                "image_url": "https://example.com/image.jpg",
+                "datetime": "not-a-date"
+            }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        let item = try #require(dto.documents[0].toImageItem())
+
+        #expect(item.datetime == nil)
+    }
+
+    @Test("toImageItem이 displaySitename을 전달한다")
+    func toImageItem_passesDisplaySitename() throws {
+        let json = """
+        {
+            "meta": { "total_count": 1, "pageable_count": 1, "is_end": false },
+            "documents": [{
+                "image_url": "https://example.com/image.jpg",
+                "display_sitename": "Naver Blog"
+            }]
+        }
+        """.data(using: .utf8)!
+
+        let dto = try decoder.decode(KakaoSearchResponseDTO.self, from: json)
+        let item = try #require(dto.documents[0].toImageItem())
+
+        #expect(item.displaySitename == "Naver Blog")
+    }
+
     @Test("imageUrl이 nil인 Document는 toImageItem이 nil을 반환한다")
     func toImageItem_nilImageUrl_returnsNil() throws {
         let json = """

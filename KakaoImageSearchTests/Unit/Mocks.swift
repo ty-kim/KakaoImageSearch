@@ -152,6 +152,8 @@ extension ImageItem {
         thumbnailURL: URL? = URL(string: "https://example.com/thumb.jpg"),
         width: Int? = 800,
         height: Int? = 600,
+        displaySitename: String? = nil,
+        datetime: Date? = nil,
         isBookmarked: Bool = false
     ) -> ImageItem {
         ImageItem(
@@ -160,6 +162,8 @@ extension ImageItem {
             thumbnailURL: thumbnailURL,
             width: width,
             height: height,
+            displaySitename: displaySitename,
+            datetime: datetime,
             isBookmarked: isBookmarked
         )
     }

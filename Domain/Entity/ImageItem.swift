@@ -13,6 +13,8 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
     let thumbnailURL: URL?
     let width: Int?
     let height: Int?
+    let displaySitename: String?
+    let datetime: Date?
     var isBookmarked: Bool
 
     /// full-width 표시 시 높이 계산에 사용 (height / width)
@@ -24,6 +26,16 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
     var displayURL: URL? {
         imageURL ?? thumbnailURL
     }
+
+    private static let relativeDateFormatter: RelativeDateTimeFormatter = {
+        let f = RelativeDateTimeFormatter()
+        f.unitsStyle = .short
+        return f
+    }()
+
+    var relativeTimeString: String? {
+        datetime.map { Self.relativeDateFormatter.localizedString(for: $0, relativeTo: Date()) }
+    }
 }
 
 extension ImageItem {
@@ -33,6 +45,8 @@ extension ImageItem {
         thumbnailURL: URL,
         width: Int,
         height: Int,
+        displaySitename: String? = nil,
+        datetime: Date? = nil,
         isBookmarked: Bool
     ) {
         self.id = id
@@ -40,6 +54,8 @@ extension ImageItem {
         self.thumbnailURL = thumbnailURL
         self.width = width
         self.height = height
+        self.displaySitename = displaySitename
+        self.datetime = datetime
         self.isBookmarked = isBookmarked
     }
 }
