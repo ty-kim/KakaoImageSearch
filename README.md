@@ -1,8 +1,11 @@
 # KakaoImageSearch
 
-Kakao 이미지 검색과 북마크 기능을 구현한 **SwiftUI 기반 iOS 앱**입니다.  
-**Network Layer, Image Downloader, DI, Cache**를 직접 구현했습니다.  
-또한 **Clean Architecture + MVVM** 구조를 바탕으로 **상태 분리, 실패 복구, 테스트 가능성**을 우선해 구성했습니다.
+![Build](https://github.com/ty-kim/KakaoImageSearch/actions/workflows/ci.yml/badge.svg)
+
+이미지 검색 · 상세 뷰어 · 북마크 관리를 지원하는 **SwiftUI 기반 iOS 앱**입니다.
+대량 이미지의 효율적 로딩, 캐싱, 페이지네이션에 초점을 두었으며,
+**Network Layer, Image Downloader, DI, Cache**를 직접 구현했습니다.
+**Clean Architecture + MVVM** 구조를 바탕으로 **상태 분리, 실패 복구, 테스트 가능성**을 우선해 구성했습니다.
 
 
 ## Quick Guide
