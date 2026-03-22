@@ -22,6 +22,23 @@ Kakao 이미지 검색과 북마크 기능을 구현한 **SwiftUI 기반 iOS 앱
 
 샘플 키 파일은 `KakaoAPIKey.swift.example`에 포함되어 있습니다.
 
+### 빌드 & 테스트 (CLI)
+
+```bash
+# 빌드
+xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
+  -destination 'platform=iOS Simulator,name=iPhone 16' build
+
+# 유닛 + 통합 테스트
+xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
+  -destination 'platform=iOS Simulator,name=iPhone 16' test
+
+# UI 테스트만
+xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
+  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -only-testing:KakaoImageSearchUITests test
+```
+
 ### 빠르게 보면 좋은 파일
 - `README.md` : 실행 방법 / 구조 요약
 - `DEVELOPMENT.md` : 설계 의도 / 예외 처리 / 개선 포인트
