@@ -8,6 +8,7 @@
 import UIKit
 
 enum ImageDownloadError: Error, LocalizedError {
+    case notFound
     case invalidResponse
     case invalidData
     case notImageContentType
@@ -15,6 +16,7 @@ enum ImageDownloadError: Error, LocalizedError {
 
     var isRetryable: Bool {
         switch self {
+        case .notFound:              return false
         case .invalidResponse:       return true
         case .invalidData:           return true
         case .notImageContentType:   return false
@@ -24,6 +26,7 @@ enum ImageDownloadError: Error, LocalizedError {
 
     var errorDescription: String? {
         switch self {
+        case .notFound:              return String(localized: "image_download.error.not_found")
         case .invalidResponse:       return String(localized: "image_download.error.invalid_response")
         case .invalidData:           return String(localized: "image_download.error.invalid_data")
         case .notImageContentType:   return String(localized: "image_download.error.not_image_content_type")

@@ -112,8 +112,11 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
 
             guard let http = response as? HTTPURLResponse,
                   (200..<300).contains(http.statusCode) else {
-                Logger.imageLoader.errorPrint("Invalid response for: \(secureURL.absoluteString)")
-                throw ImageDownloadError.invalidResponse
+                let statusCode = (response as? HTTPURLResponse)?.statusCode
+                Logger.imageLoader.errorPrint("Invalid response (\(statusCode ?? 0)) for: \(secureURL.absoluteString)")
+                throw statusCode == 404
+                    ? ImageDownloadError.notFound
+                    : ImageDownloadError.invalidResponse
             }
 
             // Content-Type이 image/* 인지 검증 — nil이면 거부

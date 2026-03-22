@@ -99,15 +99,15 @@ struct ImageDownloaderIntegrationTests {
         }
     }
 
-    @Test("4xx 응답은 invalidResponse를 던진다")
-    func download_4xx_throwsInvalidResponse() async throws {
+    @Test("404 응답은 notFound를 던진다")
+    func download_404_throwsNotFound() async throws {
         let sut = makeDownloader()
         defer { MockImageURLProtocol.requestHandler = nil }
         MockImageURLProtocol.requestHandler = { req in
             (HTTPURLResponse(url: req.url!, statusCode: 404, httpVersion: nil, headerFields: nil)!, Data())
         }
 
-        await #expect(throws: ImageDownloadError.invalidResponse) {
+        await #expect(throws: ImageDownloadError.notFound) {
             _ = try await sut.download(from: imageURL)
         }
     }
