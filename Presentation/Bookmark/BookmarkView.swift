@@ -55,6 +55,7 @@ struct BookmarkView: View {
                         }
                         .padding(.horizontal, horizontalPadding)
                     }
+                    .scrollDismissesKeyboard(.interactively)
                     .accessibilityIdentifier("bookmarkView.list")
                 }
             }

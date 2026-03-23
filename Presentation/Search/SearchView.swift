@@ -31,6 +31,7 @@ struct SearchView: View {
                         }
                         .padding(.horizontal, horizontalPadding)
                     }
+                    .scrollDismissesKeyboard(.interactively)
                     .accessibilityLabel(L10n.Accessibility.loading)
                     .accessibilityIdentifier("searchView.loadingIndicator")
 
@@ -109,6 +110,7 @@ struct SearchView: View {
                             EmptyView()
                         }
                     }
+                    .scrollDismissesKeyboard(.interactively)
                     .accessibilityIdentifier("searchView.resultsList")
                 }
             }

@@ -25,13 +25,7 @@ struct MainView: View {
             await viewModel.loadInitialData()
         }
     }
-
-    /// 탭 내부 콘텐츠를 탭하면 키보드를 내리는 제스처.
-    /// simultaneousGesture로 붙여 내부 버튼·스크롤과 충돌 없이 동시 인식한다.
-    private var dismissKeyboardGesture: some Gesture {
-        TapGesture().onEnded { isSearchFieldFocused = false }
-    }
-
+    
     // MARK: - iPhone Layout
 
     private var iPhoneLayout: some View {
@@ -52,7 +46,6 @@ struct MainView: View {
             TabView(selection: $viewModel.selectedTab) {
                 SearchView(viewModel: viewModel.searchViewModel)
                     // 검색 탭 영역 탭 시 키보드 dismiss
-                    .simultaneousGesture(dismissKeyboardGesture)
                     .tabItem {
                         Label(L10n.Tab.search, systemImage: "magnifyingglass")
                     }
@@ -61,7 +54,6 @@ struct MainView: View {
 
                 BookmarkView(viewModel: viewModel.bookmarkViewModel)
                     // 북마크 탭 영역 탭 시 키보드 dismiss
-                    .simultaneousGesture(dismissKeyboardGesture)
                     .tabItem {
                         Label(L10n.Tab.bookmark, systemImage: "bookmark.fill")
                     }
