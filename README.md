@@ -30,15 +30,15 @@
 ```bash
 # 빌드
 xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
-  -destination 'platform=iOS Simulator,name=iPhone 16' build
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
 
 # 유닛 + 통합 테스트
 xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
-  -destination 'platform=iOS Simulator,name=iPhone 16' test
+  -destination 'platform=iOS Simulator,name=iPhone 17' test
 
 # UI 테스트만
 xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
+  -destination 'platform=iOS Simulator,name=iPhone 17' \
   -only-testing:KakaoImageSearchUITests test
 ```
 
