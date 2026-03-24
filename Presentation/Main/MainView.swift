@@ -42,9 +42,11 @@ struct MainView: View {
                         viewModel.selectedTab = .search
                     }
                 }
+                .onTapGesture {
+                }
 
             TabView(selection: $viewModel.selectedTab) {
-                SearchView(viewModel: viewModel.searchViewModel)
+                SearchView(viewModel: viewModel.searchViewModel, isFocused: $isSearchFieldFocused)
                     // 검색 탭 영역 탭 시 키보드 dismiss
                     .tabItem {
                         Label(L10n.Tab.search, systemImage: "magnifyingglass")
@@ -52,7 +54,7 @@ struct MainView: View {
                     .tag(MainViewModel.Tab.search)
                     .accessibilityHint(L10n.Accessibility.tabSearchHint)
 
-                BookmarkView(viewModel: viewModel.bookmarkViewModel)
+                BookmarkView(viewModel: viewModel.bookmarkViewModel, isFocused: $isSearchFieldFocused)
                     // 북마크 탭 영역 탭 시 키보드 dismiss
                     .tabItem {
                         Label(L10n.Tab.bookmark, systemImage: "bookmark.fill")
@@ -72,12 +74,12 @@ struct MainView: View {
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }
-                SearchView(viewModel: viewModel.searchViewModel, columns: 1)
+                SearchView(viewModel: viewModel.searchViewModel, isFocused: $isSearchFieldFocused, columns: 1)
             }
             .navigationTitle(L10n.Tab.search)
             .navigationBarTitleDisplayMode(.inline)
         } detail: {
-            BookmarkView(viewModel: viewModel.bookmarkViewModel, columns: 2)
+            BookmarkView(viewModel: viewModel.bookmarkViewModel, isFocused: $isSearchFieldFocused, columns: 2)
                 .navigationTitle(L10n.Tab.bookmark)
                 .navigationBarTitleDisplayMode(.inline)
         }

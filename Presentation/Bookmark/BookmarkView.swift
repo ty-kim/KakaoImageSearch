@@ -10,6 +10,7 @@ import SwiftUI
 struct BookmarkView: View {
 
     let viewModel: BookmarkViewModel
+    var isFocused: FocusState<Bool>.Binding
     var columns: Int = 1
 
     private let toastTransitionDuration = 0.3
@@ -70,6 +71,9 @@ struct BookmarkView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
+        .simultaneousGesture(TapGesture().onEnded {
+            isFocused.wrappedValue = false
+        })
         .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
     }
 }

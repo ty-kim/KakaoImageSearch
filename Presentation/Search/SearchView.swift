@@ -10,6 +10,7 @@ import SwiftUI
 struct SearchView: View {
 
     let viewModel: SearchViewModel
+    var isFocused: FocusState<Bool>.Binding
     var columns: Int = 1
 
     var body: some View {
@@ -121,6 +122,9 @@ struct SearchView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+            .simultaneousGesture(TapGesture().onEnded {
+                isFocused.wrappedValue = false
+            })
             .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
         }
     }
