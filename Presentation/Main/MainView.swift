@@ -11,11 +11,11 @@ struct MainView: View {
 
     @State var viewModel: MainViewModel
     @FocusState private var isSearchFieldFocused: Bool
-    private var isIPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         Group {
-            if isIPad {
+            if sizeClass == .regular {
                 iPadLayout
             } else {
                 iPhoneLayout
