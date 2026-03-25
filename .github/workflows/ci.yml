@@ -1,0 +1,21 @@
+name: CI
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master, develop]
+
+jobs:
+  test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build & Test
+        run: A |
+          echo 'let kakaoAPIKey = "test-key"' > KakaoImageSearch/KakaoAPIKey.swift
+          xcodebuild -project KakaoImageSearch.xcodeproj \
+            -scheme KakaoImageSearch \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -only-testing:KakaoImageSearchTests \
+            test
