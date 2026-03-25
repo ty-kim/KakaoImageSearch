@@ -19,18 +19,15 @@ struct SearchView: View {
             Group {
                 switch viewModel.searchState {
                 case .loading:
-                    let horizontalPadding: CGFloat = columns == 1 ? 0 : 20
-                    let columnSpacing: CGFloat = columns == 1 ? 0 : 20
-                    let skeletonWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
-                    let skeletonColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
+                    let layout = GridLayout(columns: columns, availableWidth: geometry.size.width)
 
                     ScrollView {
-                        LazyVGrid(columns: skeletonColumns, spacing: 20) {
+                        LazyVGrid(columns: layout.gridColumns, spacing: 20) {
                             ForEach(0..<6, id: \.self) { _ in
-                                SkeletonItemView(width: skeletonWidth)
+                                SkeletonItemView(width: layout.itemWidth)
                             }
                         }
-                        .padding(.horizontal, horizontalPadding)
+                        .padding(.horizontal, layout.horizontalPadding)
                     }
                     .scrollDismissesKeyboard(.interactively)
                     .accessibilityLabel(L10n.Accessibility.loading)
@@ -53,17 +50,14 @@ struct SearchView: View {
                     EmptyStateView(message: L10n.Search.emptyInitial, accessibilityID: "searchView.emptyState")
 
                 case .loaded(let paginationState):
-                    let horizontalPadding: CGFloat = columns == 1 ? 0 : 20
-                    let columnSpacing: CGFloat = columns == 1 ? 0 : 20
-                    let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
-                    let gridColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
+                    let layout = GridLayout(columns: columns, availableWidth: geometry.size.width)
 
                     ScrollView {
-                        LazyVGrid(columns: gridColumns, spacing: 20) {
+                        LazyVGrid(columns: layout.gridColumns, spacing: 20) {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
-                                    screenWidth: itemWidth,
+                                    screenWidth: layout.itemWidth,
                                     isBookmarkInFlight: viewModel.inFlightBookmarkIDs.contains(item.id)
                                 ) {
                                     Task { await viewModel.toggleBookmark(for: item) }
@@ -76,7 +70,7 @@ struct SearchView: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, horizontalPadding)
+                        .padding(.horizontal, layout.horizontalPadding)
 
                         switch paginationState {
                         case .loadingMore:

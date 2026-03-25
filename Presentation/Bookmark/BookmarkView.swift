@@ -36,17 +36,14 @@ struct BookmarkView: View {
                     EmptyStateView(message: L10n.Bookmark.empty, accessibilityID: "bookmarkView.emptyState")
 
                 case .loaded:
-                    let horizontalPadding: CGFloat = columns == 1 ? 0 : 20
-                    let columnSpacing: CGFloat = columns == 1 ? 0 : 20
-                    let itemWidth = (geometry.size.width - horizontalPadding * 2 - columnSpacing * CGFloat(columns - 1)) / CGFloat(columns)
-                    let gridColumns = Array(repeating: GridItem(.flexible(), spacing: columnSpacing), count: columns)
+                    let layout = GridLayout(columns: columns, availableWidth: geometry.size.width)
 
                     ScrollView {
-                        LazyVGrid(columns: gridColumns, spacing: 20) {
+                        LazyVGrid(columns: layout.gridColumns, spacing: 20) {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
-                                    screenWidth: itemWidth,
+                                    screenWidth: layout.itemWidth,
                                     isBookmarkInFlight: viewModel.inFlightBookmarkIDs.contains(item.id)
                                 ) {
                                     Task { await viewModel.toggleBookmark(for: item) }
@@ -54,7 +51,7 @@ struct BookmarkView: View {
                                 .accessibilityIdentifier("bookmarkItem.\(item.id)")
                             }
                         }
-                        .padding(.horizontal, horizontalPadding)
+                        .padding(.horizontal, layout.horizontalPadding)
                     }
                     .scrollDismissesKeyboard(.interactively)
                     .accessibilityIdentifier("bookmarkView.list")

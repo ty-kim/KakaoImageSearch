@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E24007BDBABB36758AA51A8A /* GridLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = C788FCADE028A7C8A60D968E /* GridLayout.swift */; };
 		FC116B732F69131000111870 /* DEVELOPMENT.md in Resources */ = {isa = PBXBuildFile; fileRef = FC116B722F69131000111870 /* DEVELOPMENT.md */; };
 		FC116B752F69131700111870 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = FC116B742F69131700111870 /* README.md */; };
 		FC1E89F72F681CC2008CAC25 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */; };
@@ -76,6 +77,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C788FCADE028A7C8A60D968E /* GridLayout.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = GridLayout.swift; path = ../../Presentation/Components/GridLayout.swift; sourceTree = "<group>"; };
 		FC116B722F69131000111870 /* DEVELOPMENT.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DEVELOPMENT.md; sourceTree = "<group>"; };
 		FC116B742F69131700111870 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -134,11 +136,15 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FCCD76852F680A850081FC81 /* KakaoImageSearchTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = KakaoImageSearchTests;
 			sourceTree = "<group>";
 		};
 		FCCD768F2F680A850081FC81 /* KakaoImageSearchUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+			);
 			path = KakaoImageSearchUITests;
 			sourceTree = "<group>";
 		};
@@ -188,6 +194,7 @@
 				FC1E8A012F6826B2008CAC25 /* SearchBar.swift */,
 				FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */,
 				FCCC21262F699A0000363054 /* ToastView.swift */,
+				C788FCADE028A7C8A60D968E /* GridLayout.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -446,8 +453,6 @@
 			dependencies = (
 			);
 			name = KakaoImageSearch;
-			packageProductDependencies = (
-			);
 			productName = KakaoImageSearch;
 			productReference = FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */;
 			productType = "com.apple.product-type.application";
@@ -469,8 +474,6 @@
 				FCCD76852F680A850081FC81 /* KakaoImageSearchTests */,
 			);
 			name = KakaoImageSearchTests;
-			packageProductDependencies = (
-			);
 			productName = KakaoImageSearchTests;
 			productReference = FCCD76822F680A850081FC81 /* KakaoImageSearchTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
@@ -492,8 +495,6 @@
 				FCCD768F2F680A850081FC81 /* KakaoImageSearchUITests */,
 			);
 			name = KakaoImageSearchUITests;
-			packageProductDependencies = (
-			);
 			productName = KakaoImageSearchUITests;
 			productReference = FCCD768C2F680A850081FC81 /* KakaoImageSearchUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
@@ -620,6 +621,7 @@
 				FC5768342F6EAE2E007D8364 /* AppColors.swift in Sources */,
 				FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */,
 				FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */,
+				E24007BDBABB36758AA51A8A /* GridLayout.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
