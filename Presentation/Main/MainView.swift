@@ -42,8 +42,6 @@ struct MainView: View {
                         viewModel.selectedTab = .search
                     }
                 }
-                .onTapGesture {
-                }
 
             TabView(selection: $viewModel.selectedTab) {
                 SearchView(viewModel: viewModel.searchViewModel, isFocused: $isSearchFieldFocused)
