@@ -144,7 +144,7 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 117개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 131개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
