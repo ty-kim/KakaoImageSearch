@@ -17,6 +17,7 @@ import OSLog
 final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
+    private var isLoaded = false
 
     var bookmarkedIDs: Set<String> {
         Set(bookmarkedItems.map(\.id))
@@ -29,8 +30,10 @@ final class BookmarkStore {
     }
 
     func load() async throws {
+        guard !isLoaded else { return }
         let fetched = try await manageBookmarkUseCase.fetchAll()
         bookmarkedItems = fetched
+        isLoaded = true
         Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
     }
 
