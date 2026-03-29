@@ -58,6 +58,7 @@
 		FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */; };
 		FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
 		FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77072F680E070081FC81 /* Assets.xcassets */; };
+		FCDF35832F79DCB20004E912 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDF35812F79DCB20004E912 /* PreviewHelpers.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -133,6 +134,7 @@
 		FCCD77072F680E070081FC81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCCD77082F680E070081FC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FCCD77092F680E070081FC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		FCDF35812F79DCB20004E912 /* PreviewHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelpers.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -370,6 +372,7 @@
 				FC1E8A0A2F6826C5008CAC25 /* Search */,
 				FC1E8A072F6826B8008CAC25 /* Bookmark */,
 				FC1E8A022F6826B2008CAC25 /* Components */,
+				FCDF35822F79DCB20004E912 /* Preview */,
 				FC32032D2F7C000200A90DC0 /* Logger */,
 				FC75FCFE2F6A9C4E00A90DC0 /* L10n.swift */,
 			);
@@ -442,6 +445,14 @@
 				FC1E89F62F681CC2008CAC25 /* Localizable.xcstrings */,
 			);
 			path = KakaoImageSearch;
+			sourceTree = "<group>";
+		};
+		FCDF35822F79DCB20004E912 /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				FCDF35812F79DCB20004E912 /* PreviewHelpers.swift */,
+			);
+			path = Preview;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -628,6 +639,7 @@
 				FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */,
 				FC5768342F6EAE2E007D8364 /* AppColors.swift in Sources */,
 				FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */,
+				FCDF35832F79DCB20004E912 /* PreviewHelpers.swift in Sources */,
 				FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */,
 				E24007BDBABB36758AA51A8A /* GridLayout.swift in Sources */,
 			);

@@ -74,3 +74,13 @@ struct BookmarkView: View {
         .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
     }
 }
+
+#if DEBUG
+#Preview {
+    @Previewable @FocusState var focused: Bool
+    BookmarkView(
+        viewModel: PreviewFactory.makeBookmarkViewModel(),
+        isFocused: $focused
+    )
+}
+#endif

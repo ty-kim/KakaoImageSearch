@@ -133,3 +133,15 @@ struct ImageDetailView: View {
             }
     }
 }
+
+#if DEBUG
+#Preview("Loading") {
+    ImageDetailView(url: nil)
+        .environment(\.imageDownloader, PreviewFactory.imageDownloader)
+}
+
+#Preview("With Image") {
+    ImageDetailView(url: URL(string: "https://picsum.photos/800/600"))
+        .environment(\.imageDownloader, PreviewFactory.imageDownloader)
+}
+#endif

@@ -56,3 +56,13 @@ struct SkeletonItemView: View {
         .clipped()
     }
 }
+
+#if DEBUG
+#Preview {
+    HStack(spacing: 16) {
+        SkeletonItemView(width: 150, aspectRatio: 0.8)
+        SkeletonItemView(width: 150, aspectRatio: 1.2)
+    }
+    .padding()
+}
+#endif

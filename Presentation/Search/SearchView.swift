@@ -123,3 +123,13 @@ struct SearchView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("Idle") {
+    @Previewable @FocusState var focused: Bool
+    SearchView(
+        viewModel: PreviewFactory.makeSearchViewModel(),
+        isFocused: $focused
+    )
+}
+#endif

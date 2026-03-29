@@ -83,3 +83,14 @@ struct MainView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("iPhone") {
+    MainView(viewModel: PreviewFactory.makeMainViewModel())
+}
+
+#Preview("iPad") {
+    MainView(viewModel: PreviewFactory.makeMainViewModel())
+        .previewDevice("iPad Pro (11-inch)")
+}
+#endif

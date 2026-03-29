@@ -89,3 +89,23 @@ struct SearchResultItemView: View {
         )
     }
 }
+
+#if DEBUG
+#Preview("With Metadata") {
+    SearchResultItemView(
+        item: PreviewData.singleItem,
+        screenWidth: 350,
+        onBookmarkToggle: {}
+    )
+    .environment(\.imageDownloader, PreviewFactory.imageDownloader)
+}
+
+#Preview("Bookmarked") {
+    SearchResultItemView(
+        item: PreviewData.bookmarkedItem,
+        screenWidth: 350,
+        onBookmarkToggle: {}
+    )
+    .environment(\.imageDownloader, PreviewFactory.imageDownloader)
+}
+#endif

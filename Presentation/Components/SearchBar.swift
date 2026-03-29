@@ -48,3 +48,11 @@ struct SearchBar: View {
         .padding(.vertical, 8)
     }
 }
+
+#if DEBUG
+#Preview {
+    @Previewable @FocusState var focused: Bool
+    @Previewable @State var text = ""
+    SearchBar(text: $text, isFocused: $focused)
+}
+#endif
