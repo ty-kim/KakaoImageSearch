@@ -87,9 +87,8 @@ struct SearchViewModelTests {
     @Test("HTTP 에러 응답의 서버 메시지가 error 상태에 반영된다")
     func search_httpError_showsServerMessage() async {
         let serverMessage = "page is more than max"
-        let body = #"{"errorType":"InvalidArgument","message":"\#(serverMessage)"}"#
         let (sut, _, _, _) = makeSUT(
-            searchError: NetworkError.httpError(statusCode: 400, responseBody: body)
+            searchError: ImageSearchError.serverError(message: serverMessage)
         )
 
         await sut.submitSearch(query: "cat").value

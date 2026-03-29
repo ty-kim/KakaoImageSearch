@@ -269,10 +269,8 @@ final class SearchViewModel {
     }
 
     private func serverMessage(from error: Error) -> String {
-        if case NetworkError.httpError(_, let body) = error,
-           let data = body?.data(using: .utf8),
-           let dto = try? JSONDecoder().decode(KakaoErrorResponseDTO.self, from: data) {
-            return dto.message
+        if let searchError = error as? ImageSearchError {
+            return searchError.userMessage
         }
         return error.localizedDescription
     }

@@ -32,6 +32,7 @@
 		FC3203302F7C000400A90DC0 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203312F7C000400A90DC0 /* ImageDetailView.swift */; };
 		FC3203322F7C000500A90DC0 /* BookmarkEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */; };
 		FC3203342F7C000600A90DC0 /* NetworkMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */; };
+		FC564DBC2F795A1F00D15B88 /* ImageSearchError.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC564DBB2F795A1F00D15B88 /* ImageSearchError.swift */; };
 		FC5768342F6EAE2E007D8364 /* AppColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC5768332F6EAE2E007D8364 /* AppColors.swift */; };
 		FC5768362F6EB2E2007D8364 /* InfoPlist.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = FC5768352F6EB2E2007D8364 /* InfoPlist.xcstrings */; };
 		FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */; };
@@ -102,6 +103,7 @@
 		FC3203312F7C000400A90DC0 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		FC3203332F7C000500A90DC0 /* BookmarkEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkEntity.swift; sourceTree = "<group>"; };
 		FC3203352F7C000600A90DC0 /* NetworkMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkMonitor.swift; sourceTree = "<group>"; };
+		FC564DBB2F795A1F00D15B88 /* ImageSearchError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageSearchError.swift; sourceTree = "<group>"; };
 		FC5768332F6EAE2E007D8364 /* AppColors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColors.swift; sourceTree = "<group>"; };
 		FC5768352F6EB2E2007D8364 /* InfoPlist.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = InfoPlist.xcstrings; sourceTree = "<group>"; };
 		FC75FCDD2F6A9BA400A90DC0 /* BookmarkStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BookmarkStore.swift; sourceTree = "<group>"; };
@@ -136,15 +138,11 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		FCCD76852F680A850081FC81 /* KakaoImageSearchTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = KakaoImageSearchTests;
 			sourceTree = "<group>";
 		};
 		FCCD768F2F680A850081FC81 /* KakaoImageSearchUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-			);
 			path = KakaoImageSearchUITests;
 			sourceTree = "<group>";
 		};
@@ -241,6 +239,14 @@
 				FC32032B2F7C000200A90DC0 /* PresentationLogger.swift */,
 			);
 			path = Logger;
+			sourceTree = "<group>";
+		};
+		FC564DBA2F795A0800D15B88 /* Error */ = {
+			isa = PBXGroup;
+			children = (
+				FC564DBB2F795A1F00D15B88 /* ImageSearchError.swift */,
+			);
+			path = Error;
 			sourceTree = "<group>";
 		};
 		FC75FCDE2F6A9BA400A90DC0 /* Store */ = {
@@ -408,6 +414,7 @@
 		FCCD76EA2F680D710081FC81 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				FC564DBA2F795A0800D15B88 /* Error */,
 				FCCD76E32F680D710081FC81 /* Entity */,
 				FCCD76E62F680D710081FC81 /* Repository */,
 				FC3203252F7C000000A90DC0 /* Service */,
@@ -599,6 +606,7 @@
 				FC75FD052F6A9C4E00A90DC0 /* NetworkService.swift in Sources */,
 				FC75FD062F6A9C4E00A90DC0 /* ImageDownloader.swift in Sources */,
 				FC75FD072F6A9C4E00A90DC0 /* APIEndpoint.swift in Sources */,
+				FC564DBC2F795A1F00D15B88 /* ImageSearchError.swift in Sources */,
 				FCCD76EC2F680D710081FC81 /* ImageItem.swift in Sources */,
 				FC1E8A112F68276E008CAC25 /* SearchResultItemView.swift in Sources */,
 				FC1E8A0B2F6826C5008CAC25 /* SearchViewModel.swift in Sources */,
