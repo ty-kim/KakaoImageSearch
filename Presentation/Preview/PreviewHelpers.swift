@@ -57,6 +57,7 @@ private final class PreviewImageSearchRepository: ImageSearchRepository {
     }
 }
 
+@MainActor
 private final class PreviewBookmarkRepository: BookmarkRepository {
     private var items: [ImageItem] = []
 

@@ -27,7 +27,7 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         imageURL ?? thumbnailURL
     }
 
-    private static let relativeDateFormatter: RelativeDateTimeFormatter = {
+    nonisolated(unsafe) private static let relativeDateFormatter: RelativeDateTimeFormatter = {
         let f = RelativeDateTimeFormatter()
         f.unitsStyle = .short
         return f
