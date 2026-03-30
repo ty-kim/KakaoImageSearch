@@ -18,4 +18,5 @@ jobs:
             -scheme KakaoImageSearch \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
             -only-testing:KakaoImageSearchTests \
+            -skip-testing:KakaoImageSearchUITests \
             test
