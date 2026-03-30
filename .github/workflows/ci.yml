@@ -12,7 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build & Test
-        run: A |
+        run: |
           echo 'let kakaoAPIKey = "test-key"' > KakaoImageSearch/KakaoAPIKey.swift
           xcodebuild -project KakaoImageSearch.xcodeproj \
             -scheme KakaoImageSearch \
