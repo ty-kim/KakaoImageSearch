@@ -13,7 +13,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build & Test
         run: |
-          echo 'let kakaoAPIKey = "test-key"' > KakaoAPIKey.swift
+          echo 'enum KakaoAPIKey { static let restAPIKey = "test-key" }' > KakaoAPIKey.swift
           xcodebuild -project KakaoImageSearch.xcodeproj \
             -scheme KakaoImageSearch \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
