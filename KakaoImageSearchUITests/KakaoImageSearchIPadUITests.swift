@@ -124,12 +124,15 @@ extension KakaoImageSearchIPadRetryUITests {
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
-        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(retryButton.waitForHittable(timeout: 8))
 
         retryButton.tap()
 
+        let retriedRetryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
+
         // --simulateNetworkError 이므로 재시도 후에도 에러 → 버튼 다시 노출
-        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(retriedRetryButton.waitForExistence(timeout: 8))
     }
 
     // MARK: - 에러 상태에서도 양쪽 패널 유지

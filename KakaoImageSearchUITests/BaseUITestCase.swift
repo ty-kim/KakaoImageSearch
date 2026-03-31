@@ -70,9 +70,15 @@ class BaseUITestCase: XCTestCase {
     }
 }
 
-private extension XCUIElement {
+extension XCUIElement {
     func waitForKeyboardFocus(timeout: TimeInterval) -> Bool {
         let predicate = NSPredicate(format: "hasKeyboardFocus == true")
+        let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
+        return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
+    }
+
+    func waitForHittable(timeout: TimeInterval) -> Bool {
+        let predicate = NSPredicate(format: "exists == true AND hittable == true")
         let expectation = XCTNSPredicateExpectation(predicate: predicate, object: self)
         return XCTWaiter.wait(for: [expectation], timeout: timeout) == .completed
     }
