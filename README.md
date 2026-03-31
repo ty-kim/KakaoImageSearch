@@ -8,6 +8,12 @@
 **Clean Architecture + MVVM** 구조를 바탕으로 **상태 분리, 실패 복구, 테스트 가능성**을 우선해 구성했습니다.
 
 
+## Screenshots
+
+| 초기 화면 | 검색 결과 | 이미지 상세 | 북마크 | iPad |
+|:-:|:-:|:-:|:-:|:-:|
+| <img src="Screenshots/01_Screenshot.png" width="160"> | <img src="Screenshots/02_Screenshot.png" width="160"> | <img src="Screenshots/03_Screenshot.png" width="160"> | <img src="Screenshots/04_Screenshot.png" width="160"> | <img src="Screenshots/05_Screenshot.png" width="280"> |
+
 ## Quick Guide
 - **1초 debounce** 후 자동 검색
 - **검색 결과 / 북마크 탭 간 상태 동기화**
