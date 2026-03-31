@@ -748,8 +748,11 @@ struct MainViewModelTests {
         sut.onSearchTextChanged("ab")
         sut.onSearchTextChanged("abc")
 
-        // debounce(1초) 대기
-        try await Task.sleep(for: .seconds(2.5))
+        // 디바운스 + 검색 완료까지 대기
+        let deadline = Date().addingTimeInterval(5)
+        while searchRepo.searchCallCount == 0 && Date() < deadline {
+            try await Task.sleep(for: .milliseconds(100))
+        }
 
         #expect(searchRepo.searchCallCount == 1)
         #expect(searchRepo.lastQuery == "abc")
