@@ -53,7 +53,9 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 
 iPhone은 Portrait only로 제한했고, iPad는 4방향 회전을 모두 지원합니다.
 iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitView를 사용해 검색과 북마크를 한 화면에서 볼 수 있도록 했습니다.
-레이아웃 분기는 `horizontalSizeClass`을 사용해서 .regular일때 아이패드 레이아웃으로 표시합니다.
+레이아웃 분기는 `horizontalSizeClass`를 사용해서 `.regular`일 때 iPad 레이아웃으로 표시합니다.
+iPhone은 세로 모드만 지원하므로, 대형 iPhone landscape에서 `horizontalSizeClass == .regular`가 되어 iPad 레이아웃이 잘못 표시되는 케이스는 이 프로젝트의 지원 범위에 포함되지 않습니다.
+이 전제 안에서는 `horizontalSizeClass` 기반 분기가 충분히 단순하고 설명 가능한 선택이라고 판단했습니다.
 iPad 검색 패널은 sidebar 폭에 맞춰 1열, 북마크 패널은 2열 그리드로 구성했고, 크기 계산은 화면 너비를 기준으로 처리했습니다.
 
 ### 6. 페이지네이션 & 에러 핸들링 UX

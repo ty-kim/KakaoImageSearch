@@ -12,7 +12,7 @@
 - **1초 debounce** 후 자동 검색
 - **검색 결과 / 북마크 탭 간 상태 동기화**
 - **페이지네이션, stale response 방지, 재시도 UI** 지원
-- **iPhone / iPad 레이아웃 분리 대응**
+- **iPhone(세로 고정) / iPad 레이아웃 분리 대응**
 - **Unit / Integration / UI Test** 포함
 
 이 프로젝트는 기능 확장보다 **일관된 상태 관리와 안정적인 사용자 경험**에 중점을 두었습니다.  
@@ -144,41 +144,41 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 
 ### 유닛 테스트
 
-Swift Testing Framework 기반 131개 테스트 케이스를 작성했고, 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 131개 테스트 케이스를 작성했고, CI 및 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
-| `ImageItemTests` | 14 | aspectRatio 경계값, Codable 라운드트립, Hashable, displayURL fallback |
+| `ImageItemTests` | 20 | aspectRatio 경계값, Codable 라운드트립, Hashable, displayURL fallback |
 | `SearchImageUseCaseTests` | 5 | 검색 결과 반환, 에러 전파, 쿼리/페이지 전달 |
 | `ManageBookmarkUseCaseTests` | 10 | toggle add/remove, 중복 방지 |
 | `KakaoImageSearchEndpointTests` | 16 | URL 구성, 쿼리 파라미터, 헤더 검증, query/page/size 입력 클램핑 |
-| `KakaoSearchResponseDTOTests` | 12 | JSON 디코딩, snake_case 변환, 필드 fallback, URL 스킴 검증 (javascript:/file: 거부) |
-| `SearchViewModelTests` | 32 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, API 페이지 제한 vs 결과 소진 구분, 재시도, 오프라인 감지, 셀룰러 prefetch 억제, 북마크 토글/Toast, 연속 토글 dedup, loadMore/prefetch Task 취소 |
+| `KakaoSearchResponseDTOTests` | 16 | JSON 디코딩, snake_case 변환, 필드 fallback, URL 스킴 검증 (javascript:/file: 거부) |
+| `SearchViewModelTests` | 33 | 검색 성공/실패, 취소/race condition 처리, 페이지네이션, API 페이지 제한 vs 결과 소진 구분, 재시도, 오프라인 감지, 셀룰러 prefetch 억제, 북마크 토글/Toast, 연속 토글 dedup, loadMore/prefetch Task 취소 |
 | `BookmarkViewModelTests` | 7 | 목록 로드/실패, 로드 재시도 성공, 토글 후 갱신, 토글 실패 Toast, 연속 토글 dedup |
 | `BookmarkStoreTests` | 6 | load 성공/실패(throws), toggle 추가/제거, 연속 토글 상태 일관성, isBookmarked 판별 |
-| `CachedAsyncImageViewModelTests` | 11 | Phase Equatable 동등성(같은/다른 인스턴스, 다른 case), Phase 상태 전이(성공/실패/영구실패), 재시도 횟수 초과, 재시도 불가 에러 즉시 실패, retryCount 초기화 |
+| `CachedAsyncImageViewModelTests` | 14 | Phase Equatable 동등성(같은/다른 인스턴스, 다른 case), Phase 상태 전이(성공/실패/영구실패), 재시도 횟수 초과, 재시도 불가 에러 즉시 실패, retryCount 초기화 |
 | `MainViewModelTests` | 4 | debounce 취소, 빈 입력 처리 |
 
 Domain과 ViewModel 중심으로 테스트를 작성했습니다.
 
 ### 통합 테스트
 
-Swift Testing Framework 기반 43개 테스트 케이스, 작성한 테스트는 로컬 기준으로 모두 통과했습니다.
+Swift Testing Framework 기반 44개 테스트 케이스, CI 및 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
-| `NetworkServiceIntegrationTests` | 9 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑, 타임아웃 |
+| `NetworkServiceIntegrationTests` | 10 | MockURLProtocol 기반 실제 URLSession 요청/응답, 에러 매핑, 타임아웃 |
 | `BookmarkStorageIntegrationTests` | 12 | SwiftData in-memory 기반 저장/조회/삭제, 중복 방지, 앱 재시작 영속성, 필드 보존 라운드트립 |
 | `ImageDownloaderIntegrationTests` | 16 | MockImageURLProtocol 기반 다운로드 성공/실패, 캐시 히트, in-flight dedup(호출자 취소 내성), prefetch 병렬도 제한·부분 실패, Content-Type 검증, Content-Length 사전 검사·스트리밍 크기 제한, http→https 변환 |
 | `ImageCacheIntegrationTests` | 6 | 손상 파일 자동 삭제 후 nil 반환, 재캐싱 복구, TTL 초과 파일 삭제, TTL 유효 파일 유지, 디스크 용량 초과 시 LRU 삭제, 용량 이하 시 유지 |
 
 ### UI 테스트
 
-XCUITest 기반 UI 테스트 26개 + Launch Test 1개를 작성했고, 로컬 기준으로 모두 통과했습니다.
+XCUITest 기반 UI 테스트 27개 + Launch Test 1개를 작성했고, 로컬 기준으로 모두 통과했습니다.
 
 | 테스트 Suite | 케이스 수 | 주요 검증 항목 |
 |---|---|---|
-| `KakaoImageSearchIPhoneUITests` | 16 | 앱 실행, 검색창 인터랙션, 탭 전환, 검색 결과, 이미지 상세 닫기 접근성, 네트워크 오류 재시도 UX (`--useFixtureData` / `--simulateNetworkError`, iPhone 전용) |
+| `KakaoImageSearchIPhoneUITests` | 17 | 앱 실행, 검색창 인터랙션, 탭 전환, 검색 결과, 이미지 상세 닫기 접근성, 네트워크 오류 재시도 UX (`--useFixtureData` / `--simulateNetworkError`, iPhone 전용) |
 | `KakaoImageSearchIPadUITests` | 10 | NavigationSplitView 구조, 양쪽 패널 동시 표시, 네트워크 오류 재시도 UX (`--useFixtureData` / `--simulateNetworkError`, iPad 전용) |
 
 ---
