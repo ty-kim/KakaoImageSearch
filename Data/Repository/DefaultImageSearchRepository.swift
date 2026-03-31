@@ -29,6 +29,8 @@ final class DefaultImageSearchRepository: ImageSearchRepository {
                 throw ImageSearchError.serverError(message: dto.message)
             }
             throw ImageSearchError.serverError(message: "HTTP \(statusCode)")
+        } catch let error as CancellationError {
+            throw error
         } catch {
             throw ImageSearchError.unknown(error)
         }
