@@ -116,9 +116,18 @@ struct SearchView: View {
                         .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
+            .contentShape(Rectangle())
             .simultaneousGesture(TapGesture().onEnded {
                 isFocused.wrappedValue = false
             })
+            .onChange(of: viewModel.searchState) { _, newValue in
+                switch newValue {
+                case .loaded, .error, .empty:
+                    isFocused.wrappedValue = false
+                case .idle, .loading:
+                    break
+                }
+            }
             .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
         }
     }

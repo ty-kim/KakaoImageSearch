@@ -10,7 +10,6 @@ import SwiftUI
 struct BookmarkView: View {
 
     let viewModel: BookmarkViewModel
-    var isFocused: FocusState<Bool>.Binding
     var columns: Int = 1
 
     private let toastTransitionDuration = 0.3
@@ -53,7 +52,6 @@ struct BookmarkView: View {
                         }
                         .padding(.horizontal, layout.horizontalPadding)
                     }
-                    .scrollDismissesKeyboard(.interactively)
                     .accessibilityIdentifier("bookmarkView.list")
                 }
             }
@@ -68,19 +66,14 @@ struct BookmarkView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .simultaneousGesture(TapGesture().onEnded {
-            isFocused.wrappedValue = false
-        })
         .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
     }
 }
 
 #if DEBUG
 #Preview {
-    @Previewable @FocusState var focused: Bool
     BookmarkView(
-        viewModel: PreviewFactory.makeBookmarkViewModel(),
-        isFocused: $focused
+        viewModel: PreviewFactory.makeBookmarkViewModel()
     )
 }
 #endif

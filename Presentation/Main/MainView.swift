@@ -30,29 +30,24 @@ struct MainView: View {
 
     private var iPhoneLayout: some View {
         VStack(spacing: 0) {
-            SearchBar(text: $viewModel.searchText, isFocused: $isSearchFieldFocused) {
-                    viewModel.selectedTab = .search
-                }
-                .onChange(of: viewModel.searchText) { _, newValue in
-                    viewModel.onSearchTextChanged(newValue)
-                }
-                .onChange(of: viewModel.searchViewModel.items) {
-                    if !viewModel.searchViewModel.items.isEmpty {
-                        isSearchFieldFocused = false
-                        viewModel.selectedTab = .search
-                    }
-                }
-
             TabView(selection: $viewModel.selectedTab) {
-                SearchView(viewModel: viewModel.searchViewModel, isFocused: $isSearchFieldFocused)
-                    // 검색 탭 영역 탭 시 키보드 dismiss
-                    .tabItem {
-                        Label(L10n.Tab.search, systemImage: "magnifyingglass")
+                VStack(spacing: 0) {
+                    SearchBar(text: $viewModel.searchText, isFocused: $isSearchFieldFocused)
+                    .onChange(of: viewModel.searchText) { _, newValue in
+                        viewModel.onSearchTextChanged(newValue)
                     }
-                    .tag(MainViewModel.Tab.search)
-                    .accessibilityHint(L10n.Accessibility.tabSearchHint)
+                    
+                    SearchView(viewModel: viewModel.searchViewModel,
+                               isFocused: $isSearchFieldFocused)
+                }
+                // 검색 탭 영역 탭 시 키보드 dismiss
+                .tabItem {
+                    Label(L10n.Tab.search, systemImage: "magnifyingglass")
+                }
+                .tag(MainViewModel.Tab.search)
+                .accessibilityHint(L10n.Accessibility.tabSearchHint)
 
-                BookmarkView(viewModel: viewModel.bookmarkViewModel, isFocused: $isSearchFieldFocused)
+                BookmarkView(viewModel: viewModel.bookmarkViewModel)
                     // 북마크 탭 영역 탭 시 키보드 dismiss
                     .tabItem {
                         Label(L10n.Tab.bookmark, systemImage: "bookmark.fill")
@@ -72,12 +67,14 @@ struct MainView: View {
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }
-                SearchView(viewModel: viewModel.searchViewModel, isFocused: $isSearchFieldFocused, columns: 1)
+                SearchView(viewModel: viewModel.searchViewModel,
+                           isFocused: $isSearchFieldFocused,
+                           columns: 1)
             }
             .navigationTitle(L10n.Tab.search)
             .navigationBarTitleDisplayMode(.inline)
         } detail: {
-            BookmarkView(viewModel: viewModel.bookmarkViewModel, isFocused: $isSearchFieldFocused, columns: 2)
+            BookmarkView(viewModel: viewModel.bookmarkViewModel, columns: 2)
                 .navigationTitle(L10n.Tab.bookmark)
                 .navigationBarTitleDisplayMode(.inline)
         }
@@ -91,6 +88,5 @@ struct MainView: View {
 
 #Preview("iPad") {
     MainView(viewModel: PreviewFactory.makeMainViewModel())
-        .previewDevice("iPad Pro (11-inch)")
 }
 #endif

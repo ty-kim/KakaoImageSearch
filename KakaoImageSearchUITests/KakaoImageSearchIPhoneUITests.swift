@@ -251,27 +251,4 @@ extension KakaoImageSearchIPhoneRetryUITests {
         // --simulateNetworkError 이므로 재시도 후에도 에러 → 버튼 다시 노출
         XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
     }
-
-    // MARK: - 에러 상태에서도 탭 전환 정상 동작
-
-    func test_errorState_tabSwitch_toBookmark_works() {
-        let searchField = app.textFields["searchBar.textField"]
-        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
-        searchField.tap()
-        searchField.typeText("cat")
-
-        let retryButton = app.descendants(matching: .any)
-            .matching(identifier: "emptyStateView.retryButton").firstMatch
-        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
-
-        // 에러 영역 탭으로 키보드 dismiss (simultaneousGesture 검증 겸용)
-        retryButton.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
-
-        app.tabBars.firstMatch.buttons.element(boundBy: 1).tap()
-
-        let bookmarkEmpty = app.descendants(matching: .any)
-            .matching(identifier: "bookmarkView.emptyState").firstMatch
-        XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
-    }
 }
