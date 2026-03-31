@@ -17,5 +17,4 @@ jobs:
           xcodebuild -project KakaoImageSearch.xcodeproj \
             -scheme KakaoImageSearch \
             -destination 'platform=iOS Simulator,name=iPhone 17' \
-            -only-testing:KakaoImageSearchTests \
             test
