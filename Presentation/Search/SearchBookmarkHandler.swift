@@ -12,7 +12,7 @@ struct SearchBookmarkOutcome {
     let inFlightBookmarkIDs: Set<String>
 }
 
-enum SearchBookmarkEffect {
+enum SearchBookmarkEffect: Equatable {
     case updated
     case ignored
     case failed(message: String)
