@@ -84,6 +84,14 @@ final class SearchFlowController {
     }
 
     func executeLoadMore(_ request: LoadMoreRequest) async throws -> SearchFlowResult? {
+          guard networkMonitor.isConnected else {
+              return SearchFlowResult(
+                  items: [],
+                  searchState: .error(message: L10n.Search.offline),
+                  prefetchItems: []
+              )
+          }
+
           let result = try await searchImageUseCase.execute(
               query: request.query,
               page: request.page

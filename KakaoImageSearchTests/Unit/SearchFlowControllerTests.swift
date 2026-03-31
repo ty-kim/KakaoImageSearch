@@ -152,6 +152,21 @@ struct SearchFlowControllerTests {
 
     // MARK: - executeLoadMore
 
+    @Test("executeLoadMore — 오프라인이면 에러 상태 반환")
+    func executeLoadMore_offline_returnsError() async throws {
+        let (sut, searchRepo, networkMonitor) = makeSUT()
+        searchRepo.stubbedResult = [.fixture(id: "1")]
+        let searchID = sut.beginSearch(query: "cat")
+        _ = try await sut.executeSearch(query: "cat", searchID: searchID)
+
+        networkMonitor.isConnected = false
+        let request = LoadMoreRequest(query: "cat", searchID: searchID, page: 2)
+        let result = try await sut.executeLoadMore(request)
+
+        #expect(result?.searchState == .error(message: L10n.Search.offline))
+        #expect(result?.items.isEmpty == true)
+    }
+
     @Test("executeLoadMore — 성공 시 items와 상태 반환")
     func executeLoadMore_success_returnsResult() async throws {
         let (sut, searchRepo, _) = makeSUT()

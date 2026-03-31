@@ -141,6 +141,12 @@ final class SearchViewModel {
                 let result = try await self.flow.executeLoadMore(request)
                 guard let result else { return }
 
+                if case .error = result.searchState {
+                    self.searchState = .loaded(.loadMoreError)
+                    Logger.presentation.debugPrint("Load more skipped (offline)")
+                    return
+                }
+
                 self.resultsStore.append(result.items)
                 self.searchState = result.searchState
 
