@@ -29,28 +29,20 @@ enum PaginationState: Equatable {
 @MainActor
 final class SearchViewModel {
 
-    private(set) var items: [ImageItem] = []
-    private var rawItems: [ImageItem] = []
+    var items: [ImageItem] { resultsStore.items }
     private(set) var searchState: SearchState = .idle
     private(set) var toastMessage: String? = nil
     private(set) var inFlightBookmarkIDs: Set<String> = []
 
-    private var currentQuery: String = ""
-    private var currentPage: Int = 1
+    private var searchTask: Task<Void, Never>? = nil
+    private var loadMoreTask: Task<Void, Never>? = nil
     private var toastTask: Task<Void, Never>? = nil
     private let toastDuration: Duration
 
-    private var searchTask: Task<Void, Never>? = nil
-    private var loadMoreTask: Task<Void, Never>? = nil
-    private var prefetchTask: Task<Void, Never>? = nil
-    private var activeSearchID: UUID? = nil
-
-    /// Kakao API 페이지 파라미터 허용 범위 상한 (1~15)
-    private let maxPage = 15
-    private let searchImageUseCase: SearchImageUseCase
-    private let bookmarkStore: BookmarkStore
-    private let imagePrefetcher: any ImagePrefetcher
-    private let networkMonitor: any NetworkMonitoring
+    private let flow: SearchFlowController
+    private let resultsStore: SearchResultsStore
+    private let bookmarkHandler: SearchBookmarkHandler
+    private let prefetchCoordinator: SearchPrefetchCoordinator
 
     init(
         searchImageUseCase: SearchImageUseCase,
@@ -59,202 +51,121 @@ final class SearchViewModel {
         networkMonitor: any NetworkMonitoring,
         toastDuration: Duration = ToastView.defaultDuration
     ) {
-        self.searchImageUseCase = searchImageUseCase
-        self.bookmarkStore = bookmarkStore
-        self.imagePrefetcher = imagePrefetcher
-        self.networkMonitor = networkMonitor
         self.toastDuration = toastDuration
-        observeBookmarkStore()
-    }
-
-    // bookmarkedIDs 변경 시에만 재계산 — withObservationTracking으로 단일 의존성 추적.
-    // onChange는 1회성이므로 재등록을 반복하는 것이 @Observable의 공식 패턴 (WWDC23).
-    // self가 해제되면 재등록하지 않아 관찰이 중단되며, 이는 ViewModel 수명 = 관찰 수명을 의미하는 의도된 동작이다.
-    private func observeBookmarkStore() {
-        withObservationTracking {
-            _ = bookmarkStore.bookmarkedIDs
-        } onChange: { [weak self] in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                self.rebuildItems()
-                self.observeBookmarkStore()
-            }
-        }
-    }
-
-    private func rebuildItems() {
-        let ids = bookmarkStore.bookmarkedIDs
-        items = rawItems.map { item in
-            var updated = item
-            updated.isBookmarked = ids.contains(item.id)
-            return updated
-        }
+        self.flow = SearchFlowController(searchImageUseCase: searchImageUseCase, networkMonitor: networkMonitor)
+        self.resultsStore = SearchResultsStore(bookmarkStore: bookmarkStore)
+        self.bookmarkHandler = SearchBookmarkHandler(bookmarkStore: bookmarkStore)
+        self.prefetchCoordinator = SearchPrefetchCoordinator(imagePrefetcher: imagePrefetcher, networkMonitor: networkMonitor)
     }
 
     // MainViewModel에서 debounce 후 호출. retry()도 이 경로를 사용
     // @discardableResult로 반환된 Task를 무시하거나, 테스트에서 .value로 await 가능
     @discardableResult
     func submitSearch(query: String) -> Task<Void, Never> {
-        let searchID = beginSearch(query: query)
+        searchTask?.cancel()
+        loadMoreTask?.cancel()
+        prefetchCoordinator.cancel()
+
+        let searchID = flow.beginSearch(query: query)
+        searchState = .loading
+
         let task = Task { [weak self] in
             guard let self else { return }
-            await self.performSearch(query: query, searchID: searchID)
+
+            defer {
+                if self.flow.isActive(searchID: searchID) {
+                    self.searchTask = nil
+                }
+            }
+
+            do {
+                let result = try await self.flow.executeSearch(query: query, searchID: searchID)
+                guard let result else { return }
+
+                switch result.searchState {
+                case .error:
+                    self.searchState = result.searchState
+                    Logger.presentation.debugPrint("Search skipped (offline): \"\(query)\"")
+
+                case .empty, .loaded:
+                    self.resultsStore.replace(with: result.items)
+                    self.searchState = result.searchState
+
+                    if !result.prefetchItems.isEmpty {
+                        self.prefetchCoordinator.start(with: result.prefetchItems)
+                    }
+
+                    Logger.presentation.debugPrint(
+                        "Search completed: \(result.items.count) results"
+                    )
+
+                case .idle, .loading:
+                    break
+                }
+            } catch is CancellationError {
+                Logger.presentation.debugPrint("Search cancelled: \"\(query)\"")
+            } catch {
+                guard self.flow.isActive(searchID: searchID) else { return }
+
+                self.resultsStore.clear()
+                self.searchState = .error(message: L10n.Search.error(self.serverMessage(from: error)))
+                Logger.presentation.errorPrint("Search failed: \(error)")
+            }
         }
         searchTask = task
         return task
     }
 
-    private func beginSearch(query: String) -> UUID {
-        searchTask?.cancel()
-        loadMoreTask?.cancel()
-        prefetchTask?.cancel()
-
-        let searchID = UUID()
-        activeSearchID = searchID
-
-        currentQuery = query
-        currentPage = 1
-        searchState = .loading
-
-        return searchID
-    }
-
-    private func performSearch(query: String, searchID: UUID) async {
-        guard networkMonitor.isConnected else {
-            searchState = .error(message: L10n.Search.offline)
-            Logger.presentation.debugPrint("Search skipped (offline): \"\(query)\"")
-            return
-        }
-
-        Logger.presentation.debugPrint("Search started: \"\(query)\"")
-
-        defer {
-            if activeSearchID == searchID {
-                searchTask = nil
-            }
-        }
-
-        do {
-            let result = try await searchImageUseCase.execute(query: query, page: 1)
-
-            guard !Task.isCancelled, activeSearchID == searchID else { return }
-
-            rawItems = result.items
-            rebuildItems()
-
-            if result.items.isEmpty {
-                searchState = .empty
-            } else {
-                searchState = .loaded(paginationState(isEnd: result.isEnd, page: 1))
-                prefetch(result.items)
-            }
-
-            Logger.presentation.debugPrint("Search completed: \(result.items.count) results, isEnd: \(result.isEnd)")
-        } catch is CancellationError {
-            Logger.presentation.debugPrint("Search cancelled: \"\(query)\"")
-        } catch {
-            guard activeSearchID == searchID else { return }
-
-            rawItems = []
-            items = []
-            searchState = .error(message: L10n.Search.error(serverMessage(from: error)))
-
-            Logger.presentation.errorPrint("Search failed: \(error)")
-        }
-    }
-
     @discardableResult
     func retry() -> Task<Void, Never>? {
-        guard !currentQuery.isEmpty else { return nil }
-        return submitSearch(query: currentQuery)
+        guard let query = flow.retryQuery() else { return nil }
+        return submitSearch(query: query)
     }
 
     // @discardableResult로 반환된 Task를 무시하거나, 테스트에서 .value로 await 가능 (submitSearch와 동일 패턴)
     @discardableResult
     func loadMore() -> Task<Void, Never>? {
-        // loaded(.idle) 상태에서만 추가 로드 허용
-        guard case .loaded(.idle) = searchState else { return nil }
-
-        let queryAtRequestTime = currentQuery
-        let searchIDAtRequestTime = activeSearchID
-        let nextPage = currentPage + 1
+        guard let request = flow.makeLoadMoreRequest(for: searchState) else { return nil }
 
         searchState = .loaded(.loadingMore)
-
-        Logger.presentation.debugPrint("Loading more: page \(nextPage)")
+        Logger.presentation.debugPrint("Loading more: page \(request.page)")
 
         let task = Task { [weak self] in
             guard let self else { return }
-            await self.performLoadMore(
-                query: queryAtRequestTime,
-                searchID: searchIDAtRequestTime,
-                page: nextPage
-            )
+
+            defer {
+                self.loadMoreTask = nil
+            }
+
+            do {
+                let result = try await self.flow.executeLoadMore(request)
+                guard let result else { return }
+
+                self.resultsStore.append(result.items)
+                self.searchState = result.searchState
+
+                if !result.prefetchItems.isEmpty {
+                    self.prefetchCoordinator.start(with: result.prefetchItems)
+                }
+
+                Logger.presentation.debugPrint("Loaded \(result.items.count) more, page: \(request.page)")
+            } catch is CancellationError {
+                Logger.presentation.debugPrint("Load more cancelled: \(request.query), page \(request.page)")
+            } catch {
+                guard self.flow.matchesCurrent(request: request) else { return }
+
+                self.searchState = .loaded(.loadMoreError)
+                Logger.presentation.errorPrint("Load more failed: \(error)")
+            }
         }
         loadMoreTask = task
         return task
-    }
-
-    private func performLoadMore(query: String, searchID: UUID?, page: Int) async {
-        do {
-            let result = try await searchImageUseCase.execute(query: query, page: page)
-
-            // 검색어가 이미 바뀌었으면 이전 loadMore 결과 무시
-            guard !Task.isCancelled,
-                  searchID == activeSearchID,
-                  query == currentQuery else { return }
-
-            rawItems += result.items
-            rebuildItems()
-            searchState = .loaded(paginationState(isEnd: result.isEnd, page: page))
-            currentPage = page
-
-            Logger.presentation.debugPrint("Loaded \(result.items.count) more, page: \(page)")
-
-            prefetch(result.items)
-        } catch is CancellationError {
-            Logger.presentation.debugPrint("Load more cancelled: \(query), page \(page)")
-        } catch {
-            guard searchID == activeSearchID, query == currentQuery else { return }
-
-            searchState = .loaded(.loadMoreError)
-            Logger.presentation.errorPrint("Load more failed: \(error)")
-        }
     }
 
     @discardableResult
     func retryLoadMore() -> Task<Void, Never>? {
         searchState = .loaded(.idle)
         return loadMore()
-    }
-
-    func toggleBookmark(for item: ImageItem) async {
-        guard !inFlightBookmarkIDs.contains(item.id) else { return }
-        inFlightBookmarkIDs.insert(item.id)
-        defer { inFlightBookmarkIDs.remove(item.id) }
-
-        do {
-            _ = try await bookmarkStore.toggle(item)
-            rebuildItems()
-        } catch {
-            showToast(L10n.Bookmark.toggleError)
-            Logger.presentation.errorPrint("Bookmark toggle failed: \(error)")
-        }
-    }
-
-    private func prefetch(_ items: [ImageItem]) {
-        guard !networkMonitor.isExpensive else { return }
-        let urls = items.compactMap(\.displayURL)
-        prefetchTask?.cancel()
-        prefetchTask = Task(priority: .background) { [weak self] in
-            await self?.imagePrefetcher.prefetch(urls: urls)
-        }
-    }
-
-    private func paginationState(isEnd: Bool, page: Int) -> PaginationState {
-        if !isEnd && page >= maxPage { return .apiLimitReached }
-        if isEnd || page >= maxPage { return .exhausted }
-        return .idle
     }
 
     private func showToast(_ message: String) {
@@ -280,18 +191,27 @@ final class SearchViewModel {
         searchTask = nil
         loadMoreTask?.cancel()
         loadMoreTask = nil
-        prefetchTask?.cancel()
-        prefetchTask = nil
-        activeSearchID = nil
-
-        rawItems = []
-        items = []
+        prefetchCoordinator.cancel()
+        flow.reset()
+        resultsStore.clear()
         searchState = .idle
-
-        currentQuery = ""
-        currentPage = 1
 
         Logger.presentation.debugPrint("Search cancelled and cleared")
     }
+    
+    func toggleBookmark(for item: ImageItem) async {
+        let outcome = await bookmarkHandler.toggle(item)
+        inFlightBookmarkIDs = outcome.inFlightBookmarkIDs
 
+        switch outcome.effect {
+        case .updated:
+            resultsStore.refresh()
+        case .ignored:
+            break
+        case .failed(let message):
+            resultsStore.refresh()
+            showToast(message)
+            Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id)")
+        }
+    }
 }
