@@ -14,8 +14,10 @@ jobs:
       - name: Build & Test
         run: |
           xcrun simctl boot "iPhone 17" || true
+          sleep 3
           xcrun simctl spawn "iPhone 17" defaults write com.apple.Preferences ConnectHardwareKeyboard -bool false
-          sleep 5
+          xcrun simctl spawn "iPhone 17" defaults write com.apple.Preferences AutomaticMinimizationEnabled -bool false
+          sleep 3
           echo 'enum KakaoAPIKey { static let restAPIKey = "test-key" }' > KakaoAPIKey.swift
           xcodebuild -project KakaoImageSearch.xcodeproj \
             -scheme KakaoImageSearch \

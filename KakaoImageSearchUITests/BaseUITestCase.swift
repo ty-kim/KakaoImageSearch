@@ -41,13 +41,20 @@ class BaseUITestCase: XCTestCase {
     }
 
     /// 하드웨어 키보드 연결 상태에서도 안정적으로 텍스트를 입력한다.
-    /// tap()만으로 포커스가 안 잡히는 CI 환경 대응.
+    /// CI 환경에서 tap()만으로 키보드 포커스가 안 잡히는 문제 대응.
     @MainActor
     func typeText(_ text: String, into element: XCUIElement) {
-        element.tap()
-        if !element.waitForKeyboardFocus(timeout: 2) {
-            element.press(forDuration: 0.5)
+        let app = element.firstMatch
+
+        for attempt in 1...3 {
+            element.tap()
+            if element.waitForKeyboardFocus(timeout: 2) { break }
+            if attempt == 3 {
+                XCTFail("TextField에 키보드 포커스를 획득하지 못했습니다: \(element.identifier)")
+                return
+            }
         }
+
         element.typeText(text)
     }
 
