@@ -117,9 +117,9 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 
 #### 외부 상태 변화 반영 — `withObservationTracking`
 
-`SearchViewModel.items`는 computed property 대신 stored property로 캐싱합니다.
-`BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuildItems()`를 한 번만 실행합니다.
-외부 객체 상태 변화에 반응하도록 구성했습니다.
+`SearchResultsStore`가 검색 결과 아이템과 북마크 상태 동기화를 담당합니다.
+`BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuild()`를 한 번만 실행합니다.
+`SearchViewModel.items`는 `SearchResultsStore.items`를 그대로 위임하는 computed property입니다.
 
 이 패턴은 `onChange`가 1회성이라 콜백 내에서 재등록을 반복해야 합니다. Combine의 `sink`처럼 한 번 구독으로 지속 관찰하는 방식보다 직관적이지 않지만, WWDC23에서 소개된 `@Observable`의 공식 패턴이며 외부 의존성 없이 ViewModel 간 상태 동기화를 구현할 수 있어 이 방식을 택했습니다.
 
