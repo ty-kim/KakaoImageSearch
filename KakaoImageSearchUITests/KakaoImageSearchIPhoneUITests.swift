@@ -237,8 +237,10 @@ extension KakaoImageSearchIPhoneRetryUITests {
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
         XCTAssertTrue(retryButton.waitForHittable(timeout: 8))
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
 
         retryButton.tap()
+        XCTAssertTrue(retryButton.waitForNonExistence(timeout: 3))
 
         let retriedRetryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
