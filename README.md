@@ -10,9 +10,13 @@
 
 ## Screenshots
 
-| 초기 화면 | 검색 결과 | 이미지 상세 | 북마크 | iPad |
-|:-:|:-:|:-:|:-:|:-:|
-| <img src="Screenshots/01_Screenshot.png" width="160"> | <img src="Screenshots/02_Screenshot.png" width="160"> | <img src="Screenshots/03_Screenshot.png" width="160"> | <img src="Screenshots/04_Screenshot.png" width="160"> | <img src="Screenshots/05_Screenshot.png" width="280"> |
+| 초기 화면 | 검색 결과 |
+|:-:|:-:|
+| <img src="Screenshots/01_Screenshot.png" width="300"> | <img src="Screenshots/02_Screenshot.png" width="300"> |
+| **이미지 상세** | **북마크** |
+| <img src="Screenshots/03_Screenshot.png" width="300"> | <img src="Screenshots/04_Screenshot.png" width="300"> |
+| **iPad** | |
+| <img src="Screenshots/05_Screenshot.png" width="500"> | |
 
 ## Quick Guide
 - **1초 debounce** 후 자동 검색
