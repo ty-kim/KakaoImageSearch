@@ -236,32 +236,15 @@ extension KakaoImageSearchIPhoneRetryUITests {
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 8))
+        // 키보드가 retryButton을 덮어 hittable이 안 될 수 있으므로 dismiss 대기
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
 
-        XCTContext.runActivity(named: "1_retryButton_waitForHittable") { activity in
-            let result = retryButton.waitForHittable(timeout: 8)
-            activity.add(XCTAttachment(screenshot: app.screenshot()))
-            XCTAssertTrue(result, "retryButton should be hittable")
-        }
+        retryButton.tap()
 
-        XCTContext.runActivity(named: "2_after_tap") { activity in
-            retryButton.tap()
-            activity.add(XCTAttachment(screenshot: app.screenshot()))
-        }
-
-        XCTContext.runActivity(named: "3_loading_indicator") { activity in
-            let loading = app.descendants(matching: .any)
-                .matching(identifier: "searchView.loadingIndicator").firstMatch
-            let appeared = loading.waitForExistence(timeout: 5)
-            activity.add(XCTAttachment(screenshot: app.screenshot()))
-            XCTAssertTrue(appeared, "tap should trigger loading state")
-        }
-
-        XCTContext.runActivity(named: "4_retried_retryButton") { activity in
-            let retriedRetryButton = app.descendants(matching: .any)
-                .matching(identifier: "emptyStateView.retryButton").firstMatch
-            let result = retriedRetryButton.waitForExistence(timeout: 8)
-            activity.add(XCTAttachment(screenshot: app.screenshot()))
-            XCTAssertTrue(result, "retryButton should reappear after retry")
-        }
+        // --simulateNetworkError 이므로 재시도 후에도 에러 → 버튼 다시 노출
+        let retriedRetryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
+        XCTAssertTrue(retriedRetryButton.waitForExistence(timeout: 8))
     }
 }

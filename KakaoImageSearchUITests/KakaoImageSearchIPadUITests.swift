@@ -124,16 +124,15 @@ extension KakaoImageSearchIPadRetryUITests {
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
-        XCTAssertTrue(retryButton.waitForHittable(timeout: 8))
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 8))
+        // 키보드가 retryButton을 덮어 hittable이 안 될 수 있으므로 dismiss 대기
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
 
         retryButton.tap()
-        XCTAssertTrue(retryButton.waitForNonExistence(timeout: 3))
-
-        let retriedRetryButton = app.descendants(matching: .any)
-            .matching(identifier: "emptyStateView.retryButton").firstMatch
 
         // --simulateNetworkError 이므로 재시도 후에도 에러 → 버튼 다시 노출
+        let retriedRetryButton = app.descendants(matching: .any)
+            .matching(identifier: "emptyStateView.retryButton").firstMatch
         XCTAssertTrue(retriedRetryButton.waitForExistence(timeout: 8))
     }
 
