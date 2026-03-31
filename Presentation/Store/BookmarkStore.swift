@@ -17,7 +17,10 @@ import OSLog
 final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
-    private var isLoaded = false
+    private enum LoadState {
+        case idle, loading, loaded
+    }
+    private var loadState: LoadState = .idle
 
     var bookmarkedIDs: Set<String> {
         Set(bookmarkedItems.map(\.id))
@@ -30,11 +33,17 @@ final class BookmarkStore {
     }
 
     func load() async throws {
-        guard !isLoaded else { return }
-        let fetched = try await manageBookmarkUseCase.fetchAll()
-        bookmarkedItems = fetched
-        isLoaded = true
-        Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
+        guard loadState == .idle else { return }
+        loadState = .loading
+        do {
+            let fetched = try await manageBookmarkUseCase.fetchAll()
+            bookmarkedItems = fetched
+            loadState = .loaded
+            Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
+        } catch {
+            loadState = .idle
+            throw error
+        }
     }
 
     func isBookmarked(_ id: String) -> Bool {
