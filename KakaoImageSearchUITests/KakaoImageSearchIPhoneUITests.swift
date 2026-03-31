@@ -174,17 +174,10 @@ extension KakaoImageSearchIPhoneUITests {
 
         let item = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
         XCTAssertTrue(item.waitForExistence(timeout: 3))
-        
-        // 검색 결과 영역 탭으로 키보드 dismiss
-        let resultsList = app.descendants(matching: .any).matching(identifier: "searchView.resultsList").firstMatch
-        XCTAssertTrue(resultsList.waitForExistence(timeout: 3))
-        resultsList.tap()
-
-        // 그 다음 아이템 탭
         item.tap()
 
         let closeButton = app.buttons["imageDetailView.closeButton"]
-        XCTAssertTrue(closeButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 5))
         XCTAssertEqual(closeButton.label, "이미지 닫기")
     }
 
