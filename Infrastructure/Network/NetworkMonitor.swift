@@ -13,12 +13,12 @@ import os
 final class NetworkMonitor: NetworkMonitoring, @unchecked Sendable {
 
     private struct State {
-        var isConnected: Bool = true
-        var isExpensive: Bool = false
+        var isConnected: Bool
+        var isExpensive: Bool
     }
 
     private let monitor = NWPathMonitor()
-    private let lock = OSAllocatedUnfairLock(initialState: State())
+    private let lock: OSAllocatedUnfairLock<State>
 
     var isConnected: Bool {
         lock.withLock { $0.isConnected }
@@ -29,6 +29,12 @@ final class NetworkMonitor: NetworkMonitoring, @unchecked Sendable {
     }
 
     init() {
+        let initialPath = monitor.currentPath
+        lock = OSAllocatedUnfairLock(initialState: State(
+            isConnected: initialPath.status == .satisfied,
+            isExpensive: initialPath.isExpensive
+        ))
+
         monitor.pathUpdateHandler = { [weak self] path in
             self?.lock.withLock {
                 $0.isConnected = path.status == .satisfied
