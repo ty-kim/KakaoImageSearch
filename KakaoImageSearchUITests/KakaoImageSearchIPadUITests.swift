@@ -62,8 +62,7 @@ extension KakaoImageSearchIPadUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         // debounce 1.0초 대기 (fixture이므로 네트워크 불필요)
         let resultsList = app.scrollViews["searchView.resultsList"]
@@ -100,8 +99,7 @@ extension KakaoImageSearchIPadRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
@@ -122,8 +120,7 @@ extension KakaoImageSearchIPadRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
@@ -141,8 +138,7 @@ extension KakaoImageSearchIPadRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch

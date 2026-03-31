@@ -41,8 +41,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("고양이")
+        typeText("고양이", into: searchField)
 
         let clearButton = app.buttons["searchBar.clearButton"]
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
@@ -52,8 +51,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("고양이")
+        typeText("고양이", into: searchField)
 
         let clearButton = app.buttons["searchBar.clearButton"]
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
@@ -115,8 +113,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         // debounce 1.0초 대기 (fixture이므로 네트워크 불필요)
         let resultsList = app.scrollViews["searchView.resultsList"]
@@ -133,8 +130,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         // debounce 후 검색 결과 노출 대기
         let item1 = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
@@ -152,8 +148,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("고양이")
+        typeText("고양이", into: searchField)
 
         let clearButton = app.buttons["searchBar.clearButton"]
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
@@ -169,8 +164,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let item = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
         XCTAssertTrue(item.waitForExistence(timeout: 3))
@@ -217,8 +211,7 @@ extension KakaoImageSearchIPhoneRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
@@ -239,8 +232,7 @@ extension KakaoImageSearchIPhoneRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
