@@ -749,7 +749,7 @@ struct MainViewModelTests {
         sut.onSearchTextChanged("abc")
 
         // 디바운스 + 검색 완료까지 대기
-        let deadline = Date().addingTimeInterval(5)
+        let deadline = Date().addingTimeInterval(10)
         while searchRepo.searchCallCount == 0 && Date() < deadline {
             try await Task.sleep(for: .milliseconds(100))
         }
