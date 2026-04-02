@@ -24,7 +24,6 @@ final class BookmarkViewModel {
     private let toastDuration: Duration
     private(set) var bookmarkState: BookmarkState = .idle
     private(set) var toastMessage: String? = nil
-    private(set) var inFlightBookmarkIDs: Set<String> = []
     private var toastTask: Task<Void, Never>? = nil
 
     var items: [ImageItem] {
@@ -51,17 +50,16 @@ final class BookmarkViewModel {
         Task { await loadBookmarks() }
     }
 
-    func toggleBookmark(for item: ImageItem) async {
-        guard !inFlightBookmarkIDs.contains(item.id) else { return }
-        inFlightBookmarkIDs.insert(item.id)
-        defer { inFlightBookmarkIDs.remove(item.id) }
+    var inFlightBookmarkIDs: Set<String> {
+        bookmarkStore.inFlightBookmarkIDs
+    }
 
-        do {
-            let isNowBookmarked = try await bookmarkStore.toggle(item)
-            Logger.presentation.debugPrint("Toggled bookmark: \(item.id) → \(isNowBookmarked)")
-        } catch {
+    func toggleBookmark(for item: ImageItem) async {
+        let result = await bookmarkStore.toggle(item)
+
+        if case .failure = result {
             showToast(L10n.Bookmark.toggleError)
-            Logger.presentation.errorPrint("Toggle bookmark failed: \(error)")
+            Logger.presentation.errorPrint("Toggle bookmark failed: \(item.id)")
         }
     }
 

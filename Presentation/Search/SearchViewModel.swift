@@ -32,8 +32,6 @@ final class SearchViewModel {
     var items: [ImageItem] { resultsStore.items }
     private(set) var searchState: SearchState = .idle
     private(set) var toastMessage: String? = nil
-    private(set) var inFlightBookmarkIDs: Set<String> = []
-
     private var searchTask: Task<Void, Never>? = nil
     private var loadMoreTask: Task<Void, Never>? = nil
     private var toastTask: Task<Void, Never>? = nil
@@ -41,7 +39,7 @@ final class SearchViewModel {
 
     private let flow: SearchFlowController
     private let resultsStore: SearchResultsStore
-    private let bookmarkHandler: SearchBookmarkHandler
+    private let bookmarkStore: BookmarkStore
     private let prefetchCoordinator: SearchPrefetchCoordinator
 
     init(
@@ -54,7 +52,7 @@ final class SearchViewModel {
         self.toastDuration = toastDuration
         self.flow = SearchFlowController(searchImageUseCase: searchImageUseCase, networkMonitor: networkMonitor)
         self.resultsStore = SearchResultsStore(bookmarkStore: bookmarkStore)
-        self.bookmarkHandler = SearchBookmarkHandler(bookmarkStore: bookmarkStore)
+        self.bookmarkStore = bookmarkStore
         self.prefetchCoordinator = SearchPrefetchCoordinator(imagePrefetcher: imagePrefetcher, networkMonitor: networkMonitor)
     }
 
@@ -205,18 +203,19 @@ final class SearchViewModel {
         Logger.presentation.debugPrint("Search cancelled and cleared")
     }
     
-    func toggleBookmark(for item: ImageItem) async {
-        let outcome = await bookmarkHandler.toggle(item)
-        inFlightBookmarkIDs = outcome.inFlightBookmarkIDs
+    var inFlightBookmarkIDs: Set<String> {
+        bookmarkStore.inFlightBookmarkIDs
+    }
 
-        switch outcome.effect {
-        case .updated:
+    func toggleBookmark(for item: ImageItem) async {
+        let result = await bookmarkStore.toggle(item)
+
+        switch result {
+        case .success:
             resultsStore.refresh()
-        case .ignored:
-            break
-        case .failed(let message):
+        case .failure:
             resultsStore.refresh()
-            showToast(message)
+            showToast(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id)")
         }
     }

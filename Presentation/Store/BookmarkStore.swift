@@ -17,6 +17,7 @@ import OSLog
 final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
+    private(set) var inFlightBookmarkIDs: Set<String> = []
     private enum LoadState {
         case idle, loading, loaded
     }
@@ -51,29 +52,30 @@ final class BookmarkStore {
     }
 
     @discardableResult
-    func toggle(_ item: ImageItem) async throws -> Bool {
-        let isNowBookmarked = try await manageBookmarkUseCase.toggle(item)
-
-        if isNowBookmarked {
-            var updated = item
-            updated.isBookmarked = true
-
-            if let index = bookmarkedItems.firstIndex(where: { $0.id == item.id }) {
-                bookmarkedItems[index] = updated
-            } else {
-                bookmarkedItems.append(updated)
-            }
-
-        } else {
-            bookmarkedItems.removeAll { $0.id == item.id }
+    func toggle(_ item: ImageItem) async -> Result<Bool, Error> {
+        guard !inFlightBookmarkIDs.contains(item.id) else {
+            return .success(isBookmarked(item.id))
         }
 
-        Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
-        return isNowBookmarked
+        inFlightBookmarkIDs.insert(item.id)
+        defer { inFlightBookmarkIDs.remove(item.id) }
+
+        // 낙관적 업데이트: UI 먼저 토글
+        optimisticUpdate(item)
+
+        do {
+            let isNowBookmarked = try await manageBookmarkUseCase.toggle(item)
+            Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
+            return .success(isNowBookmarked)
+        } catch {
+            // 실패 시 롤백
+            optimisticUpdate(item)
+            Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id) — \(error)")
+            return .failure(error)
+        }
     }
-    
-    // UI상태만 토글
-    func optimisticToggle(_ item: ImageItem) {
+
+    private func optimisticUpdate(_ item: ImageItem) {
         if let index = bookmarkedItems.firstIndex(where: { $0.id == item.id }) {
             bookmarkedItems.remove(at: index)
         } else {
@@ -81,9 +83,5 @@ final class BookmarkStore {
             updated.isBookmarked = true
             bookmarkedItems.append(updated)
         }
-    }
-    
-    func persist(_ item: ImageItem) async throws {
-        _ = try await manageBookmarkUseCase.toggle(item)
     }
 }

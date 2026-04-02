@@ -53,8 +53,9 @@ struct BookmarkStoreTests {
         let item = ImageItem.fixture(id: "a")
         let (sut, _) = makeSUT()
 
-        _ = try await sut.toggle(item)
+        let result = await sut.toggle(item)
 
+        #expect(try result.get() == true)
         #expect(sut.bookmarkedIDs.contains("a"))
         #expect(sut.bookmarkedItems.contains { $0.id == "a" })
     }
@@ -65,8 +66,9 @@ struct BookmarkStoreTests {
         let (sut, _) = makeSUT(initialItems: [item])
         try await sut.load()
 
-        _ = try await sut.toggle(item)
+        let result = await sut.toggle(item)
 
+        #expect(try result.get() == false)
         #expect(!sut.bookmarkedIDs.contains("a"))
         #expect(!sut.bookmarkedItems.contains { $0.id == "a" })
     }
@@ -86,13 +88,51 @@ struct BookmarkStoreTests {
         let item = ImageItem.fixture(id: "a")
         let (sut, _) = makeSUT()
 
-        let first = try await sut.toggle(item)
+        let first = try await sut.toggle(item).get()
         #expect(first == true)
         #expect(sut.bookmarkedIDs.contains("a"))
 
-        let second = try await sut.toggle(item)
+        let second = try await sut.toggle(item).get()
         #expect(second == false)
         #expect(!sut.bookmarkedIDs.contains("a"))
         #expect(sut.bookmarkedItems.isEmpty)
+    }
+
+    @Test("동일 아이템 동시 toggle 시 한 번만 처리 (inFlight dedup)")
+    func toggle_concurrent_deduplicates() async {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, repo) = makeSUT()
+
+        async let t1 = sut.toggle(item)
+        async let t2 = sut.toggle(item)
+        _ = await (t1, t2)
+
+        #expect(repo.saveCallCount == 1)
+    }
+
+    @Test("toggle 실패 시 optimistic 업데이트 롤백")
+    func toggle_failure_rollsBackOptimisticUpdate() async {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, repo) = makeSUT()
+        repo.stubbedSaveError = TestError.stub
+
+        let result = await sut.toggle(item)
+
+        guard case .failure = result else {
+            Issue.record("Expected .failure")
+            return
+        }
+        #expect(!sut.bookmarkedIDs.contains("a"))
+        #expect(sut.bookmarkedItems.isEmpty)
+    }
+
+    @Test("toggle 완료 후 inFlightBookmarkIDs에서 제거")
+    func toggle_completion_removesFromInFlight() async {
+        let item = ImageItem.fixture(id: "a")
+        let (sut, _) = makeSUT()
+
+        _ = await sut.toggle(item)
+
+        #expect(!sut.inFlightBookmarkIDs.contains("a"))
     }
 }
