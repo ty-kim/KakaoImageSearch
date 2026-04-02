@@ -17,7 +17,7 @@ struct BookmarkStorageIntegrationTests {
     // MARK: - Helpers
 
     private func makeStorage() throws -> BookmarkStorage {
-        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        let config = ModelConfiguration(UUID().uuidString, isStoredInMemoryOnly: true)
         let container = try ModelContainer(for: BookmarkEntity.self, configurations: config)
         return BookmarkStorage(modelContainer: container)
     }

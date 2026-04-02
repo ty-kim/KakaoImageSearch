@@ -19,7 +19,7 @@ final class MainViewModel {
     private(set) var searchViewModel: SearchViewModel
     private(set) var bookmarkViewModel: BookmarkViewModel
 
-    private let bookmarkStore: BookmarkStore
+    private let bookmarkStore: BookmarkCoordinator
     private var debounceTask: Task<Void, Never>?
 
     enum Tab {
@@ -32,7 +32,7 @@ final class MainViewModel {
         imagePrefetcher: any ImagePrefetcher,
         networkMonitor: any NetworkMonitoring
     ) {
-        let bookmarkStore = BookmarkStore(manageBookmarkUseCase: manageBookmarkUseCase)
+        let bookmarkStore = BookmarkCoordinator(manageBookmarkUseCase: manageBookmarkUseCase)
 
         self.bookmarkStore = bookmarkStore
         self.searchViewModel = SearchViewModel(
@@ -47,11 +47,7 @@ final class MainViewModel {
     }
 
     func loadInitialData() async {
-        do {
-            try await bookmarkStore.load()
-        } catch {
-            Logger.presentation.errorPrint("Failed to load bookmarks: \(error)")
-        }
+        await bookmarkViewModel.loadBookmarks()
     }
 
     func onSearchTextChanged(_ newValue: String) {

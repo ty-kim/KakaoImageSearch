@@ -15,7 +15,7 @@ final class SearchImageUseCase: Sendable {
         self.imageSearchRepository = imageSearchRepository
     }
 
-    /// 검색 결과를 반환합니다. 북마크 상태 merge는 Presentation 레이어(BookmarkStore)에서 처리합니다.
+    /// 검색 결과를 반환합니다. 북마크 상태 merge는 Presentation 레이어(BookmarkCoordinator)에서 처리합니다.
     func execute(query: String, page: Int = 1) async throws -> SearchResultPage {
         try await imageSearchRepository.search(query: query, page: page)
     }

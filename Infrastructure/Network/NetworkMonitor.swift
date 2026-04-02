@@ -29,10 +29,10 @@ final class NetworkMonitor: NetworkMonitoring, @unchecked Sendable {
     }
 
     init() {
-        let initialPath = monitor.currentPath
+        // start() 전 currentPath는 신뢰할 수 없으므로 보수적으로 connected 설정
         lock = OSAllocatedUnfairLock(initialState: State(
-            isConnected: initialPath.status == .satisfied,
-            isExpensive: initialPath.isExpensive
+            isConnected: true,
+            isExpensive: false
         ))
 
         monitor.pathUpdateHandler = { [weak self] path in

@@ -31,30 +31,26 @@ final class SearchViewModel {
 
     var items: [ImageItem] { resultsStore.items }
     private(set) var searchState: SearchState = .idle
-    private(set) var toastMessage: String? = nil
-    private(set) var inFlightBookmarkIDs: Set<String> = []
-
+    let toast: ToastState
     private var searchTask: Task<Void, Never>? = nil
     private var loadMoreTask: Task<Void, Never>? = nil
-    private var toastTask: Task<Void, Never>? = nil
-    private let toastDuration: Duration
 
     private let flow: SearchFlowController
     private let resultsStore: SearchResultsStore
-    private let bookmarkHandler: SearchBookmarkHandler
+    private let bookmarkStore: BookmarkCoordinator
     private let prefetchCoordinator: SearchPrefetchCoordinator
 
     init(
         searchImageUseCase: SearchImageUseCase,
-        bookmarkStore: BookmarkStore,
+        bookmarkStore: BookmarkCoordinator,
         imagePrefetcher: any ImagePrefetcher,
         networkMonitor: any NetworkMonitoring,
         toastDuration: Duration = ToastView.defaultDuration
     ) {
-        self.toastDuration = toastDuration
+        self.toast = ToastState(duration: toastDuration)
         self.flow = SearchFlowController(searchImageUseCase: searchImageUseCase, networkMonitor: networkMonitor)
         self.resultsStore = SearchResultsStore(bookmarkStore: bookmarkStore)
-        self.bookmarkHandler = SearchBookmarkHandler(bookmarkStore: bookmarkStore)
+        self.bookmarkStore = bookmarkStore
         self.prefetchCoordinator = SearchPrefetchCoordinator(imagePrefetcher: imagePrefetcher, networkMonitor: networkMonitor)
     }
 
@@ -174,15 +170,8 @@ final class SearchViewModel {
         return loadMore()
     }
 
-    private func showToast(_ message: String) {
-        toastTask?.cancel()
-        toastMessage = message
-
-        toastTask = Task {
-            try? await Task.sleep(for: toastDuration)
-            guard !Task.isCancelled else { return }
-            toastMessage = nil
-        }
+    var toastMessage: String? {
+        toast.message
     }
 
     private func serverMessage(from error: Error) -> String {
@@ -205,19 +194,17 @@ final class SearchViewModel {
         Logger.presentation.debugPrint("Search cancelled and cleared")
     }
     
-    func toggleBookmark(for item: ImageItem) async {
-        let outcome = await bookmarkHandler.toggle(item)
-        inFlightBookmarkIDs = outcome.inFlightBookmarkIDs
+    var inFlightBookmarkIDs: Set<String> {
+        bookmarkStore.inFlightBookmarkIDs
+    }
 
-        switch outcome.effect {
-        case .updated:
-            resultsStore.refresh()
-        case .ignored:
-            break
-        case .failed(let message):
-            resultsStore.refresh()
-            showToast(message)
+    func toggleBookmark(for item: ImageItem) async {
+        do {
+            _ = try await bookmarkStore.toggle(item)
+        } catch {
+            toast.show(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id)")
         }
+        resultsStore.refresh()
     }
 }

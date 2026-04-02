@@ -29,7 +29,7 @@ struct SearchViewModelTests {
         let bookmarkRepo = MockBookmarkRepository()
         bookmarkRepo.items = bookmarkedItems
 
-        let bookmarkStore = BookmarkStore(
+        let bookmarkStore = BookmarkCoordinator(
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
         )
         let sut = SearchViewModel(

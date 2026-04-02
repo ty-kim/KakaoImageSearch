@@ -35,6 +35,9 @@ final class MockBookmarkRepository: BookmarkRepository, @unchecked Sendable {
     var stubbedSaveError: Error?
     var stubbedDeleteError: Error?
     var stubbedFetchError: Error?
+    /// fetchAll() 진입 시 이 continuation이 설정되어 있으면 외부에서 resume할 때까지 대기
+    var fetchSuspender: (@Sendable () async -> Void)?
+    private(set) var fetchCallCount = 0
     private(set) var saveCallCount = 0
     private(set) var deleteCallCount = 0
     private(set) var lastDeletedID: String?
@@ -54,6 +57,10 @@ final class MockBookmarkRepository: BookmarkRepository, @unchecked Sendable {
     }
 
     func fetchAll() async throws -> [ImageItem] {
+        fetchCallCount += 1
+        if let suspender = fetchSuspender {
+            await suspender()
+        }
         if let error = stubbedFetchError { throw error }
         return items
     }

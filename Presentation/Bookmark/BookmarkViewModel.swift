@@ -20,20 +20,21 @@ final class BookmarkViewModel {
         case error(message: String)
     }
 
-    private let bookmarkStore: BookmarkStore
-    private let toastDuration: Duration
+    private let bookmarkStore: BookmarkCoordinator
+    let toast: ToastState
     private(set) var bookmarkState: BookmarkState = .idle
-    private(set) var toastMessage: String? = nil
-    private(set) var inFlightBookmarkIDs: Set<String> = []
-    private var toastTask: Task<Void, Never>? = nil
 
     var items: [ImageItem] {
         bookmarkStore.bookmarkedItems
     }
 
-    init(bookmarkStore: BookmarkStore, toastDuration: Duration = ToastView.defaultDuration) {
+    var toastMessage: String? {
+        toast.message
+    }
+
+    init(bookmarkStore: BookmarkCoordinator, toastDuration: Duration = ToastView.defaultDuration) {
         self.bookmarkStore = bookmarkStore
-        self.toastDuration = toastDuration
+        self.toast = ToastState(duration: toastDuration)
     }
 
     func loadBookmarks() async {
@@ -51,27 +52,16 @@ final class BookmarkViewModel {
         Task { await loadBookmarks() }
     }
 
-    func toggleBookmark(for item: ImageItem) async {
-        guard !inFlightBookmarkIDs.contains(item.id) else { return }
-        inFlightBookmarkIDs.insert(item.id)
-        defer { inFlightBookmarkIDs.remove(item.id) }
-
-        do {
-            let isNowBookmarked = try await bookmarkStore.toggle(item)
-            Logger.presentation.debugPrint("Toggled bookmark: \(item.id) → \(isNowBookmarked)")
-        } catch {
-            showToast(L10n.Bookmark.toggleError)
-            Logger.presentation.errorPrint("Toggle bookmark failed: \(error)")
-        }
+    var inFlightBookmarkIDs: Set<String> {
+        bookmarkStore.inFlightBookmarkIDs
     }
 
-    private func showToast(_ message: String) {
-        toastTask?.cancel()
-        toastMessage = message
-        toastTask = Task {
-            try? await Task.sleep(for: toastDuration)
-            guard !Task.isCancelled else { return }
-            toastMessage = nil
+    func toggleBookmark(for item: ImageItem) async {
+        do {
+            _ = try await bookmarkStore.toggle(item)
+        } catch {
+            toast.show(L10n.Bookmark.toggleError)
+            Logger.presentation.errorPrint("Toggle bookmark failed: \(item.id)")
         }
     }
 }
