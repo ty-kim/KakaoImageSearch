@@ -47,3 +47,16 @@ struct EmptyStateView: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
+
+#if DEBUG
+#Preview("With Retry") {
+    EmptyStateView(
+        message: "검색 결과가 없습니다",
+        retryAction: {}
+    )
+}
+
+#Preview("Without Retry") {
+    EmptyStateView(message: "검색어를 입력해주세요")
+}
+#endif

@@ -76,6 +76,8 @@ actor ImageCache {
         if let data = try? Data(contentsOf: diskURL) {
             if let image = UIImage(data: data) {
                 memoryCache.setObject(image, forKey: key as NSString, cost: estimatedCost(of: image))
+                try? fileManager.setAttributes([.modificationDate: Date()], ofItemAtPath:
+                  diskURL.path)
                 return image
             } else {
                 // 데이터는 읽혔지만 이미지 디코딩 실패 → 손상된 파일 삭제해 반복 미스 방지

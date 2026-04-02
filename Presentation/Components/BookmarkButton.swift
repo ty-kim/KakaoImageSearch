@@ -28,3 +28,13 @@ struct BookmarkButton: View {
         .accessibilityIdentifier(isBookmarked ? "bookmarkButton.active" : "bookmarkButton.inactive")
     }
 }
+
+#if DEBUG
+#Preview {
+    HStack(spacing: 32) {
+        BookmarkButton(isBookmarked: false, action: {})
+        BookmarkButton(isBookmarked: true, action: {})
+    }
+    .padding()
+}
+#endif

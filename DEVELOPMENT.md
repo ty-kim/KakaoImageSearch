@@ -40,9 +40,9 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 128개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO 보안 검증 중심 (`Unit/`)
+- **유닛 테스트**: Swift Testing Framework, 168개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchBookmarkHandler + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 44개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
-- **UI 테스트**: XCUITest, 26개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
+- **UI 테스트**: XCUITest, 28개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **OSLog**: 카테고리별 로깅 구성
 - **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
 - **VoiceOver 접근성**: 주요 인터랙티브 컴포넌트에 `accessibilityLabel`/`accessibilityHint` 적용, 접근성 문자열도 ko/en/ja 3개 언어 지원
@@ -53,7 +53,9 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 
 iPhone은 Portrait only로 제한했고, iPad는 4방향 회전을 모두 지원합니다.
 iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitView를 사용해 검색과 북마크를 한 화면에서 볼 수 있도록 했습니다.
-레이아웃 분기는 `UIDevice.current.userInterfaceIdiom`으로 판별합니다. `horizontalSizeClass` 대신 디바이스 idiom을 사용해 대형 iPhone landscape에서 iPad 레이아웃이 표시되는 문제를 방지했습니다.
+레이아웃 분기는 `horizontalSizeClass`를 사용해서 `.regular`일 때 iPad 레이아웃으로 표시합니다.
+iPhone은 세로 모드만 지원하므로, 대형 iPhone landscape에서 `horizontalSizeClass == .regular`가 되어 iPad 레이아웃이 잘못 표시되는 케이스는 이 프로젝트의 지원 범위에 포함되지 않습니다.
+이 전제 안에서는 `horizontalSizeClass` 기반 분기가 충분히 단순하고 설명 가능한 선택이라고 판단했습니다.
 iPad 검색 패널은 sidebar 폭에 맞춰 1열, 북마크 패널은 2열 그리드로 구성했고, 크기 계산은 화면 너비를 기준으로 처리했습니다.
 
 ### 6. 페이지네이션 & 에러 핸들링 UX
@@ -115,9 +117,9 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 
 #### 외부 상태 변화 반영 — `withObservationTracking`
 
-`SearchViewModel.items`는 computed property 대신 stored property로 캐싱합니다.
-`BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuildItems()`를 한 번만 실행합니다.
-외부 객체 상태 변화에 반응하도록 구성했습니다.
+`SearchResultsStore`가 검색 결과 아이템과 북마크 상태 동기화를 담당합니다.
+`BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuild()`를 한 번만 실행합니다.
+`SearchViewModel.items`는 `SearchResultsStore.items`를 그대로 위임하는 computed property입니다.
 
 이 패턴은 `onChange`가 1회성이라 콜백 내에서 재등록을 반복해야 합니다. Combine의 `sink`처럼 한 번 구독으로 지속 관찰하는 방식보다 직관적이지 않지만, WWDC23에서 소개된 `@Observable`의 공식 패턴이며 외부 의존성 없이 ViewModel 간 상태 동기화를 구현할 수 있어 이 방식을 택했습니다.
 

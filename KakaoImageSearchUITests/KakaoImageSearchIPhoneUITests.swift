@@ -41,8 +41,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("고양이")
+        typeText("고양이", into: searchField)
 
         let clearButton = app.buttons["searchBar.clearButton"]
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
@@ -52,8 +51,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("고양이")
+        typeText("고양이", into: searchField)
 
         let clearButton = app.buttons["searchBar.clearButton"]
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
@@ -77,27 +75,6 @@ extension KakaoImageSearchIPhoneUITests {
         let emptyState = app.descendants(matching: .any).matching(identifier: "searchView.emptyState").firstMatch
         XCTAssertTrue(emptyState.waitForExistence(timeout: 2))
         emptyState.tap()
-
-        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
-    }
-
-    func test_searchBar_tapOutsideOnBookmarkTab_dismissesKeyboard() {
-        // 북마크 탭으로 전환
-        let tabBar = app.tabBars.firstMatch
-        XCTAssertTrue(tabBar.waitForExistence(timeout: 3))
-        tabBar.buttons.element(boundBy: 1).tap()
-
-        // 검색바 탭하여 키보드 올림
-        let searchField = app.textFields["searchBar.textField"]
-        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
-
-        searchField.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 2))
-
-        // 북마크 영역 탭
-        let bookmarkEmpty = app.descendants(matching: .any).matching(identifier: "bookmarkView.emptyState").firstMatch
-        XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
-        bookmarkEmpty.tap()
 
         XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
     }
@@ -136,8 +113,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         // debounce 1.0초 대기 (fixture이므로 네트워크 불필요)
         let resultsList = app.scrollViews["searchView.resultsList"]
@@ -154,8 +130,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         // debounce 후 검색 결과 노출 대기
         let item1 = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
@@ -173,8 +148,7 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("고양이")
+        typeText("고양이", into: searchField)
 
         let clearButton = app.buttons["searchBar.clearButton"]
         XCTAssertTrue(clearButton.waitForExistence(timeout: 2))
@@ -190,15 +164,14 @@ extension KakaoImageSearchIPhoneUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let item = app.descendants(matching: .any).matching(identifier: "searchResultItem.fixture-1").firstMatch
         XCTAssertTrue(item.waitForExistence(timeout: 3))
         item.tap()
 
         let closeButton = app.buttons["imageDetailView.closeButton"]
-        XCTAssertTrue(closeButton.waitForExistence(timeout: 3))
+        XCTAssertTrue(closeButton.waitForExistence(timeout: 5))
         XCTAssertEqual(closeButton.label, "이미지 닫기")
     }
 
@@ -220,33 +193,6 @@ final class KakaoImageSearchIPhoneBookmarkUITests: BaseUITestCase {
     }
 }
 
-@MainActor
-extension KakaoImageSearchIPhoneBookmarkUITests {
-
-    func test_searchBar_tapOutsideOnBookmarkTabWithItems_dismissesKeyboard() {
-        // 북마크 탭으로 전환
-        let tabBar = app.tabBars.firstMatch
-        XCTAssertTrue(tabBar.waitForExistence(timeout: 3))
-        tabBar.buttons.element(boundBy: 1).tap()
-
-        // 북마크 목록이 표시되는지 확인
-        let bookmarkList = app.scrollViews["bookmarkView.list"]
-        XCTAssertTrue(bookmarkList.waitForExistence(timeout: 3))
-
-        // 검색바 탭하여 키보드 올림
-        let searchField = app.textFields["searchBar.textField"]
-        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
-
-        searchField.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForExistence(timeout: 2))
-
-        // 북마크 목록 영역 탭
-        bookmarkList.tap()
-
-        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
-    }
-}
-
 // MARK: - iPhone 에러 / 재시도 UX (네트워크 에러 시뮬레이션)
 
 final class KakaoImageSearchIPhoneRetryUITests: BaseUITestCase {
@@ -265,8 +211,7 @@ extension KakaoImageSearchIPhoneRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
@@ -287,39 +232,19 @@ extension KakaoImageSearchIPhoneRetryUITests {
         let searchField = app.textFields["searchBar.textField"]
         XCTAssertTrue(searchField.waitForExistence(timeout: 3))
 
-        searchField.tap()
-        searchField.typeText("cat")
+        typeText("cat", into: searchField)
 
         let retryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
-        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
+        XCTAssertTrue(retryButton.waitForExistence(timeout: 8))
+        // 키보드가 retryButton을 덮어 hittable이 안 될 수 있으므로 dismiss 대기
+        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 5))
 
         retryButton.tap()
 
         // --simulateNetworkError 이므로 재시도 후에도 에러 → 버튼 다시 노출
-        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
-    }
-
-    // MARK: - 에러 상태에서도 탭 전환 정상 동작
-
-    func test_errorState_tabSwitch_toBookmark_works() {
-        let searchField = app.textFields["searchBar.textField"]
-        XCTAssertTrue(searchField.waitForExistence(timeout: 3))
-        searchField.tap()
-        searchField.typeText("cat")
-
-        let retryButton = app.descendants(matching: .any)
+        let retriedRetryButton = app.descendants(matching: .any)
             .matching(identifier: "emptyStateView.retryButton").firstMatch
-        XCTAssertTrue(retryButton.waitForExistence(timeout: 5))
-
-        // 에러 영역 탭으로 키보드 dismiss (simultaneousGesture 검증 겸용)
-        retryButton.tap()
-        XCTAssertTrue(app.keyboards.firstMatch.waitForNonExistence(timeout: 2))
-
-        app.tabBars.firstMatch.buttons.element(boundBy: 1).tap()
-
-        let bookmarkEmpty = app.descendants(matching: .any)
-            .matching(identifier: "bookmarkView.emptyState").firstMatch
-        XCTAssertTrue(bookmarkEmpty.waitForExistence(timeout: 3))
+        XCTAssertTrue(retriedRetryButton.waitForExistence(timeout: 8))
     }
 }

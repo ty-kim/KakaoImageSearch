@@ -90,7 +90,7 @@ extension KakaoSearchResponseDTO.Document {
         return true
     }
 
-    private static let iso8601Formatter: ISO8601DateFormatter = {
+    nonisolated(unsafe) private static let iso8601Formatter: ISO8601DateFormatter = {
         let f = ISO8601DateFormatter()
         f.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         return f

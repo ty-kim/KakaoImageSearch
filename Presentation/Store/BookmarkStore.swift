@@ -17,6 +17,10 @@ import OSLog
 final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
+    private enum LoadState {
+        case idle, loading, loaded
+    }
+    private var loadState: LoadState = .idle
 
     var bookmarkedIDs: Set<String> {
         Set(bookmarkedItems.map(\.id))
@@ -29,9 +33,17 @@ final class BookmarkStore {
     }
 
     func load() async throws {
-        let fetched = try await manageBookmarkUseCase.fetchAll()
-        bookmarkedItems = fetched
-        Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
+        guard loadState == .idle else { return }
+        loadState = .loading
+        do {
+            let fetched = try await manageBookmarkUseCase.fetchAll()
+            bookmarkedItems = fetched
+            loadState = .loaded
+            Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
+        } catch {
+            loadState = .idle
+            throw error
+        }
     }
 
     func isBookmarked(_ id: String) -> Bool {
@@ -58,5 +70,20 @@ final class BookmarkStore {
 
         Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
         return isNowBookmarked
+    }
+    
+    // UI상태만 토글
+    func optimisticToggle(_ item: ImageItem) {
+        if let index = bookmarkedItems.firstIndex(where: { $0.id == item.id }) {
+            bookmarkedItems.remove(at: index)
+        } else {
+            var updated = item
+            updated.isBookmarked = true
+            bookmarkedItems.append(updated)
+        }
+    }
+    
+    func persist(_ item: ImageItem) async throws {
+        _ = try await manageBookmarkUseCase.toggle(item)
     }
 }

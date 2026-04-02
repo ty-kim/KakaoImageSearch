@@ -30,3 +30,9 @@ struct ToastView: View {
             }
     }
 }
+
+#if DEBUG
+#Preview {
+    ToastView(message: "북마크에 추가되었습니다")
+}
+#endif

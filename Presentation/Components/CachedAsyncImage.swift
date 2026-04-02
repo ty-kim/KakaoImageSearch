@@ -140,3 +140,12 @@ struct CachedAsyncImage: View {
             )
     }
 }
+
+#if DEBUG
+#Preview {
+    CachedAsyncImage(url: URL(string: "https://picsum.photos/400/300"))
+        .frame(width: 200, height: 150)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .environment(\.imageDownloader, PreviewFactory.imageDownloader)
+}
+#endif

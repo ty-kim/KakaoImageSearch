@@ -11,11 +11,11 @@ struct MainView: View {
 
     @State var viewModel: MainViewModel
     @FocusState private var isSearchFieldFocused: Bool
-    private var isIPad: Bool { UIDevice.current.userInterfaceIdiom == .pad }
+    @Environment(\.horizontalSizeClass) private var sizeClass
 
     var body: some View {
         Group {
-            if isIPad {
+            if sizeClass == .regular {
                 iPadLayout
             } else {
                 iPhoneLayout
@@ -25,43 +25,30 @@ struct MainView: View {
             await viewModel.loadInitialData()
         }
     }
-
-    /// 탭 내부 콘텐츠를 탭하면 키보드를 내리는 제스처.
-    /// simultaneousGesture로 붙여 내부 버튼·스크롤과 충돌 없이 동시 인식한다.
-    private var dismissKeyboardGesture: some Gesture {
-        TapGesture().onEnded { isSearchFieldFocused = false }
-    }
-
+    
     // MARK: - iPhone Layout
 
     private var iPhoneLayout: some View {
         VStack(spacing: 0) {
-            SearchBar(text: $viewModel.searchText, isFocused: $isSearchFieldFocused) {
-                    viewModel.selectedTab = .search
-                }
-                .onChange(of: viewModel.searchText) { _, newValue in
-                    viewModel.onSearchTextChanged(newValue)
-                }
-                .onChange(of: viewModel.searchViewModel.items) {
-                    if !viewModel.searchViewModel.items.isEmpty {
-                        isSearchFieldFocused = false
-                        viewModel.selectedTab = .search
-                    }
-                }
-
             TabView(selection: $viewModel.selectedTab) {
-                SearchView(viewModel: viewModel.searchViewModel)
-                    // 검색 탭 영역 탭 시 키보드 dismiss
-                    .simultaneousGesture(dismissKeyboardGesture)
-                    .tabItem {
-                        Label(L10n.Tab.search, systemImage: "magnifyingglass")
+                VStack(spacing: 0) {
+                    SearchBar(text: $viewModel.searchText, isFocused: $isSearchFieldFocused)
+                    .onChange(of: viewModel.searchText) { _, newValue in
+                        viewModel.onSearchTextChanged(newValue)
                     }
-                    .tag(MainViewModel.Tab.search)
-                    .accessibilityHint(L10n.Accessibility.tabSearchHint)
+                    
+                    SearchView(viewModel: viewModel.searchViewModel,
+                               isFocused: $isSearchFieldFocused)
+                }
+                // 검색 탭 영역 탭 시 키보드 dismiss
+                .tabItem {
+                    Label(L10n.Tab.search, systemImage: "magnifyingglass")
+                }
+                .tag(MainViewModel.Tab.search)
+                .accessibilityHint(L10n.Accessibility.tabSearchHint)
 
                 BookmarkView(viewModel: viewModel.bookmarkViewModel)
                     // 북마크 탭 영역 탭 시 키보드 dismiss
-                    .simultaneousGesture(dismissKeyboardGesture)
                     .tabItem {
                         Label(L10n.Tab.bookmark, systemImage: "bookmark.fill")
                     }
@@ -80,7 +67,9 @@ struct MainView: View {
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }
-                SearchView(viewModel: viewModel.searchViewModel, columns: 1)
+                SearchView(viewModel: viewModel.searchViewModel,
+                           isFocused: $isSearchFieldFocused,
+                           columns: 1)
             }
             .navigationTitle(L10n.Tab.search)
             .navigationBarTitleDisplayMode(.inline)
@@ -91,3 +80,13 @@ struct MainView: View {
         }
     }
 }
+
+#if DEBUG
+#Preview("iPhone") {
+    MainView(viewModel: PreviewFactory.makeMainViewModel())
+}
+
+#Preview("iPad") {
+    MainView(viewModel: PreviewFactory.makeMainViewModel())
+}
+#endif
