@@ -184,15 +184,6 @@ extension KakaoImageSearchIPhoneUITests {
     }
 }
 
-// MARK: - iPhone 북마크 있는 상태 (fixture 북마크)
-
-final class KakaoImageSearchIPhoneBookmarkUITests: BaseUITestCase {
-    override func setUp() async throws {
-        try await super.setUp()
-        try await launchApp(arguments: ["--resetBookmarks", "--useFixtureBookmarks", "--useFixtureData"])
-    }
-}
-
 // MARK: - iPhone 에러 / 재시도 UX (네트워크 에러 시뮬레이션)
 
 final class KakaoImageSearchIPhoneRetryUITests: BaseUITestCase {
