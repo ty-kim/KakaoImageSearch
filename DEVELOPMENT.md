@@ -43,6 +43,7 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 - **유닛 테스트**: Swift Testing Framework, 173개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 44개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
 - **UI 테스트**: XCUITest, 28개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
+- **Test Plan**: `UnitTests`(유닛+통합, CI 기본) / `AllTests`(전체) 분리로 UI 테스트 빌드 없이 빠른 피드백 확보
 - **OSLog**: 카테고리별 로깅 구성
 - **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
 - **VoiceOver 접근성**: 주요 인터랙티브 컴포넌트에 `accessibilityLabel`/`accessibilityHint` 적용, 접근성 문자열도 ko/en/ja 3개 언어 지원

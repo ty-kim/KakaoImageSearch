@@ -9,27 +9,25 @@ on:
 jobs:
   test:
     runs-on: macos-15
-    strategy:
-      matrix:
-        device: ["iPhone 17", "iPad Pro 13-inch (M4)"]
     steps:
       - uses: actions/checkout@v4
-      - name: Build & Test (${{ matrix.device }})
+      - name: Unit & Integration Tests
         run: |
-          xcrun simctl boot "${{ matrix.device }}" || true
+          xcrun simctl boot "iPhone 17" || true
           sleep 3
-          xcrun simctl spawn "${{ matrix.device }}" defaults write com.apple.Preferences ConnectHardwareKeyboard -bool false
-          xcrun simctl spawn "${{ matrix.device }}" defaults write com.apple.Preferences AutomaticMinimizationEnabled -bool false
+          xcrun simctl spawn "iPhone 17" defaults write com.apple.Preferences ConnectHardwareKeyboard -bool false
+          xcrun simctl spawn "iPhone 17" defaults write com.apple.Preferences AutomaticMinimizationEnabled -bool false
           sleep 3
           echo 'enum KakaoAPIKey { static let restAPIKey = "test-key" }' > KakaoAPIKey.swift
           xcodebuild -project KakaoImageSearch.xcodeproj \
             -scheme KakaoImageSearch \
-            -destination 'platform=iOS Simulator,name=${{ matrix.device }}' \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            -testPlan UnitTests \
             -resultBundlePath TestResults.xcresult \
             test
       - name: Upload test results
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: test-results-${{ matrix.device }}
+          name: test-results
           path: TestResults.xcresult

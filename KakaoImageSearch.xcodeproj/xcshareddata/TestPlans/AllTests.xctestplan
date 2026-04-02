@@ -1,0 +1,32 @@
+{
+  "configurations" : [
+    {
+      "id" : "A1B2C3D4-E5F6-7A8B-9C0D-1E2F3A4B5C6D",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true,
+    "defaultTestExecutionTimeAllowance" : 120
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:KakaoImageSearch.xcodeproj",
+        "identifier" : "FCCD76812F680A850081FC81",
+        "name" : "KakaoImageSearchTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:KakaoImageSearch.xcodeproj",
+        "identifier" : "FCCD768B2F680A850081FC81",
+        "name" : "KakaoImageSearchUITests"
+      }
+    }
+  ],
+  "version" : 1
+}
