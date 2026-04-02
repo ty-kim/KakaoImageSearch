@@ -135,4 +135,60 @@ struct BookmarkStoreTests {
 
         #expect(!sut.inFlightBookmarkIDs.contains("a"))
     }
+
+    // MARK: - load() 동시 호출 테스트
+
+    @Test("동시 load() 호출 시 둘 다 같은 완료를 기다린다")
+    func load_concurrent_bothWaitForSameCompletion() async throws {
+        let items = [ImageItem.fixture(id: "a")]
+        let (sut, repo) = makeSUT(initialItems: items)
+
+        // fetchAll()이 suspend되도록 설정
+        repo.fetchSuspender = {
+            await Task.yield()
+        }
+
+        async let load1: () = sut.load()
+        async let load2: () = sut.load()
+        _ = try await (load1, load2)
+
+        // fetchAll()은 한 번만 호출되어야 함
+        #expect(repo.fetchCallCount == 1)
+        #expect(sut.bookmarkedItems.count == 1)
+    }
+
+    @Test("첫 load() 실패 시 대기 중인 호출도 같은 에러를 받는다")
+    func load_concurrentFailure_bothReceiveError() async {
+        let (sut, repo) = makeSUT(fetchError: TestError.stub)
+
+        repo.fetchSuspender = {
+            await Task.yield()
+        }
+
+        async let r1: Result<Void, Error> = {
+            do { try await sut.load(); return .success(()) }
+            catch { return .failure(error) }
+        }()
+        async let r2: Result<Void, Error> = {
+            do { try await sut.load(); return .success(()) }
+            catch { return .failure(error) }
+        }()
+
+        let results = await [r1, r2]
+
+        #expect(results.allSatisfy { if case .failure = $0 { true } else { false } })
+        #expect(repo.fetchCallCount == 1)
+    }
+
+    @Test("이미 loaded 상태면 재fetch하지 않는다")
+    func load_alreadyLoaded_skipsRefetch() async throws {
+        let (sut, repo) = makeSUT(initialItems: [ImageItem.fixture(id: "a")])
+
+        try await sut.load()
+        #expect(repo.fetchCallCount == 1)
+
+        // 두 번째 호출은 fetch 없이 즉시 return
+        try await sut.load()
+        #expect(repo.fetchCallCount == 1)
+    }
 }
