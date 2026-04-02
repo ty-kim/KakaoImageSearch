@@ -11,7 +11,7 @@ import SwiftData
 @testable import KakaoImageSearch
 
 @MainActor
-@Suite("BookmarkStorage 통합 테스트")
+@Suite("BookmarkStorage 통합 테스트", .serialized)
 struct BookmarkStorageIntegrationTests {
 
     // MARK: - Helpers
