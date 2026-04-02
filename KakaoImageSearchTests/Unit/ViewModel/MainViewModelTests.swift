@@ -57,6 +57,39 @@ struct MainViewModelTests {
         #expect(sut.searchViewModel.searchState == .idle)
     }
 
+    @Test("loadInitialData 성공 시 bookmarkState가 .loaded")
+    func loadInitialData_success_setsBookmarkStateLoaded() async {
+        let sut = makeSUT()
+
+        await sut.loadInitialData()
+
+        guard case .loaded = sut.bookmarkViewModel.bookmarkState else {
+            Issue.record("Expected .loaded but got \(sut.bookmarkViewModel.bookmarkState)")
+            return
+        }
+    }
+
+    @Test("loadInitialData 실패 시 bookmarkState가 .error")
+    func loadInitialData_failure_setsBookmarkStateError() async {
+        let bookmarkRepo = MockBookmarkRepository()
+        bookmarkRepo.stubbedFetchError = TestError.stub
+        let sut = MainViewModel(
+            searchImageUseCase: SearchImageUseCase(
+                imageSearchRepository: MockImageSearchRepository()
+            ),
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
+        )
+
+        await sut.loadInitialData()
+
+        guard case .error = sut.bookmarkViewModel.bookmarkState else {
+            Issue.record("Expected .error but got \(sut.bookmarkViewModel.bookmarkState)")
+            return
+        }
+    }
+
     @Test("연속 입력 시 이전 debounce 취소 후 마지막 쿼리만 검색")
     func onSearchTextChanged_rapidInput_onlyLastQuerySearched() async throws {
         let searchRepo = MockImageSearchRepository()
