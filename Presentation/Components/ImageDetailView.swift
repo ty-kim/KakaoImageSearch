@@ -36,8 +36,9 @@ struct ImageDetailView: View {
                     .aspectRatio(contentMode: .fit)
                     .scaleEffect(scale)
                     .offset(offset)
-                    .gesture(magnifyGesture)
-                    .gesture(dragGesture)
+                    .gesture(
+                        magnifyGesture.simultaneously(with: dragGesture)
+                    )
                     // 더블탭: 확대↔원본 토글.
                     // 축소 시 offset도 리셋 — 확대 상태에서 패닝한 위치가 원본에서는 무의미.
                     .onTapGesture(count: 2) {
