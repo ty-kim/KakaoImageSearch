@@ -43,6 +43,7 @@
 		FC75FD062F6A9C4E00A90DC0 /* ImageDownloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCF62F6A9C4E00A90DC0 /* ImageDownloader.swift */; };
 		FC75FD072F6A9C4E00A90DC0 /* APIEndpoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC75FCFA2F6A9C4E00A90DC0 /* APIEndpoint.swift */; };
 		FCCC21252F699A0000363054 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCC21262F699A0000363054 /* ToastView.swift */; };
+		FC0A00052FA40002000A0003 /* ToastState.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0A00042FA40002000A0003 /* ToastState.swift */; };
 		FCCD76D62F680C880081FC81 /* KakaoSearchResponseDTO.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D52F680C880081FC81 /* KakaoSearchResponseDTO.swift */; };
 		FCCD76D82F680C970081FC81 /* DefaultImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D72F680C970081FC81 /* DefaultImageSearchRepository.swift */; };
 		FCCD76DA2F680CA50081FC81 /* DefaultBookmarkRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76D92F680CA50081FC81 /* DefaultBookmarkRepository.swift */; };
@@ -117,6 +118,7 @@
 		FC75FCFC2F6A9C4E00A90DC0 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		FC75FCFE2F6A9C4E00A90DC0 /* L10n.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = L10n.swift; sourceTree = "<group>"; };
 		FCCC21262F699A0000363054 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		FC0A00042FA40002000A0003 /* ToastState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastState.swift; sourceTree = "<group>"; };
 		FCCD766C2F680A840081FC81 /* KakaoImageSearch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = KakaoImageSearch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD76822F680A850081FC81 /* KakaoImageSearchTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCCD768C2F680A850081FC81 /* KakaoImageSearchUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = KakaoImageSearchUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -198,6 +200,7 @@
 				FC1E8A012F6826B2008CAC25 /* SearchBar.swift */,
 				FC32032F2F7C000300A90DC0 /* SkeletonItemView.swift */,
 				FCCC21262F699A0000363054 /* ToastView.swift */,
+				FC0A00042FA40002000A0003 /* ToastState.swift */,
 				C788FCADE028A7C8A60D968E /* GridLayout.swift */,
 			);
 			path = Components;
@@ -607,6 +610,7 @@
 				FC75FCDF2F6A9BA400A90DC0 /* BookmarkStore.swift in Sources */,
 				FC1E8A042F6826B2008CAC25 /* BookmarkButton.swift in Sources */,
 				FCCC21252F699A0000363054 /* ToastView.swift in Sources */,
+				FC0A00052FA40002000A0003 /* ToastState.swift in Sources */,
 				FC1E8A052F6826B2008CAC25 /* SearchBar.swift in Sources */,
 				FC1E8A0D2F682759008CAC25 /* MainView.swift in Sources */,
 				FC1E8A0F2F682768008CAC25 /* SearchView.swift in Sources */,

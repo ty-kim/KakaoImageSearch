@@ -21,18 +21,20 @@ final class BookmarkViewModel {
     }
 
     private let bookmarkStore: BookmarkStore
-    private let toastDuration: Duration
+    let toast: ToastState
     private(set) var bookmarkState: BookmarkState = .idle
-    private(set) var toastMessage: String? = nil
-    private var toastTask: Task<Void, Never>? = nil
 
     var items: [ImageItem] {
         bookmarkStore.bookmarkedItems
     }
 
+    var toastMessage: String? {
+        toast.message
+    }
+
     init(bookmarkStore: BookmarkStore, toastDuration: Duration = ToastView.defaultDuration) {
         self.bookmarkStore = bookmarkStore
-        self.toastDuration = toastDuration
+        self.toast = ToastState(duration: toastDuration)
     }
 
     func loadBookmarks() async {
@@ -58,18 +60,8 @@ final class BookmarkViewModel {
         let result = await bookmarkStore.toggle(item)
 
         if case .failure = result {
-            showToast(L10n.Bookmark.toggleError)
+            toast.show(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Toggle bookmark failed: \(item.id)")
-        }
-    }
-
-    private func showToast(_ message: String) {
-        toastTask?.cancel()
-        toastMessage = message
-        toastTask = Task {
-            try? await Task.sleep(for: toastDuration)
-            guard !Task.isCancelled else { return }
-            toastMessage = nil
         }
     }
 }

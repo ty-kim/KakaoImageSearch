@@ -31,11 +31,9 @@ final class SearchViewModel {
 
     var items: [ImageItem] { resultsStore.items }
     private(set) var searchState: SearchState = .idle
-    private(set) var toastMessage: String? = nil
+    let toast: ToastState
     private var searchTask: Task<Void, Never>? = nil
     private var loadMoreTask: Task<Void, Never>? = nil
-    private var toastTask: Task<Void, Never>? = nil
-    private let toastDuration: Duration
 
     private let flow: SearchFlowController
     private let resultsStore: SearchResultsStore
@@ -49,7 +47,7 @@ final class SearchViewModel {
         networkMonitor: any NetworkMonitoring,
         toastDuration: Duration = ToastView.defaultDuration
     ) {
-        self.toastDuration = toastDuration
+        self.toast = ToastState(duration: toastDuration)
         self.flow = SearchFlowController(searchImageUseCase: searchImageUseCase, networkMonitor: networkMonitor)
         self.resultsStore = SearchResultsStore(bookmarkStore: bookmarkStore)
         self.bookmarkStore = bookmarkStore
@@ -172,15 +170,8 @@ final class SearchViewModel {
         return loadMore()
     }
 
-    private func showToast(_ message: String) {
-        toastTask?.cancel()
-        toastMessage = message
-
-        toastTask = Task {
-            try? await Task.sleep(for: toastDuration)
-            guard !Task.isCancelled else { return }
-            toastMessage = nil
-        }
+    var toastMessage: String? {
+        toast.message
     }
 
     private func serverMessage(from error: Error) -> String {
@@ -215,7 +206,7 @@ final class SearchViewModel {
             resultsStore.refresh()
         case .failure:
             resultsStore.refresh()
-            showToast(L10n.Bookmark.toggleError)
+            toast.show(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id)")
         }
     }
