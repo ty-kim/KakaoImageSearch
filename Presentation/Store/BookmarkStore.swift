@@ -22,6 +22,7 @@ final class BookmarkStore {
         case idle, loading, loaded
     }
     private var loadState: LoadState = .idle
+    private var loadContinuations: [CheckedContinuation<Void, Error>] = []
 
     var bookmarkedIDs: Set<String> {
         Set(bookmarkedItems.map(\.id))
@@ -34,16 +35,28 @@ final class BookmarkStore {
     }
 
     func load() async throws {
-        guard loadState == .idle else { return }
-        loadState = .loading
-        do {
-            let fetched = try await manageBookmarkUseCase.fetchAll()
-            bookmarkedItems = fetched
-            loadState = .loaded
-            Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
-        } catch {
-            loadState = .idle
-            throw error
+        switch loadState {
+        case .loaded:
+            return
+        case .loading:
+            try await withCheckedThrowingContinuation { continuation in
+                loadContinuations.append(continuation)
+            }
+        case .idle:
+            loadState = .loading
+            do {
+                let fetched = try await manageBookmarkUseCase.fetchAll()
+                bookmarkedItems = fetched
+                loadState = .loaded
+                loadContinuations.forEach { $0.resume() }
+                loadContinuations.removeAll()
+                Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
+            } catch {
+                loadState = .idle
+                loadContinuations.forEach { $0.resume(throwing: error) }
+                loadContinuations.removeAll()
+                throw error
+            }
         }
     }
 
