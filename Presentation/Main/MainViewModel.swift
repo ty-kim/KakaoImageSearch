@@ -47,11 +47,7 @@ final class MainViewModel {
     }
 
     func loadInitialData() async {
-        do {
-            try await bookmarkStore.load()
-        } catch {
-            Logger.presentation.errorPrint("Failed to load bookmarks: \(error)")
-        }
+        await bookmarkViewModel.loadBookmarks()
     }
 
     func onSearchTextChanged(_ newValue: String) {

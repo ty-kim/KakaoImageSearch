@@ -56,9 +56,6 @@ struct BookmarkView: View {
                 }
             }
         }
-        .task {
-            await viewModel.loadBookmarks()
-        }
         .overlay(alignment: .bottom) {
             if let msg = viewModel.toastMessage {
                 ToastView(message: msg)
