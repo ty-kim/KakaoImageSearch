@@ -53,6 +53,8 @@
 		FCCD76EE2F680D710081FC81 /* ManageBookmarkUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */; };
 		FCCD76EF2F680D710081FC81 /* ImageSearchRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD76E52F680D710081FC81 /* ImageSearchRepository.swift */; };
 		FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */; };
+		FC0A00012FA40001000A0001 /* AppAssembler.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0A00002FA40001000A0001 /* AppAssembler.swift */; };
+		FC0A00032FA40001000A0002 /* DebugTestRepositories.swift in Sources */ = {isa = PBXBuildFile; fileRef = FC0A00022FA40001000A0002 /* DebugTestRepositories.swift */; };
 		FCCD77282F68185E0081FC81 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FCCD770A2F680E070081FC81 /* LaunchScreen.storyboard */; };
 		FCCD772A2F68186F0081FC81 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FCCD77072F680E070081FC81 /* Assets.xcassets */; };
 		FCDF35832F79DCB20004E912 /* PreviewHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDF35812F79DCB20004E912 /* PreviewHelpers.swift */; };
@@ -128,6 +130,8 @@
 		FCCD76E72F680D710081FC81 /* ManageBookmarkUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageBookmarkUseCase.swift; sourceTree = "<group>"; };
 		FCCD76E82F680D710081FC81 /* SearchImageUseCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchImageUseCase.swift; sourceTree = "<group>"; };
 		FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KakaoImageSearchApp.swift; sourceTree = "<group>"; };
+		FC0A00002FA40001000A0001 /* AppAssembler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppAssembler.swift; sourceTree = "<group>"; };
+		FC0A00022FA40001000A0002 /* DebugTestRepositories.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugTestRepositories.swift; sourceTree = "<group>"; };
 		FCCD77072F680E070081FC81 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FCCD77082F680E070081FC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FCCD77092F680E070081FC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -430,6 +434,8 @@
 			isa = PBXGroup;
 			children = (
 				FCCD77032F680D9B0081FC81 /* KakaoImageSearchApp.swift */,
+				FC0A00002FA40001000A0001 /* AppAssembler.swift */,
+				FC0A00022FA40001000A0002 /* DebugTestRepositories.swift */,
 				FC3203232F7C000000A90DC0 /* ImageDownloaderEnvironment.swift */,
 			);
 			path = App;
@@ -622,6 +628,8 @@
 				FC1E8A0B2F6826C5008CAC25 /* SearchViewModel.swift in Sources */,
 				FC1E89FA2F68236A008CAC25 /* KakaoImageSearchEndpoint.swift in Sources */,
 				FCCD77052F680D9B0081FC81 /* KakaoImageSearchApp.swift in Sources */,
+				FC0A00012FA40001000A0001 /* AppAssembler.swift in Sources */,
+				FC0A00032FA40001000A0002 /* DebugTestRepositories.swift in Sources */,
 				FCCD76ED2F680D710081FC81 /* SearchImageUseCase.swift in Sources */,
 				FCCD76EE2F680D710081FC81 /* ManageBookmarkUseCase.swift in Sources */,
 				FC1E8A082F6826B8008CAC25 /* BookmarkViewModel.swift in Sources */,
