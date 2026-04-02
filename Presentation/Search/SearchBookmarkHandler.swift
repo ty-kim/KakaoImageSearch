@@ -38,13 +38,17 @@ final class SearchBookmarkHandler {
         inFlightBookmarkIDs.insert(item.id)
         defer { inFlightBookmarkIDs.remove(item.id) }
 
+        // 낙관적 업데이트: UI 먼저 토글
+        bookmarkStore.optimisticToggle(item)
+        
         do {
-            _ = try await bookmarkStore.toggle(item)
+            _ = try await bookmarkStore.persist(item)
             return SearchBookmarkOutcome(
                 effect: .updated,
                 inFlightBookmarkIDs: inFlightBookmarkIDs.subtracting([item.id])
             )
         } catch {
+            bookmarkStore.optimisticToggle(item)
             return SearchBookmarkOutcome(
                 effect: .failed(message: L10n.Bookmark.toggleError),
                 inFlightBookmarkIDs: inFlightBookmarkIDs.subtracting([item.id])

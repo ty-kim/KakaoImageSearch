@@ -71,4 +71,19 @@ final class BookmarkStore {
         Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
         return isNowBookmarked
     }
+    
+    // UI상태만 토글
+    func optimisticToggle(_ item: ImageItem) {
+        if let index = bookmarkedItems.firstIndex(where: { $0.id == item.id }) {
+            bookmarkedItems.remove(at: index)
+        } else {
+            var updated = item
+            updated.isBookmarked = true
+            bookmarkedItems.append(updated)
+        }
+    }
+    
+    func persist(_ item: ImageItem) async throws {
+        _ = try await manageBookmarkUseCase.toggle(item)
+    }
 }
