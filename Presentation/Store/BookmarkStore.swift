@@ -18,11 +18,7 @@ final class BookmarkStore {
 
     private(set) var bookmarkedItems: [ImageItem] = []
     private(set) var inFlightBookmarkIDs: Set<String> = []
-    private enum LoadState {
-        case idle, loading, loaded
-    }
-    private var loadState: LoadState = .idle
-    private var loadContinuations: [CheckedContinuation<Void, Error>] = []
+    private var loadTask: Task<Void, Error>?
 
     var bookmarkedIDs: Set<String> {
         Set(bookmarkedItems.map(\.id))
@@ -35,28 +31,23 @@ final class BookmarkStore {
     }
 
     func load() async throws {
-        switch loadState {
-        case .loaded:
+        if let existing = loadTask {
+            try await existing.value
             return
-        case .loading:
-            try await withCheckedThrowingContinuation { continuation in
-                loadContinuations.append(continuation)
-            }
-        case .idle:
-            loadState = .loading
-            do {
-                let fetched = try await manageBookmarkUseCase.fetchAll()
-                bookmarkedItems = fetched
-                loadState = .loaded
-                loadContinuations.forEach { $0.resume() }
-                loadContinuations.removeAll()
-                Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
-            } catch {
-                loadState = .idle
-                loadContinuations.forEach { $0.resume(throwing: error) }
-                loadContinuations.removeAll()
-                throw error
-            }
+        }
+
+        let task = Task {
+            let fetched = try await manageBookmarkUseCase.fetchAll()
+            bookmarkedItems = fetched
+            Logger.presentation.debugPrint("Loaded \(fetched.count) bookmarks")
+        }
+        loadTask = task
+
+        do {
+            try await task.value
+        } catch {
+            loadTask = nil
+            throw error
         }
     }
 
