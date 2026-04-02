@@ -62,9 +62,9 @@ final class BookmarkCoordinator {
     }
 
     @discardableResult
-    func toggle(_ item: ImageItem) async -> Result<Bool, Error> {
+    func toggle(_ item: ImageItem) async throws -> Bool {
         guard !inFlightBookmarkIDs.contains(item.id) else {
-            return .success(isBookmarked(item.id))
+            return isBookmarked(item.id)
         }
 
         inFlightBookmarkIDs.insert(item.id)
@@ -76,12 +76,12 @@ final class BookmarkCoordinator {
         do {
             let isNowBookmarked = try await manageBookmarkUseCase.toggle(item)
             Logger.presentation.debugPrint("Bookmark toggled: \(item.id) → \(isNowBookmarked)")
-            return .success(isNowBookmarked)
+            return isNowBookmarked
         } catch {
             // 실패 시 롤백
             optimisticUpdate(item)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id) — \(error)")
-            return .failure(error)
+            throw error
         }
     }
 

@@ -57,9 +57,9 @@ final class BookmarkViewModel {
     }
 
     func toggleBookmark(for item: ImageItem) async {
-        let result = await bookmarkStore.toggle(item)
-
-        if case .failure = result {
+        do {
+            _ = try await bookmarkStore.toggle(item)
+        } catch {
             toast.show(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Toggle bookmark failed: \(item.id)")
         }

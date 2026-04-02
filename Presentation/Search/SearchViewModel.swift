@@ -199,15 +199,12 @@ final class SearchViewModel {
     }
 
     func toggleBookmark(for item: ImageItem) async {
-        let result = await bookmarkStore.toggle(item)
-
-        switch result {
-        case .success:
-            resultsStore.refresh()
-        case .failure:
-            resultsStore.refresh()
+        do {
+            _ = try await bookmarkStore.toggle(item)
+        } catch {
             toast.show(L10n.Bookmark.toggleError)
             Logger.presentation.errorPrint("Bookmark toggle failed: \(item.id)")
         }
+        resultsStore.refresh()
     }
 }
