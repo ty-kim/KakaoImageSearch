@@ -191,4 +191,18 @@ struct BookmarkStoreTests {
         try await sut.load()
         #expect(repo.fetchCallCount == 1)
     }
+
+    @Test("refresh()는 loaded 상태에서도 다시 fetch한다")
+    func refresh_refetchesAfterLoaded() async throws {
+        let (sut, repo) = makeSUT(initialItems: [ImageItem.fixture(id: "a")])
+
+        try await sut.load()
+        #expect(repo.fetchCallCount == 1)
+
+        repo.items = [ImageItem.fixture(id: "a"), ImageItem.fixture(id: "b")]
+        try await sut.refresh()
+
+        #expect(repo.fetchCallCount == 2)
+        #expect(sut.bookmarkedItems.count == 2)
+    }
 }

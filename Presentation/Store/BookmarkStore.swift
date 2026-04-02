@@ -51,6 +51,12 @@ final class BookmarkStore {
         }
     }
 
+    /// loadTask를 초기화하고 다시 fetch. 외부 변경이나 강제 새로고침 시 사용.
+    func refresh() async throws {
+        loadTask = nil
+        try await load()
+    }
+
     func isBookmarked(_ id: String) -> Bool {
         bookmarkedIDs.contains(id)
     }
