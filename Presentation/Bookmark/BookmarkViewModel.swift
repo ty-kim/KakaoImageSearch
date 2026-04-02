@@ -20,7 +20,7 @@ final class BookmarkViewModel {
         case error(message: String)
     }
 
-    private let bookmarkStore: BookmarkStore
+    private let bookmarkStore: BookmarkCoordinator
     let toast: ToastState
     private(set) var bookmarkState: BookmarkState = .idle
 
@@ -32,7 +32,7 @@ final class BookmarkViewModel {
         toast.message
     }
 
-    init(bookmarkStore: BookmarkStore, toastDuration: Duration = ToastView.defaultDuration) {
+    init(bookmarkStore: BookmarkCoordinator, toastDuration: Duration = ToastView.defaultDuration) {
         self.bookmarkStore = bookmarkStore
         self.toast = ToastState(duration: toastDuration)
     }

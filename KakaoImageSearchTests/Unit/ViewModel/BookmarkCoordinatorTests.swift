@@ -1,5 +1,5 @@
 //
-//  BookmarkStore.swift
+//  BookmarkCoordinator.swift
 //  KakaoImageSearchTests
 //
 //  Created by tykim on 4/2/26.
@@ -9,20 +9,20 @@ import Testing
 @testable import KakaoImageSearch
 import Foundation
 
-// MARK: - BookmarkStore
+// MARK: - BookmarkCoordinator
 
 @MainActor
-@Suite("BookmarkStore")
-struct BookmarkStoreTests {
+@Suite("BookmarkCoordinator")
+struct BookmarkCoordinatorTests {
 
     private func makeSUT(
         initialItems: [ImageItem] = [],
         fetchError: Error? = nil
-    ) -> (sut: BookmarkStore, repo: MockBookmarkRepository) {
+    ) -> (sut: BookmarkCoordinator, repo: MockBookmarkRepository) {
         let repo = MockBookmarkRepository()
         repo.items = initialItems
         repo.stubbedFetchError = fetchError
-        let sut = BookmarkStore(
+        let sut = BookmarkCoordinator(
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: repo)
         )
         return (sut, repo)

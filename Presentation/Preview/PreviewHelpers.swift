@@ -108,7 +108,7 @@ enum PreviewFactory {
     }
 
     static func makeSearchViewModel() -> SearchViewModel {
-        let bookmarkStore = BookmarkStore(
+        let bookmarkStore = BookmarkCoordinator(
             manageBookmarkUseCase: ManageBookmarkUseCase(
                 bookmarkRepository: PreviewBookmarkRepository()
             )
@@ -124,7 +124,7 @@ enum PreviewFactory {
     }
 
     static func makeBookmarkViewModel() -> BookmarkViewModel {
-        let bookmarkStore = BookmarkStore(
+        let bookmarkStore = BookmarkCoordinator(
             manageBookmarkUseCase: ManageBookmarkUseCase(
                 bookmarkRepository: PreviewBookmarkRepository()
             )

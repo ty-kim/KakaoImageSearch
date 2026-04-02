@@ -23,7 +23,7 @@ struct BookmarkViewModelTests {
         repo.items = initialItems
         repo.stubbedFetchError = fetchError
         let sut = BookmarkViewModel(
-            bookmarkStore: BookmarkStore(
+            bookmarkStore: BookmarkCoordinator(
                 manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: repo)
             ),
             toastDuration: .zero

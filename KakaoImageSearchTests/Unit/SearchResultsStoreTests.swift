@@ -13,9 +13,9 @@ import Foundation
 @Suite("SearchResultsStore")
 struct SearchResultsStoreTests {
 
-    private func makeSUT() async throws -> (sut: SearchResultsStore, bookmarkStore: BookmarkStore) {
+    private func makeSUT() async throws -> (sut: SearchResultsStore, bookmarkStore: BookmarkCoordinator) {
         let bookmarkRepo = MockBookmarkRepository()
-        let bookmarkStore = BookmarkStore(
+        let bookmarkStore = BookmarkCoordinator(
             manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo)
         )
         try await bookmarkStore.load()
@@ -98,10 +98,10 @@ struct SearchResultsStoreTests {
         #expect(sut.items[0].isBookmarked == true)
     }
 
-    // MARK: - observeBookmarkStore
+    // MARK: - observeBookmarkCoordinator
 
     @Test("북마크 토글 시 자동으로 items 갱신")
-    func observeBookmarkStore_autoUpdates() async throws {
+    func observeBookmarkCoordinator_autoUpdates() async throws {
         let (sut, bookmarkStore) = try await makeSUT()
         sut.replace(with: [.fixture(id: "1")])
 

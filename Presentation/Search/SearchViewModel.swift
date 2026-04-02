@@ -37,12 +37,12 @@ final class SearchViewModel {
 
     private let flow: SearchFlowController
     private let resultsStore: SearchResultsStore
-    private let bookmarkStore: BookmarkStore
+    private let bookmarkStore: BookmarkCoordinator
     private let prefetchCoordinator: SearchPrefetchCoordinator
 
     init(
         searchImageUseCase: SearchImageUseCase,
-        bookmarkStore: BookmarkStore,
+        bookmarkStore: BookmarkCoordinator,
         imagePrefetcher: any ImagePrefetcher,
         networkMonitor: any NetworkMonitoring,
         toastDuration: Duration = ToastView.defaultDuration
