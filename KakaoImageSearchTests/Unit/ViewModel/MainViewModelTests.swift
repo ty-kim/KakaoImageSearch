@@ -1,0 +1,86 @@
+//
+//  MainViewModelTests.swift
+//  KakaoImageSearchTests
+//
+//  Created by tykim on 4/2/26.
+//
+
+import Testing
+@testable import KakaoImageSearch
+import Foundation
+
+// MARK: - MainViewModel
+
+@MainActor
+@Suite("MainViewModel")
+struct MainViewModelTests {
+
+    private func makeSUT() -> MainViewModel {
+        let bookmarkRepo = MockBookmarkRepository()
+        let searchRepo = MockImageSearchRepository()
+        return MainViewModel(
+            searchImageUseCase: SearchImageUseCase(
+                imageSearchRepository: searchRepo
+            ),
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
+        )
+    }
+
+    @Test("빈 문자열 입력 시 검색 결과 초기화")
+    func onSearchTextChanged_empty_clearsResults() {
+        let sut = makeSUT()
+
+        sut.onSearchTextChanged("")
+
+        #expect(sut.searchViewModel.items.isEmpty)
+        #expect(sut.searchViewModel.searchState == .idle)
+    }
+
+    @Test("공백만 입력 시 검색 결과 초기화")
+    func onSearchTextChanged_whitespace_clearsResults() {
+        let sut = makeSUT()
+
+        sut.onSearchTextChanged("   ")
+
+        #expect(sut.searchViewModel.items.isEmpty)
+        #expect(sut.searchViewModel.searchState == .idle)
+    }
+
+    @Test("유효한 쿼리 입력 시 debounce 대기 중 hasSearched = false")
+    func onSearchTextChanged_validQuery_debounceNotFiredImmediately() {
+        let sut = makeSUT()
+
+        sut.onSearchTextChanged("cat")
+
+        #expect(sut.searchViewModel.searchState == .idle)
+    }
+
+    @Test("연속 입력 시 이전 debounce 취소 후 마지막 쿼리만 검색")
+    func onSearchTextChanged_rapidInput_onlyLastQuerySearched() async throws {
+        let searchRepo = MockImageSearchRepository()
+        let bookmarkRepo = MockBookmarkRepository()
+        let sut = MainViewModel(
+            searchImageUseCase: SearchImageUseCase(
+                imageSearchRepository: searchRepo
+            ),
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: bookmarkRepo),
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
+        )
+
+        sut.onSearchTextChanged("a")
+        sut.onSearchTextChanged("ab")
+        sut.onSearchTextChanged("abc")
+
+        // 디바운스 + 검색 완료까지 대기
+        let deadline = Date().addingTimeInterval(10)
+        while searchRepo.searchCallCount == 0 && Date() < deadline {
+            try await Task.sleep(for: .milliseconds(100))
+        }
+
+        #expect(searchRepo.searchCallCount == 1)
+        #expect(searchRepo.lastQuery == "abc")
+    }
+}
