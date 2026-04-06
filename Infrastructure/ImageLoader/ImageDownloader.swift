@@ -95,18 +95,19 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
             Logger.imageLoader.debugPrint("Reusing in-flight request: \(secureURL.lastPathComponent)")
             return try await existing.value
         }
-
-        // 2. 신규 요청
-        Logger.imageLoader.debugPrint("Downloading: \(secureURL.lastPathComponent)")
-
+        
+        // 2. 새로 URL 요청 생성
         // dedup 목적으로 생성하는 unstructured Task.
         // self 전체가 아닌 실제 필요한 session·cache만 명시적으로 캡처한다.
         let task = Task<UIImage, Error>(priority: priority) { [session = self.session, cache = self.cache] in
-            // 3. 캐시 히트
+            // 2-1. 캐시 히트
             if let cached = await cache.get(for: secureURL) {
                 Logger.imageLoader.debugPrint("Cache hit: \(url.lastPathComponent)")
                 return cached
             }
+            
+            // 2-2. 신규 요청
+            Logger.imageLoader.debugPrint("Downloading: \(secureURL.lastPathComponent)")
             
             let (bytes, response) = try await session.bytes(from: secureURL)
 
