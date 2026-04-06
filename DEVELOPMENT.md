@@ -40,12 +40,12 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 173개 케이스, Domain + ViewModel + BookmarkStore + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
+- **유닛 테스트**: Swift Testing Framework, 175개 케이스, Domain + ViewModel + BookmarkCoordinator + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
 - **통합 테스트**: Swift Testing Framework, 44개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
 - **UI 테스트**: XCUITest, 28개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **Test Plan**: `UnitTests`(유닛+통합, CI 기본) / `AllTests`(전체) 분리로 UI 테스트 빌드 없이 빠른 피드백 확보
 - **OSLog**: 카테고리별 로깅 구성
-- **BookmarkStore**: 탭 간 북마크 상태를 한 곳에서 관리
+- **BookmarkCoordinator**: 탭 간 북마크 상태를 한 곳에서 관리
 - **VoiceOver 접근성**: 주요 인터랙티브 컴포넌트에 `accessibilityLabel`/`accessibilityHint` 적용, 접근성 문자열도 ko/en/ja 3개 언어 지원
 
 ### 5. iPad 적응형 레이아웃
@@ -119,7 +119,7 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 #### 외부 상태 변화 반영 — `withObservationTracking`
 
 `SearchResultsStore`가 검색 결과 아이템과 북마크 상태 동기화를 담당합니다.
-`BookmarkStore.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuild()`를 한 번만 실행합니다.
+`BookmarkCoordinator.bookmarkedIDs`가 변경되면 `withObservationTracking onChange`가 트리거되어 `rebuild()`를 한 번만 실행합니다.
 `SearchViewModel.items`는 `SearchResultsStore.items`를 그대로 위임하는 computed property입니다.
 
 이 패턴은 `onChange`가 1회성이라 콜백 내에서 재등록을 반복해야 합니다. Combine의 `sink`처럼 한 번 구독으로 지속 관찰하는 방식보다 직관적이지 않지만, WWDC23에서 소개된 `@Observable`의 공식 패턴이며 외부 의존성 없이 ViewModel 간 상태 동기화를 구현할 수 있어 이 방식을 택했습니다.
@@ -130,8 +130,8 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않고, 실제 이미지 호스트도 여러 서브도메인으로 분산되어 있어 `daum.net`, `naver.net` 계열 도메인에 ATS 예외를 적용했습니다.
 이 예외는 검색 결과 이미지 로딩에만 사용하며, API 통신이나 민감 정보 전송에는 적용하지 않습니다. 현재 과제 범위에서는 호스트 구성이 다양해 이 방식이 가장 현실적이었고, 사용 호스트를 더 좁힐 수 있다면 예외 범위도 함께 축소할 수 있습니다.
 
-#### BookmarkStore (공유 상태 관리)
-- `Presentation/Store/`에 위치한 Presentation 레이어 공유 상태 객체
+#### BookmarkCoordinator (공유 상태 관리)
+- `Presentation/Coordinator/`에 위치한 Presentation 레이어 공유 상태 객체
 - `@Observable @MainActor`로 선언해 북마크 상태를 중앙 관리
 - `SearchViewModel` / `BookmarkViewModel` 이 동일 인스턴스를 참조해 양쪽 탭에서 같은 북마크 상태를 참조하도록 구성했습니다.
 
