@@ -30,6 +30,7 @@ enum PaginationState: Equatable {
 final class SearchViewModel {
 
     var items: [ImageItem] { resultsStore.items }
+    private(set) var query: String = ""
     private(set) var searchState: SearchState = .idle
     let toast: ToastState
     private var searchTask: Task<Void, Never>? = nil
@@ -80,10 +81,12 @@ final class SearchViewModel {
 
                 switch result.searchState {
                 case .error:
+                    self.query = ""
                     self.searchState = result.searchState
                     Logger.presentation.debugPrint("Search skipped (offline): \"\(query)\"")
 
                 case .empty, .loaded:
+                    self.query = query
                     self.resultsStore.replace(with: result.items)
                     self.searchState = result.searchState
 
@@ -103,6 +106,7 @@ final class SearchViewModel {
             } catch {
                 guard self.flow.isActive(searchID: searchID) else { return }
 
+                self.query = ""
                 self.resultsStore.clear()
                 self.searchState = .error(message: L10n.Search.error(self.serverMessage(from: error)))
                 Logger.presentation.errorPrint("Search failed: \(error)")
@@ -182,6 +186,7 @@ final class SearchViewModel {
     }
 
     func cancelSearchAndClear() {
+        query = ""
         searchTask?.cancel()
         searchTask = nil
         loadMoreTask?.cancel()

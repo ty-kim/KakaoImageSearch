@@ -36,6 +36,23 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
     var relativeTimeString: String? {
         datetime.map { Self.relativeDateFormatter.localizedString(for: $0, relativeTo: Date()) }
     }
+    
+    func altText(query: String) -> String {
+        var altText: String = ""
+        
+        if !query.isEmpty {
+            altText += L10n.Accessibility.searchResultAlt(query: query)
+        }
+        
+        if let sitename = displaySitename, !sitename.isEmpty {
+            altText += ", \(sitename)"
+        }
+
+        if let time = relativeTimeString {
+            altText += ", \(time)"
+        }
+        return altText
+    }
 }
 
 extension ImageItem {

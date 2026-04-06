@@ -65,10 +65,8 @@ nonisolated enum L10n {
         static var searchClear: String {
             String(localized: "accessibility.search.clear")
         }
-        static func imageItem(width: Int?, height: Int?) -> String {
-            let w = width ?? 0
-            let h = height ?? 0
-            return String(localized: "accessibility.image_item \(w) \(h)")
+        static func searchResultAlt(query: String) -> String {
+              String(localized: "accessibility.search_result \(query)")
         }
         static var tabSearchHint: String {
             String(localized: "accessibility.tab.search.hint")

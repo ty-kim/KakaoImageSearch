@@ -120,25 +120,25 @@
         }
       }
     },
-    "accessibility.image_item %lld %lld" : {
-      "comment" : "VoiceOver label for an image search result with width and height",
+    "accessibility.search_result %@" : {
+      "comment" : "VoiceOver label for an image search result with query an metadata",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Image, %1$lld by %2$lld pixels"
+            "value" : "search results for %@"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "画像、%1$lld×%2$lldピクセル"
+            "value" : "%@ 検索結果"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "이미지, %1$lld × %2$lld 픽셀"
+            "value" : "%@ 검색결과"
           }
         }
       }
