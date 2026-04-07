@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-import UIKit
+import OSLog
 
 // MARK: - ViewModel
 
@@ -41,10 +41,15 @@ final class CachedAsyncImageViewModel {
     private(set) var phase: Phase = .idle
     private(set) var retryCount = 0
     private let downloader: any ImageDownloading
+    private let analyzer: ImageAnalyzer
     private let backoffBase: Double
+    private(set) var imageKeywords: [String] = []
 
-    init(downloader: any ImageDownloading, backoffBase: Double = 2.0) {
+    init(downloader: any ImageDownloading,
+         analyzer: ImageAnalyzer,
+         backoffBase: Double = 2.0) {
         self.downloader = downloader
+        self.analyzer = analyzer
         self.backoffBase = backoffBase
     }
 
@@ -58,6 +63,14 @@ final class CachedAsyncImageViewModel {
         do {
             let image = try await downloader.download(from: url)
             phase = .success(image)
+            if UIAccessibility.isVoiceOverRunning {
+                do {
+                    imageKeywords = try await analyzer.classifyImage(image)
+                    Logger.presentation.debugPrint("image analyzed: \(imageKeywords)")
+                } catch {
+                    Logger.presentation.errorPrint("image analyze failed: \(error)")
+                }
+            }
         } catch is CancellationError {
             phase = .idle
         } catch let error as ImageDownloadError where !error.isRetryable {
@@ -88,6 +101,7 @@ struct CachedAsyncImage: View {
     private let fadeInDuration = 0.3
 
     @Environment(\.imageDownloader) private var downloader
+    @Environment(\.imageAnalyzer) private var analyzer
     @State private var viewModel: CachedAsyncImageViewModel?
     /// URL 변경 또는 실패 후 탭 시 값이 바뀌어 .task를 재실행한다.
     @State private var loadTrigger = UUID()
@@ -120,7 +134,8 @@ struct CachedAsyncImage: View {
         .animation(.easeIn(duration: fadeInDuration), value: viewModel?.phase)
         .task(id: loadTrigger) {
             if viewModel == nil {
-                viewModel = CachedAsyncImageViewModel(downloader: downloader)
+                viewModel = CachedAsyncImageViewModel(downloader: downloader,
+                                                      analyzer: analyzer)
             }
             await viewModel?.load(url: url)
         }

@@ -8,7 +8,7 @@
 import SwiftUI
 
 private struct ImageDownloaderKey: EnvironmentKey {
-    static let defaultValue: any ImageDownloading = ImageDownloader.shared
+    static let defaultValue: any ImageDownloading = ImageDownloader()
 }
 
 extension EnvironmentValues {

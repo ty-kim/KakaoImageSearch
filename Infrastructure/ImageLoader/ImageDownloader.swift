@@ -13,9 +13,6 @@ import OSLog
 /// - 동일 URL 중복 요청 dedup 처리
 /// - Content-Type image/* 검증, 최대 20 MB 제한
 actor ImageDownloader: ImagePrefetcher, ImageDownloading {
-
-    static let shared = ImageDownloader()
-
     /// 이미지 최대 허용 크기 (20 MB). 일반 CDN 썸네일/원본 기준 충분하며, 비정상 파일 조기 차단 목적
     nonisolated static let maxContentLength: Int64 = 20 * 1024 * 1024
 

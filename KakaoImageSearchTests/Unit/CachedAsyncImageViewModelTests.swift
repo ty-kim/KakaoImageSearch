@@ -31,7 +31,7 @@ struct CachedAsyncImageViewModelTests {
     private let testURL = URL(string: "https://example.com/image.jpg")!
 
     private func makeViewModel(downloader: MockImageDownloader = MockImageDownloader()) -> CachedAsyncImageViewModel {
-        CachedAsyncImageViewModel(downloader: downloader, backoffBase: 0)
+        CachedAsyncImageViewModel(downloader: downloader, analyzer: ImageAnalyzer(), backoffBase: 0)
     }
 
     // MARK: - Phase Equatable
@@ -147,7 +147,7 @@ struct CachedAsyncImageViewModelTests {
     func retryableError_backsOffBeforeFailure() async {
         let mock = MockImageDownloader()
         mock.stubbedResult = .failure(ImageDownloadError.invalidResponse)
-        let vm = CachedAsyncImageViewModel(downloader: mock, backoffBase: 0)
+        let vm = CachedAsyncImageViewModel(downloader: mock, analyzer: ImageAnalyzer(), backoffBase: 0)
 
         await vm.load(url: testURL)
         #expect(vm.phase.label == "failure")
@@ -159,7 +159,7 @@ struct CachedAsyncImageViewModelTests {
         let mock = MockImageDownloader()
         mock.stubbedResult = .failure(ImageDownloadError.invalidResponse)
         // backoffBase를 크게 설정해서 sleep 중 취소를 보장
-        let vm = CachedAsyncImageViewModel(downloader: mock, backoffBase: 100)
+        let vm = CachedAsyncImageViewModel(downloader: mock, analyzer: ImageAnalyzer(), backoffBase: 100)
 
         let task = Task {
             await vm.load(url: testURL)
@@ -176,7 +176,7 @@ struct CachedAsyncImageViewModelTests {
     func retryExhausted_noBackoff_permanentFailure() async {
         let mock = MockImageDownloader()
         mock.stubbedResult = .failure(ImageDownloadError.invalidResponse)
-        let vm = CachedAsyncImageViewModel(downloader: mock, backoffBase: 0)
+        let vm = CachedAsyncImageViewModel(downloader: mock, analyzer: ImageAnalyzer(), backoffBase: 0)
 
         for _ in 0...CachedAsyncImageViewModel.maxRetryCount {
             await vm.load(url: testURL)
