@@ -98,6 +98,7 @@ final class CachedAsyncImageViewModel {
 struct CachedAsyncImage: View {
 
     let url: URL?
+    var onKeywordsReady: (([String]) -> Void)?
     private let fadeInDuration = 0.3
 
     @Environment(\.imageDownloader) private var downloader
@@ -142,6 +143,11 @@ struct CachedAsyncImage: View {
         .onChange(of: url) {
             viewModel?.resetRetry()
             loadTrigger = UUID()
+        }
+        .onChange(of: viewModel?.imageKeywords) { _, keywords in
+            if let keywords, !keywords.isEmpty {
+                onKeywordsReady?(keywords)
+            }
         }
     }
 

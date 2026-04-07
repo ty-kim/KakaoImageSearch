@@ -37,11 +37,12 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         datetime.map { Self.relativeDateFormatter.localizedString(for: $0, relativeTo: Date()) }
     }
     
-    func altText(query: String) -> String {
+    func altText(keywords: [String]) -> String {
         var altText: String = ""
         
-        if !query.isEmpty {
-            altText += L10n.Accessibility.searchResultAlt(query: query)
+        if !keywords.isEmpty {
+            altText += L10n.Accessibility.photo
+            altText += ", " + keywords.joined(separator: ", ")
         }
         
         if let sitename = displaySitename, !sitename.isEmpty {

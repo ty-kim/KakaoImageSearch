@@ -42,7 +42,6 @@ struct BookmarkView: View {
                             ForEach(viewModel.items) { item in
                                 SearchResultItemView(
                                     item: item,
-                                    query: "",
                                     screenWidth: layout.itemWidth,
                                     isBookmarkInFlight: viewModel.inFlightBookmarkIDs.contains(item.id)
                                 ) {

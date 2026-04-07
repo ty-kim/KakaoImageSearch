@@ -19,18 +19,20 @@ private struct ScaleButtonStyle: ButtonStyle {
 struct SearchResultItemView: View {
 
     let item: ImageItem
-    let query: String
     let screenWidth: CGFloat
     var isBookmarkInFlight: Bool = false
     let onBookmarkToggle: () -> Void
 
     @State private var showDetail = false
+    @State private var imageKeywords: [String] = []
 
     var body: some View {
         Button {
             showDetail = true
         } label: {
-            CachedAsyncImage(url: item.displayURL)
+            CachedAsyncImage(url: item.displayURL, onKeywordsReady: { keywords in
+                imageKeywords = keywords
+            })
                 .frame(
                     width: screenWidth,
                     height: screenWidth * item.aspectRatio
@@ -49,7 +51,7 @@ struct SearchResultItemView: View {
                 .padding(12)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(item.altText(query: query))
+        .accessibilityLabel(item.altText(keywords: imageKeywords))
         .fullScreenCover(isPresented: $showDetail) {
             ImageDetailView(url: item.imageURL ?? item.thumbnailURL)
         }
@@ -95,7 +97,6 @@ struct SearchResultItemView: View {
 #Preview("With Metadata") {
     SearchResultItemView(
         item: PreviewData.singleItem,
-        query: "dog",
         screenWidth: 350,
         onBookmarkToggle: {}
     )
@@ -105,7 +106,6 @@ struct SearchResultItemView: View {
 #Preview("Bookmarked") {
     SearchResultItemView(
         item: PreviewData.bookmarkedItem,
-        query: "",
         screenWidth: 350,
         onBookmarkToggle: {}
     )

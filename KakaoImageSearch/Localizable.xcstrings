@@ -120,25 +120,25 @@
         }
       }
     },
-    "accessibility.search_result %@" : {
-      "comment" : "VoiceOver label for an image search result with query an metadata",
+    "accessibility.photo" : {
+      "comment" : "VoiceOver label for an image",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "search results for %@"
+            "value" : "Photo"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 検索結果"
+            "value" : "写真"
           }
         },
         "ko" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ 검색결과"
+            "value" : "사진"
           }
         }
       }
