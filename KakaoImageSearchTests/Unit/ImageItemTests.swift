@@ -192,7 +192,7 @@ struct ImageItemTests {
     @Test("altText메서드에 query를 주고 값이 잘 있는지 확인")
     func itemWithQuery_altText() {
         let item = ImageItem.fixture(displaySitename: "티스토리", datetime: Date())
-        let altText = item.altText(query: "dog")
+        let altText = item.altText(keywords: ["dog"])
         #expect(altText.contains("dog"))
         #expect(altText.contains("티스토리"))
     }
@@ -200,7 +200,7 @@ struct ImageItemTests {
     @Test("altText메서드에 빈 query를 주고 값이 잘 있는지 확인")
     func itemWithQuery_altTextWithNullQuery() {
         let item = ImageItem.fixture(displaySitename: "다음", datetime: Date())
-        let altText = item.altText(query: "")
+        let altText = item.altText(keywords: [])
         #expect(!altText.contains("dog"))
         #expect(altText.contains("다음"))
     }
