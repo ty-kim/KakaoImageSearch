@@ -13,6 +13,8 @@ struct SearchView: View {
     var isFocused: FocusState<Bool>.Binding
     var columns: Int = 1
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         GeometryReader { geometry in
             let toastTransitionDuration = 0.3
@@ -128,7 +130,7 @@ struct SearchView: View {
                     break
                 }
             }
-            .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
+            .animation(reduceMotion ? nil : .easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
         }
     }
 }

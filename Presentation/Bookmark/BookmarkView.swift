@@ -12,6 +12,7 @@ struct BookmarkView: View {
     let viewModel: BookmarkViewModel
     var columns: Int = 1
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     private let toastTransitionDuration = 0.3
 
     var body: some View {
@@ -63,7 +64,7 @@ struct BookmarkView: View {
                     .transition(.move(edge: .bottom).combined(with: .opacity))
             }
         }
-        .animation(.easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
+        .animation(reduceMotion ? nil : .easeInOut(duration: toastTransitionDuration), value: viewModel.toastMessage)
     }
 }
 

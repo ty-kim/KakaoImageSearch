@@ -147,6 +147,7 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 - Vision API(`VNClassifyImageRequest`)로 이미지 키워드를 자동 추출해 접근성 설명에 반영
 - VoiceOver 활성화 시에만 분석 실행하여 리소스 절약 (`UIAccessibility.isVoiceOverRunning`)
 - 접근성 라벨: 키워드 + 출처 + 날짜를 조합해 자연스러운 설명 제공
+- Reduce Motion 설정 시 애니메이션 비활성화 지원 (shimmer, fade-in, toast, 버튼 스케일, 줌 전환)
 
 ### BookmarkCoordinator (공유 상태 관리)
 - `Presentation/Coordinator/`에 위치한 Presentation 레이어 공유 상태 객체

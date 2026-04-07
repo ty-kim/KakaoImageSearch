@@ -14,6 +14,7 @@ struct ImageDetailView: View {
     let url: URL?
     @Environment(\.dismiss) private var dismiss
     @Environment(\.imageDownloader) private var downloader
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     @State private var image: UIImage?
     @State private var loadFailed = false
@@ -43,7 +44,7 @@ struct ImageDetailView: View {
                     // 축소 시 offset도 리셋 — 확대 상태에서 패닝한 위치가 원본에서는 무의미.
                     .onTapGesture(count: 2) {
                         let zoomToggleDuration = 0.3
-                        withAnimation(.easeInOut(duration: zoomToggleDuration)) {
+                        withAnimation(reduceMotion ? nil : .easeInOut(duration: zoomToggleDuration)) {
                             if scale > minScale {
                                 scale = minScale
                                 lastScale = minScale
@@ -108,7 +109,7 @@ struct ImageDetailView: View {
                 // onChanged에서 클램핑하지만, 제스처 관성으로 범위 밖 값이 남을 수 있어 재클램핑.
                 // 1배 이하로 복귀하면 패닝 위치도 리셋하여 이미지를 중앙에 정렬.
                 let snapBackDuration = 0.2
-                withAnimation(.easeOut(duration: snapBackDuration)) {
+                withAnimation(reduceMotion ? nil : .easeOut(duration: snapBackDuration)) {
                     scale = min(max(scale, minScale), maxScale)
                     if scale <= minScale {
                         offset = .zero

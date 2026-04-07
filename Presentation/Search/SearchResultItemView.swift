@@ -8,11 +8,13 @@
 import SwiftUI
 
 private struct ScaleButtonStyle: ButtonStyle {
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     func makeBody(configuration: Configuration) -> some View {
         let touchFeedbackDuration = 0.15
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
-            .animation(.easeInOut(duration: touchFeedbackDuration), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed && !reduceMotion ? 0.95 : 1.0)
+            .animation(reduceMotion ? nil : .easeInOut(duration: touchFeedbackDuration), value: configuration.isPressed)
     }
 }
 

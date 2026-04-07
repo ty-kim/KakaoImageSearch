@@ -103,6 +103,7 @@ struct CachedAsyncImage: View {
 
     @Environment(\.imageDownloader) private var downloader
     @Environment(\.imageAnalyzer) private var analyzer
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var viewModel: CachedAsyncImageViewModel?
     /// URL 변경 또는 실패 후 탭 시 값이 바뀌어 .task를 재실행한다.
     @State private var loadTrigger = UUID()
@@ -132,7 +133,7 @@ struct CachedAsyncImage: View {
                 placeholder(systemName: "exclamationmark.triangle")
             }
         }
-        .animation(.easeIn(duration: fadeInDuration), value: viewModel?.phase)
+        .animation(reduceMotion ? nil : .easeIn(duration: fadeInDuration), value: viewModel?.phase)
         .task(id: loadTrigger) {
             if viewModel == nil {
                 viewModel = CachedAsyncImageViewModel(downloader: downloader,

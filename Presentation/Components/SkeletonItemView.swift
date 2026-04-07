@@ -13,6 +13,7 @@ struct SkeletonItemView: View {
 
     let width: CGFloat
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var phase: CGFloat = -1
 
     /// 실제 검색 결과 이미지의 일반적인 비율 범위에서 랜덤 생성
@@ -32,6 +33,7 @@ struct SkeletonItemView: View {
                     .mask(RoundedRectangle(cornerRadius: 15))
             )
             .onAppear {
+                guard !reduceMotion else { return }
                 let skeletonCycleDuration = 1.2
                 withAnimation(.linear(duration: skeletonCycleDuration).repeatForever(autoreverses: false)) {
                     phase = 1
