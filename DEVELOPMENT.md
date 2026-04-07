@@ -41,7 +41,7 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
 - **유닛 테스트**: Swift Testing Framework, 175개 케이스, Domain + ViewModel + BookmarkCoordinator + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
-- **통합 테스트**: Swift Testing Framework, 44개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache I/O 검증 (`Integration/`)
+- **통합 테스트**: Swift Testing Framework, 46개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache / ImageAnalyzer I/O 검증 (`Integration/`, ImageAnalyzer는 실기기 전용)
 - **UI 테스트**: XCUITest, 28개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **Test Plan**: `UnitTests`(유닛+통합, CI 기본) / `AllTests`(전체) 분리로 UI 테스트 빌드 없이 빠른 피드백 확보
 - **OSLog**: 카테고리별 로깅 구성
@@ -146,6 +146,7 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 - 탭(검색/북마크): `accessibilityHint`로 탭 전환 시 역할 안내
 - 추가 로드 재시도 버튼: `accessibilityHint` 적용
 - 접근성 문자열은 `L10n.Accessibility`에서 관리하며, 한국어/영어/일본어를 지원합니다.
+- `ImageAnalyzer`: Vision API(`VNClassifyImageRequest`)로 이미지 키워드를 자동 추출해 `accessibilityLabel`에 반영. VoiceOver 활성화 시에만 실행하여 리소스 절약. 통합 테스트는 Vision ML 모델이 시뮬레이터에서 미지원되어 실기기 전용으로 구성.
 
 #### OSLog 기반 로깅
 - `Logger.network`, `Logger.imageLoader`, `Logger.bookmark`, `Logger.presentation` 카테고리 분리 (각 카테고리는 사용하는 레이어에 정의)
