@@ -32,7 +32,11 @@ struct MainView: View {
         VStack(spacing: 0) {
             TabView(selection: $viewModel.selectedTab) {
                 VStack(spacing: 0) {
-                    SearchBar(text: $viewModel.searchText, isFocused: $isSearchFieldFocused)
+                    SearchBar(text: $viewModel.searchText,
+                              isFocused: $isSearchFieldFocused,
+                              onSubmit: {
+                        viewModel.onSearchSubmit()
+                    })
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }
@@ -63,7 +67,11 @@ struct MainView: View {
     private var iPadLayout: some View {
         NavigationSplitView {
             VStack(spacing: 0) {
-                SearchBar(text: $viewModel.searchText, isFocused: $isSearchFieldFocused)
+                SearchBar(text: $viewModel.searchText,
+                          isFocused: $isSearchFieldFocused,
+                          onSubmit: {
+                    viewModel.onSearchSubmit()
+                })
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }

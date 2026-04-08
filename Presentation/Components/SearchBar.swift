@@ -11,6 +11,7 @@ struct SearchBar: View {
 
     @Binding var text: String
     var isFocused: FocusState<Bool>.Binding
+    var onSubmit: (() -> Void)
 
     var body: some View {
         HStack(spacing: 8) {
@@ -25,6 +26,10 @@ struct SearchBar: View {
                 .accessibilityHint(L10n.Accessibility.searchFieldHint)
                 .accessibilityIdentifier("searchBar.textField")
                 .focused(isFocused)
+                .onSubmit {
+                    isFocused.wrappedValue = false
+                    onSubmit()
+                }
 
             if !text.isEmpty {
                 Button {
@@ -51,6 +56,6 @@ struct SearchBar: View {
 #Preview {
     @Previewable @FocusState var focused: Bool
     @Previewable @State var text = ""
-    SearchBar(text: $text, isFocused: $focused)
+    SearchBar(text: $text, isFocused: $focused, onSubmit: {})
 }
 #endif

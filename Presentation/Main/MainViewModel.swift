@@ -69,4 +69,11 @@ final class MainViewModel {
             self.searchViewModel.submitSearch(query: trimmed)
         }
     }
+    
+    @discardableResult
+    func onSearchSubmit() -> Task<Void, Never> {
+        debounceTask?.cancel()
+        debounceTask = nil
+        return self.searchViewModel.submitSearch(query: searchText)
+    }
 }

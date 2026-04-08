@@ -116,4 +116,42 @@ struct MainViewModelTests {
         #expect(searchRepo.searchCallCount == 1)
         #expect(searchRepo.lastQuery == "abc")
     }
+    
+    @Test("검색어 입력 후 바로 리턴을 누르면 검색결과 노출")
+    func onSearchSubmit_immediatelySearchesWithoutDebounce() async {
+        let searchRepo = MockImageSearchRepository()
+        let sut = MainViewModel(
+            searchImageUseCase: SearchImageUseCase(
+                imageSearchRepository: searchRepo
+            ),
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: MockBookmarkRepository()),
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
+        )
+        
+        sut.searchText = "cat"
+        await sut.onSearchSubmit().value
+        #expect(searchRepo.lastQuery == "cat")
+        #expect(searchRepo.searchCallCount == 1)
+    }
+    
+    @Test("디바운스 대기 중 리턴 누르면 디바운스 취소되고 즉시 검색")
+    func onSearchSubmit_cancelsPendingDebounce() async throws {
+        let searchRepo = MockImageSearchRepository()
+        let sut = MainViewModel(
+            searchImageUseCase: SearchImageUseCase(
+                imageSearchRepository: searchRepo
+            ),
+            manageBookmarkUseCase: ManageBookmarkUseCase(bookmarkRepository: MockBookmarkRepository()),
+            imagePrefetcher: MockImagePrefetcher(),
+            networkMonitor: MockNetworkMonitor()
+        )
+        
+        sut.onSearchTextChanged("cat")
+        sut.searchText = "cat"
+        await sut.onSearchSubmit().value
+        #expect(searchRepo.lastQuery == "cat")
+        try await Task.sleep(for: .seconds(1.5))
+        #expect(searchRepo.searchCallCount == 1)
+    }
 }
