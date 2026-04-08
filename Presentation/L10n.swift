@@ -10,6 +10,16 @@ import Foundation
 
 nonisolated enum L10n {
 
+    /// 현재 기기 언어를 영문 이름으로 반환 (Foundation Models 프롬프트용)
+    static var currentLanguageName: String {
+        let code = Locale.current.language.languageCode?.identifier ?? "ko"
+        return switch code {
+        case "en": "English"
+        case "ja": "Japanese"
+        default: "Korean"
+        }
+    }
+
     enum Search {
         static var placeholder: String {
             String(localized: "search.bar.placeholder")

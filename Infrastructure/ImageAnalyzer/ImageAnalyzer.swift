@@ -60,19 +60,14 @@ actor ImageAnalyzer {
         }
 
         let keywordList = keywords.joined(separator: ", ")
-        let languageCode = Locale.current.language.languageCode?.identifier ?? "ko"
-        let languageName: String = switch languageCode {
-        case "en": "English"
-        case "ja": "Japanese"
-        default: "Korean"
-        }
+        let language = L10n.currentLanguageName
 
         let session = LanguageModelSession(instructions: """
             You are an accessibility assistant. \
             Given image classification keywords, generate a concise, natural description \
-            of the image in \(languageName). \
+            of the image in \(language). \
             Keep it under 20 words. Do not add any prefix like "Photo" or "Image". \
-            Respond only in \(languageName).
+            Respond only in \(language).
             """)
 
         do {
