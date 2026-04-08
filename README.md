@@ -144,9 +144,11 @@ App(Composition Root)이 전체를 조립하고 구체 타입을 주입합니다
 
 ### 접근성 (VoiceOver)
 - 주요 인터랙티브 컴포넌트에 `accessibilityLabel`/`accessibilityHint` 적용 (ko/en/ja)
-- Vision API(`VNClassifyImageRequest`)로 이미지 키워드를 자동 추출해 접근성 설명에 반영
+- Vision API(`VNClassifyImageRequest`)로 이미지 키워드를 자동 추출
+- iOS 26+: Apple Foundation Models로 키워드를 사용자 언어의 자연어 설명문으로 변환 (온디바이스)
+- iOS 17~25: 키워드 나열 방식으로 폴백 ("Photo, dog, outdoor, grass")
 - VoiceOver 활성화 시에만 분석 실행하여 리소스 절약 (`UIAccessibility.isVoiceOverRunning`)
-- 접근성 라벨: 키워드 + 출처 + 날짜를 조합해 자연스러운 설명 제공
+- 접근성 라벨: 설명문(또는 키워드) + 출처 + 날짜를 조합해 자연스러운 설명 제공
 - Reduce Motion 설정 시 애니메이션 비활성화 지원 (shimmer, fade-in, toast, 버튼 스케일, 줌 전환)
 
 ### BookmarkCoordinator (공유 상태 관리)
