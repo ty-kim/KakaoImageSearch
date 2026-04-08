@@ -26,14 +26,14 @@ struct SearchResultItemView: View {
     let onBookmarkToggle: () -> Void
 
     @State private var showDetail = false
-    @State private var imageKeywords: [String] = []
+    @State private var imageContext: String?
 
     var body: some View {
         Button {
             showDetail = true
         } label: {
-            CachedAsyncImage(url: item.displayURL, onKeywordsReady: { keywords in
-                imageKeywords = keywords
+            CachedAsyncImage(url: item.displayURL, onImageContextReady: { context in
+                imageContext = context
             })
                 .frame(
                     width: screenWidth,
@@ -53,7 +53,7 @@ struct SearchResultItemView: View {
                 .padding(12)
         }
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(item.altText(keywords: imageKeywords))
+        .accessibilityLabel(item.altText(imageContext: imageContext))
         .fullScreenCover(isPresented: $showDetail) {
             ImageDetailView(url: item.imageURL ?? item.thumbnailURL)
         }

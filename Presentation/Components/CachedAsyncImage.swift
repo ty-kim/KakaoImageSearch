@@ -43,7 +43,7 @@ final class CachedAsyncImageViewModel {
     private let downloader: any ImageDownloading
     private let analyzer: ImageAnalyzer
     private let backoffBase: Double
-    private(set) var imageKeywords: [String] = []
+    private(set) var imageContext: String?
 
     init(downloader: any ImageDownloading,
          analyzer: ImageAnalyzer,
@@ -65,8 +65,9 @@ final class CachedAsyncImageViewModel {
             phase = .success(image)
             if UIAccessibility.isVoiceOverRunning {
                 do {
-                    imageKeywords = try await analyzer.classifyImage(image)
-                    Logger.presentation.debugPrint("image analyzed: \(imageKeywords)")
+                    let keywords = try await analyzer.classifyImage(image)
+                    imageContext = await analyzer.describeImage(keywords: keywords)
+                    Logger.presentation.debugPrint("image context: \(imageContext ?? "")")
                 } catch {
                     Logger.presentation.errorPrint("image analyze failed: \(error)")
                 }
@@ -98,7 +99,7 @@ final class CachedAsyncImageViewModel {
 struct CachedAsyncImage: View {
 
     let url: URL?
-    var onKeywordsReady: (([String]) -> Void)?
+    var onImageContextReady: ((String) -> Void)?
     private let fadeInDuration = 0.3
 
     @Environment(\.imageDownloader) private var downloader
@@ -145,9 +146,9 @@ struct CachedAsyncImage: View {
             viewModel?.resetRetry()
             loadTrigger = UUID()
         }
-        .onChange(of: viewModel?.imageKeywords) { _, keywords in
-            if let keywords, !keywords.isEmpty {
-                onKeywordsReady?(keywords)
+        .onChange(of: viewModel?.imageContext) { _, context in
+            if let context, !context.isEmpty {
+                onImageContextReady?(context)
             }
         }
     }

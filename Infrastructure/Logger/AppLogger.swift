@@ -22,6 +22,9 @@ extension Logger {
 
     /// 이미지 다운로드 및 캐시
     nonisolated static let imageLoader  = Logger(subsystem: subsystem, category: "ImageLoader")
+
+    /// 이미지 분석 (Vision API, Foundation Models)
+    nonisolated static let imageAnalyzer = Logger(subsystem: subsystem, category: "ImageAnalyzer")
 }
 
 // MARK: - Debug Console 출력 보조

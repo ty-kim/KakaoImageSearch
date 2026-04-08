@@ -37,20 +37,21 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         datetime.map { Self.relativeDateFormatter.localizedString(for: $0, relativeTo: Date()) }
     }
     
-    func altText(keywords: [String]) -> String {
+    func altText(imageContext: String? = nil) -> String {
         var altText: String = ""
-        
-        if !keywords.isEmpty {
-            altText += L10n.Accessibility.photo
-            altText += ", " + keywords.joined(separator: ", ")
+
+        if let context = imageContext, !context.isEmpty {
+            altText += context
         }
-        
+
         if let sitename = displaySitename, !sitename.isEmpty {
-            altText += ", \(sitename)"
+            if !altText.isEmpty { altText += ", " }
+            altText += sitename
         }
 
         if let time = relativeTimeString {
-            altText += ", \(time)"
+            if !altText.isEmpty { altText += ", " }
+            altText += time
         }
         return altText
     }

@@ -189,19 +189,18 @@ struct ImageItemTests {
         #expect(result!.isEmpty == false)
     }
     
-    @Test("altText메서드에 query를 주고 값이 잘 있는지 확인")
-    func itemWithQuery_altText() {
+    @Test("altText에 imageContext를 주고 값이 잘 있는지 확인")
+    func itemWithContext_altText() {
         let item = ImageItem.fixture(displaySitename: "티스토리", datetime: Date())
-        let altText = item.altText(keywords: ["dog"])
-        #expect(altText.contains("dog"))
+        let altText = item.altText(imageContext: "야외 잔디밭의 강아지 사진")
+        #expect(altText.contains("야외 잔디밭의 강아지 사진"))
         #expect(altText.contains("티스토리"))
     }
-    
-    @Test("altText메서드에 빈 query를 주고 값이 잘 있는지 확인")
-    func itemWithQuery_altTextWithNullQuery() {
+
+    @Test("altText에 nil imageContext를 주고 값이 잘 있는지 확인")
+    func itemWithNilContext_altText() {
         let item = ImageItem.fixture(displaySitename: "다음", datetime: Date())
-        let altText = item.altText(keywords: [])
-        #expect(!altText.contains("dog"))
+        let altText = item.altText(imageContext: nil)
         #expect(altText.contains("다음"))
     }
 }
