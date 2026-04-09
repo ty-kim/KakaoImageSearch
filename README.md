@@ -62,6 +62,12 @@ SwiftUI로 만든 iOS 이미지 검색 앱입니다.
 - Reduce Motion 설정 시 애니메이션 축소
 - iOS 26+에서는 Foundation Models를 활용해 이미지 설명문 생성
 
+## 핵심 기술적 결정 3개
+
+1. **액터 재진입으로 in-flight 중복 요청 제거** — 같은 URL에 동시 요청이 들어오면 하나만 다운로드하고 나머지는 대기. `await` 전에 Dictionary에 Task를 등록해 재진입 문제를 해결
+2. **검색 취소 + 늦은 응답 방지** — 새 검색 시 이전 Task 취소 + `activeSearchID`(UUID)로 늦게 도착한 응답이 UI를 덮어쓰지 않도록 처리
+3. **Vision API + Foundation Models로 접근성 이미지 설명** — Vision API로 이미지 키워드를 영어로 추출하고, iOS 26+에서는 Foundation Models로 사용자 언어의 자연어 설명문으로 변환해 VoiceOver에 제공
+
 ## Quick Start
 
 ### 리뷰어용 빠른 확인
