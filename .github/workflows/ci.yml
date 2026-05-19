@@ -10,7 +10,7 @@ jobs:
   test:
     runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build & Unit/Integration Test
         run: |
           xcrun simctl boot "iPhone 17" || true
@@ -27,7 +27,7 @@ jobs:
             test
       - name: Upload test results
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: test-results
           path: TestResults.xcresult
