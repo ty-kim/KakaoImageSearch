@@ -9,7 +9,7 @@ import Foundation
 import OSLog
 
 /// Generic URLSession 래퍼.
-/// actor로 선언해 Swift 6 데이터 레이스 안전성을 보장합니다.
+/// 가변 상태가 없어 Sendable 불변 클래스로 선언, Swift 6 데이터 레이스 안전성을 보장합니다.
 final class NetworkService: NetworkServiceProtocol, Sendable {
     private let session: URLSession
 
