@@ -10,7 +10,7 @@ import OSLog
 
 /// Generic URLSession 래퍼.
 /// actor로 선언해 Swift 6 데이터 레이스 안전성을 보장합니다.
-actor NetworkService: NetworkServiceProtocol {
+final class NetworkService: NetworkServiceProtocol, Sendable {
     private let session: URLSession
 
     init(session: URLSession = {
@@ -23,7 +23,7 @@ actor NetworkService: NetworkServiceProtocol {
     }
 
     func request<T: Decodable & Sendable>(_ endpoint: some APIEndpoint) async throws -> T {
-        let urlRequest = try await endpoint.makeURLRequest()
+        let urlRequest = try endpoint.makeURLRequest()
 
         Logger.network.debugPrint("→ \(urlRequest.httpMethod ?? "") \(urlRequest.url?.absoluteString ?? "")")
 
