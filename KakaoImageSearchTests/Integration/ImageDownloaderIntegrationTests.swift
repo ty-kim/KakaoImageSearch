@@ -14,11 +14,23 @@ import UIKit
 
 final class MockImageURLProtocol: URLProtocol, @unchecked Sendable {
     nonisolated(unsafe) static var requestHandler: ((URLRequest) throws -> (HTTPURLResponse, Data))?
+    /// 동시성 테스트용 비동기 게이트. 설정 시 요청을 스레드 블로킹 없이 서스펜드시킨다.
+    /// nil이면 기존 동기 경로 그대로 동작 (다른 테스트 영향 없음).
+    nonisolated(unsafe) static var asyncGate: (@Sendable (URLRequest) async -> Void)?
 
     override class func canInit(with request: URLRequest) -> Bool { true }
     override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
 
     override func startLoading() {
+        guard let gate = MockImageURLProtocol.asyncGate else {
+            respond()                                   // 기존 동기 경로 (변경 없음)
+            return
+        }
+        let req = request
+        Task { @Sendable in await gate(req); respond() }   // 게이트 통과 후 응답
+    }
+
+    private func respond() {
         guard let handler = MockImageURLProtocol.requestHandler else {
             client?.urlProtocol(self, didFailWithError: URLError(.unknown))
             return
@@ -202,26 +214,32 @@ struct ImageDownloaderIntegrationTests {
 
     // MARK: - prefetch 병렬도 제한
 
-    @Test("prefetch 동시 요청 수가 maxConcurrentPrefetches를 초과하지 않는다")
+    @Test("prefetch 동시 요청 수가 maxConcurrentPrefetches(6)를 초과하지 않는다")
     func prefetch_concurrencyIsLimited() async {
         let sut = makeDownloader()
         let png = makePNGData()
-        let totalURLs = 20
-        let urls = (0..<totalURLs).map { URL(string: "https://example.com/img\($0).png")! }
+        let urls = (0..<20).map { URL(string: "https://example.com/img\($0).png")! }
 
-        let counter = MaxConcurrencyCounter()
-        defer { MockImageURLProtocol.requestHandler = nil }
+        let gate = RequestGate()
+        defer {
+            MockImageURLProtocol.requestHandler = nil
+            MockImageURLProtocol.asyncGate = nil
+        }
+        // 요청을 스레드 블로킹(Thread.sleep) 대신 continuation으로 서스펜드시켜 동시성을 결정론적으로 측정
+        MockImageURLProtocol.asyncGate = { _ in await gate.arrive() }
         MockImageURLProtocol.requestHandler = { req in
-            counter.increment()
-            // 약간의 지연으로 동시성 측정
-            Thread.sleep(forTimeInterval: 0.05)
-            counter.decrement()
-            return (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
+            (HTTPURLResponse(url: req.url!, statusCode: 200, httpVersion: nil, headerFields: self.imageHeaders)!, png)
         }
 
-        await sut.prefetch(urls: urls)
+        // prefetch는 cap(6)에서 정지한다: 6개가 게이트에 park되면
+        // 7번째 태스크는 group.next()가 반환되기 전까지 생성되지 않는다.
+        let prefetchTask = Task { await sut.prefetch(urls: urls) }
 
-        #expect(counter.maxConcurrent <= 6)
+        await gate.waitUntilParked(6)            // 6개 동시 park = prefetch 정지(quiescent) 상태
+        #expect(await gate.maxConcurrent == 6)   // cap 도달 & 초과 없음
+
+        await gate.releaseAll()
+        await prefetchTask.value                 // 정상 완료까지 대기 → 행 없음
     }
 
     @Test("prefetch 중 일부 실패해도 나머지는 계속 처리된다")
@@ -389,21 +407,42 @@ struct ImageDownloaderIntegrationTests {
 
 // MARK: - 동시성 측정 헬퍼
 
-private final class MaxConcurrencyCounter: @unchecked Sendable {
-    private let lock = NSLock()
+/// 동시성 측정을 위한 결정론적 게이트.
+/// Thread.sleep로 스레드를 블로킹하는 대신, 요청을 continuation으로 서스펜드시켜
+/// 동시에 게이트에 머무는(park) 요청 수의 피크를 정확히 관측한다.
+private actor RequestGate {
+    private var parked: [CheckedContinuation<Void, Never>] = []
     private var current = 0
     private(set) var maxConcurrent = 0
+    private var target = 0
+    private var targetWaiter: CheckedContinuation<Void, Never>?
+    private var passthrough = false
 
-    func increment() {
-        lock.lock()
+    /// 각 mock 요청이 진입 시 호출. releaseAll 전까지 서스펜드된다.
+    func arrive() async {
         current += 1
-        if current > maxConcurrent { maxConcurrent = current }
-        lock.unlock()
+        maxConcurrent = max(maxConcurrent, current)
+        if let waiter = targetWaiter, current >= target {
+            targetWaiter = nil
+            waiter.resume()
+        }
+        if passthrough { current -= 1; return }
+        await withCheckedContinuation { parked.append($0) }
+        current -= 1
     }
 
-    func decrement() {
-        lock.lock()
-        current -= 1
-        lock.unlock()
+    /// 동시에 `count`개가 park될 때까지 대기.
+    func waitUntilParked(_ count: Int) async {
+        if current >= count { return }
+        target = count
+        await withCheckedContinuation { targetWaiter = $0 }
+    }
+
+    /// 전부 풀고 이후 도착은 통과시켜 prefetch를 정상 완료시킨다 (행 방지).
+    func releaseAll() {
+        passthrough = true
+        let waiters = parked
+        parked.removeAll()
+        waiters.forEach { $0.resume() }
     }
 }
