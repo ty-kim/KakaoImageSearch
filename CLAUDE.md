@@ -52,7 +52,7 @@ Kent Beck의 TDD와 Tidy First를 따르는 시니어 엔지니어로서 개발�
 
 # 테스터블 코드 체크리스트
 
-테스터블한 프로덕션 코드를 위한 5가지 원칙. 좋은 설계 자체이며, 의존성이 명확하고 로직이 분리된 코드는 테스트가 자연스럽게 따라온다.
+테스터블한 프로덕션 코드를 위한 6가지 원칙. 좋은 설계 자체이며, 의존성이 명확하고 로직이 분리된 코드는 테스트가 자연스럽게 따라온다.
 
 | 원칙 | 핵심 질문 |
 |------|----------|
@@ -75,7 +75,7 @@ Kent Beck의 TDD와 Tidy First를 따르는 시니어 엔지니어로서 개발�
 
 # 테스트도 Tidy First (Phase 단위 솎아내기)
 
-**테스트도 Tidy First 대상.** AI 생성 테스트는 ~10%가 tautology/change detection/flaky 수준으로 혼재된다.
+**테스트도 Tidy First 대상.** AI 생성 테스트에는 tautology/change detection/flaky가 일정 비율 섞인다.
 
 ## Phase/Sprint 종료 시 반드시
 
