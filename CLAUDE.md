@@ -75,7 +75,9 @@ Kent Beck의 TDD와 Tidy First를 따르는 시니어 엔지니어로서 개발�
 
 # 테스트도 Tidy First (Phase 단위 솎아내기)
 
-**테스트도 Tidy First 대상.** AI 생성 테스트에는 tautology/change detection/flaky가 일정 비율 섞인다.
+**테스트도 Tidy First 대상.** AI 생성 테스트에는 tautology/change detection/flaky가 섞인다.
+개인 프로젝트 두 개(579개)를 5유형 체크리스트로 훑었을 때 11개(약 2%)가 걸렸다.
+표본이 작고 한 사람이 같은 방식으로 만든 코드라 일반화할 수치는 아니지만, 0은 아니다.
 
 ## Phase/Sprint 종료 시 반드시
 
@@ -164,9 +166,9 @@ Infrastructure (NetworkService actor, ImageDownloader actor, ImageCache actor)
 | Presentation/Bookmark | BookmarkViewModel, BookmarkView | 북마크 CRUD |
 | Presentation/Components | CachedAsyncImage, ToastView, ImageDetailView 등 | 재사용 UI 컴포넌트 |
 
-## 테스트 구성 (251개)
+## 테스트 구성 (247개)
 
-- Unit (177): UseCase(15), ViewModel(59), DTO(16), Endpoint(16), Entity(22), FlowController(21), CachedAsyncImageVM(14), SearchPrefetchCoordinator(5), SearchResultsStore(7), MainViewModel(8)
+- Unit (173): SearchViewModel(33), FlowController(21), DTO(16), Endpoint(16), Entity(16), CachedAsyncImageVM(16), BookmarkCoordinator(13), ManageBookmarkUseCase(10), MainViewModel(8), SearchResultsStore(7), BookmarkViewModel(7), SearchPrefetchCoordinator(5), SearchImageUseCase(5)
 - Integration (46): NetworkService(10), BookmarkStorage(12), ImageDownloader(16), ImageCache(6), ImageAnalyzer(2, 실기기 전용)
 - UI (28): iPhone/iPad 시나리오 (검색, 페이지네이션, 북마크, 에러 복구)
 
