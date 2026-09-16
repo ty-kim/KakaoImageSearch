@@ -5,9 +5,13 @@
 //  Created by tykim on 3/16/26.
 //
 
-import UIKit
+// Domain은 UI 프레임워크를 모르는 것이 원칙이나, UIImage 하나만 예외로 통과시킨다.
+// 디코딩된 비트맵을 메모리 캐시에 담는 것이 ImageDownloader의 존재 이유라
+// Data로 낮추면 캐시가 매 호출 디코딩을 다시 하게 된다. 심볼 단위로 좁혀 경계를 드러낸다.
+import Foundation
+import class UIKit.UIImage
 
-enum ImageDownloadError: Error, LocalizedError {
+enum ImageDownloadError: Error {
     case notFound
     case invalidResponse
     case invalidData
@@ -21,16 +25,6 @@ enum ImageDownloadError: Error, LocalizedError {
         case .invalidData:           return true
         case .notImageContentType:   return false
         case .contentLengthExceeded: return false
-        }
-    }
-
-    var errorDescription: String? {
-        switch self {
-        case .notFound:              return String(localized: "image_download.error.not_found")
-        case .invalidResponse:       return String(localized: "image_download.error.invalid_response")
-        case .invalidData:           return String(localized: "image_download.error.invalid_data")
-        case .notImageContentType:   return String(localized: "image_download.error.not_image_content_type")
-        case .contentLengthExceeded: return String(localized: "image_download.error.content_length_exceeded")
         }
     }
 }
