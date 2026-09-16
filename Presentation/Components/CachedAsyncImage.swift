@@ -44,6 +44,8 @@ final class CachedAsyncImageViewModel {
     private let analyzer: ImageAnalyzer
     private let backoffBase: Double
     private(set) var imageContext: String?
+    /// 가장 최근에 요청된 URL. 늦게 끝난 이전 요청이 결과를 덮지 않도록 판별하는 기준.
+    private var currentURL: URL?
 
     init(downloader: any ImageDownloading,
          analyzer: ImageAnalyzer,
@@ -58,10 +60,14 @@ final class CachedAsyncImageViewModel {
             phase = .idle
             return
         }
+        currentURL = url
         phase = .loading
 
         do {
             let image = try await downloader.download(from: url)
+            // ImageDownloader의 dedup용 unstructured Task는 호출자 취소와 무관하게 완료된다.
+            // 즉 바깥 .task가 취소돼도 여기로 돌아오므로, 낡은 결과인지 직접 판별해야 한다.
+            guard !Task.isCancelled, currentURL == url else { return }
             phase = .success(image)
             if UIAccessibility.isVoiceOverRunning {
                 do {

@@ -137,6 +137,52 @@ final class MockImageDownloader: ImageDownloading, @unchecked Sendable {
     }
 }
 
+// MARK: - GatedImageDownloader
+
+/// 완료 시점을 테스트가 직접 여는 다운로더.
+/// 취소에 반응하지 않으므로 실제 ImageDownloader의 dedup용 unstructured Task와 같은 모양이 된다.
+final class GatedImageDownloader: ImageDownloading, @unchecked Sendable {
+    private let lock = NSLock()
+    private var continuations: [URL: CheckedContinuation<UIImage, Never>] = [:]
+    private var earlyResults: [URL: UIImage] = [:]
+
+    private let startedContinuation: AsyncStream<URL>.Continuation
+    /// download 진입 시점을 알리는 게이트. wall-clock 대기 없이 순서를 잡는다.
+    let started: AsyncStream<URL>
+
+    init() {
+        var cont: AsyncStream<URL>.Continuation!
+        started = AsyncStream { cont = $0 }
+        startedContinuation = cont
+    }
+
+    func download(from url: URL) async throws -> UIImage {
+        await withCheckedContinuation { (continuation: CheckedContinuation<UIImage, Never>) in
+            lock.lock()
+            if let image = earlyResults.removeValue(forKey: url) {
+                lock.unlock()
+                continuation.resume(returning: image)
+            } else {
+                continuations[url] = continuation
+                lock.unlock()
+            }
+            startedContinuation.yield(url)
+        }
+    }
+
+    /// 지정 URL의 다운로드를 완료시킨다. 아직 진입 전이면 진입 즉시 완료된다.
+    func complete(_ url: URL, with image: UIImage) {
+        lock.lock()
+        if let continuation = continuations.removeValue(forKey: url) {
+            lock.unlock()
+            continuation.resume(returning: image)
+        } else {
+            earlyResults[url] = image
+            lock.unlock()
+        }
+    }
+}
+
 // MARK: - MockNetworkMonitor
 
 final class MockNetworkMonitor: NetworkMonitoring, @unchecked Sendable {
