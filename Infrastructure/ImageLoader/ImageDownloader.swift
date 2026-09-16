@@ -27,7 +27,7 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
     /// prefetch 최대 동시 다운로드 수. URLSession 기본 호스트당 커넥션 풀(6)에 맞춤
     private nonisolated static let maxConcurrentPrefetches = 6
 
-    /// 다음 페이지 썸네일을 백그라운드에서 병렬 선수 다운로드합니다.
+    /// 방금 로드된 페이지의 썸네일 중 화면에 아직 뜨지 않은 것을 백그라운드에서 병렬 선수 다운로드합니다.
     /// 캐시 히트 URL은 제외하고, 최대 동시 요청 수를 제한합니다.
     func prefetch(urls: [URL]) async {
         // 캐시 히트 제외

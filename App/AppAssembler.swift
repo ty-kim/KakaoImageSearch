@@ -11,6 +11,10 @@ import SwiftData
 @MainActor
 enum AppAssembler {
 
+    /// 화면 로더(Environment)와 프리페처가 inFlight·메모리 캐시를 공유하도록 단일 인스턴스로 조립한다.
+    /// 인스턴스가 갈리면 같은 URL을 각자 네트워크로 요청해 중복 제거가 무력화된다.
+    static let imageDownloader = ImageDownloader()
+
     private static let modelContainer: ModelContainer = {
         do {
             return try ModelContainer(for: BookmarkEntity.self)
@@ -67,7 +71,7 @@ enum AppAssembler {
         return MainViewModel(
             searchImageUseCase: searchUseCase,
             manageBookmarkUseCase: bookmarkUseCase,
-            imagePrefetcher: ImageDownloader(),
+            imagePrefetcher: imageDownloader,
             networkMonitor: NetworkMonitor()
         )
     }
