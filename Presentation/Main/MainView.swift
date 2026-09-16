@@ -25,7 +25,7 @@ struct MainView: View {
             await viewModel.loadInitialData()
         }
     }
-    
+
     // MARK: - iPhone Layout
 
     private var iPhoneLayout: some View {
@@ -40,7 +40,7 @@ struct MainView: View {
                     .onChange(of: viewModel.searchText) { _, newValue in
                         viewModel.onSearchTextChanged(newValue)
                     }
-                    
+
                     SearchView(viewModel: viewModel.searchViewModel,
                                isFocused: $isSearchFieldFocused)
                 }

@@ -21,10 +21,15 @@ final class FailingImageSearchRepository: ImageSearchRepository, @unchecked Send
 final class FixtureImageSearchRepository: ImageSearchRepository, @unchecked Sendable {
     func search(query: String, page: Int) async throws -> SearchResultPage {
         let items = (1...3).map { i in
-            ImageItem(
+            // 리터럴이라 실패할 수 없지만, 오타로 깨지면 조용히 넘어가지 않고 즉시 드러나게 한다.
+            guard let imageURL = URL(string: "https://example.com/fixture/\(i)/800x600.jpg"),
+                  let thumbnailURL = URL(string: "https://example.com/fixture/\(i)/200x150.jpg") else {
+                preconditionFailure("fixture URL 구성 실패: \(i)")
+            }
+            return ImageItem(
                 id: "fixture-\(i)",
-                imageURL: URL(string: "https://example.com/fixture/\(i)/800x600.jpg")!,
-                thumbnailURL: URL(string: "https://example.com/fixture/\(i)/200x150.jpg")!,
+                imageURL: imageURL,
+                thumbnailURL: thumbnailURL,
                 width: 800,
                 height: 600,
                 isBookmarked: false

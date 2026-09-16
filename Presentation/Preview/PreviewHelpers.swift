@@ -42,7 +42,7 @@ enum PreviewData {
             height: 700,
             datetime: Date(timeIntervalSinceNow: -604800),
             isBookmarked: false
-        ),
+        )
     ]
 
     static var singleItem: ImageItem { sampleItems[0] }

@@ -22,7 +22,7 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
         guard let width, let height, width > 0, height > 0 else { return 1 }
         return Double(height) / Double(width)
     }
-    
+
     var displayURL: URL? {
         imageURL ?? thumbnailURL
     }
@@ -36,7 +36,7 @@ struct ImageItem: Identifiable, Codable, Sendable, Hashable {
     var relativeTimeString: String? {
         datetime.map { Self.relativeDateFormatter.localizedString(for: $0, relativeTo: Date()) }
     }
-    
+
     func altText(imageContext: String? = nil) -> String {
         var altText: String = ""
 

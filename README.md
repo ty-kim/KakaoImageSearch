@@ -114,8 +114,8 @@ xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
 테스트는 검색 취소, 늦은 응답, 페이지네이션, 북마크 동기화,
 이미지 캐시와 실패 복구처럼 회귀 위험이 큰 흐름을 중심으로 작성했습니다.
 
-- Unit: 177개 / Integration: 46개 / UI Test: 28개 (총 251개)
-- CI: `UnitTests` 플랜 실행
+- Unit: 179개 / Integration: 46개 / UI Test: 28개 (총 253개)
+- CI: SwiftLint(strict) 통과 후 `UnitTests` 플랜 실행
 
 ## Architecture
 

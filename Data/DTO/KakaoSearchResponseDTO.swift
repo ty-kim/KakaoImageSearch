@@ -17,7 +17,7 @@ struct KakaoSearchResponseDTO: Sendable {
     // nonisolated init(from:)을 직접 구현해 어느 actor에서도 디코딩 가능하게 합니다.
     nonisolated init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        meta      = try container.decode(Meta.self,       forKey: .meta)
+        meta      = try container.decode(Meta.self, forKey: .meta)
         documents = try container.decode([Document].self, forKey: .documents)
     }
 
@@ -31,7 +31,7 @@ struct KakaoSearchResponseDTO: Sendable {
 
         nonisolated init(from decoder: any Decoder) throws {
             let c = try decoder.container(keyedBy: CodingKeys.self)
-            totalCount = try c.decode(Int.self,  forKey: .totalCount)
+            totalCount = try c.decode(Int.self, forKey: .totalCount)
             isEnd      = try c.decode(Bool.self, forKey: .isEnd)
         }
 
@@ -55,8 +55,8 @@ struct KakaoSearchResponseDTO: Sendable {
             collection      = try c.decodeIfPresent(String.self, forKey: .collection)
             thumbnailUrl    = try c.decodeIfPresent(String.self, forKey: .thumbnailUrl)
             imageUrl        = try c.decodeIfPresent(String.self, forKey: .imageUrl)
-            width           = try c.decodeIfPresent(Int.self,    forKey: .width)
-            height          = try c.decodeIfPresent(Int.self,    forKey: .height)
+            width           = try c.decodeIfPresent(Int.self, forKey: .width)
+            height          = try c.decodeIfPresent(Int.self, forKey: .height)
             displaySitename = try c.decodeIfPresent(String.self, forKey: .displaySitename)
             docUrl          = try c.decodeIfPresent(String.self, forKey: .docUrl)
             datetime        = try c.decodeIfPresent(String.self, forKey: .datetime)

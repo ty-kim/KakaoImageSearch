@@ -18,16 +18,16 @@ actor ImageAnalyzer {
     // - 너무 높으면 (0.7) — 키워드가 거의 안 나옴
     nonisolated let minimumConfidence: VNConfidence = 0.2
     nonisolated let maxKeywordCount: Int = 5
-    
+
     nonisolated func classifyImage(_ image: UIImage) async throws -> [String] {
         guard let cgImage = image.cgImage else {
             throw ImageAnalyzerError.invalidImage
         }
-        
+
         let request = VNClassifyImageRequest()
         let handler = VNImageRequestHandler(cgImage: cgImage)
         try handler.perform([request])
-        
+
         let results = request.results ?? []
         return results
             .sorted { $0.confidence > $1.confidence }

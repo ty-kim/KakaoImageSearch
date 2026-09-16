@@ -7,8 +7,22 @@ on:
     branches: [master]
 
 jobs:
-  test:
+  lint:
+    name: SwiftLint
     runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Install SwiftLint
+        run: brew install swiftlint
+
+      - name: Run SwiftLint (strict)
+        run: swiftlint lint --strict
+
+  test:
+    name: Build & Test
+    runs-on: macos-15
+    needs: lint
     steps:
       - uses: actions/checkout@v5
       - name: Build & Unit/Integration Test

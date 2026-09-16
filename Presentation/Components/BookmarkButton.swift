@@ -13,10 +13,10 @@ struct BookmarkButton: View {
     let action: () -> Void
 
     var body: some View {
-        Button(action: {
+        Button {
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             action()
-        }) {
+        } label: {
             Image(systemName: isBookmarked ? "bookmark.fill" : "bookmark")
                 .font(.title2)
                 .foregroundStyle(isBookmarked ? AppColors.bookmarkActive : AppColors.bookmarkInactive)

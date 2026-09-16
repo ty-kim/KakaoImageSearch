@@ -15,7 +15,7 @@ final class SearchResultsStore {
     private let bookmarkStore: BookmarkCoordinator
 
     private(set) var items: [ImageItem] = []
-    
+
     init(bookmarkStore: BookmarkCoordinator) {
         self.bookmarkStore = bookmarkStore
         observeBookmarkCoordinator()

@@ -32,8 +32,8 @@ final class SearchViewModel {
     var items: [ImageItem] { resultsStore.items }
     private(set) var searchState: SearchState = .idle
     let toast: ToastState
-    private var searchTask: Task<Void, Never>? = nil
-    private var loadMoreTask: Task<Void, Never>? = nil
+    private var searchTask: Task<Void, Never>?
+    private var loadMoreTask: Task<Void, Never>?
 
     private let flow: SearchFlowController
     private let resultsStore: SearchResultsStore
@@ -193,7 +193,7 @@ final class SearchViewModel {
 
         Logger.presentation.debugPrint("Search cancelled and cleared")
     }
-    
+
     var inFlightBookmarkIDs: Set<String> {
         bookmarkStore.inFlightBookmarkIDs
     }

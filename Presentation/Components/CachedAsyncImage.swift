@@ -128,7 +128,7 @@ struct CachedAsyncImage: View {
             case .success(let image):
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fill)
+                    .scaledToFill()
                     .transition(.opacity)
 
             case .failure:

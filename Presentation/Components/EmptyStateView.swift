@@ -11,7 +11,7 @@ struct EmptyStateView: View {
 
     let message: String
     var accessibilityID: String = ""
-    var retryAction: (() -> Void)? = nil
+    var retryAction: (() -> Void)?
 
     var body: some View {
         VStack(spacing: 16) {

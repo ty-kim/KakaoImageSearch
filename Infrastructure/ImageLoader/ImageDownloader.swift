@@ -33,9 +33,8 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         // 캐시 히트 제외
         var uncached: [URL] = []
         for url in urls {
-            if await cache.get(for: url) == nil {
-                uncached.append(url)
-            }
+            guard await cache.get(for: url) == nil else { continue }
+            uncached.append(url)
         }
 
         guard !uncached.isEmpty else { return }
@@ -74,84 +73,98 @@ actor ImageDownloader: ImagePrefetcher, ImageDownloading {
         }
     }()
 
-    func download(from url: URL, priority: TaskPriority = .userInitiated) async throws -> UIImage {
-        // http → https 변환 (ATS 예외 도메인은 HTTP 그대로 유지)
-        let secureURL: URL
-        if url.scheme == "http",
-           let host = url.host,
-           !Self.httpExemptHosts.contains(where: { host == $0 || host.hasSuffix(".\($0)") }),
-           var components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
-            components.scheme = "https"
-            secureURL = components.url ?? url
-        } else {
-            secureURL = url
+    /// http → https 승격. ATS 예외 도메인은 HTTP 그대로 유지한다.
+    private nonisolated static func secureURL(for url: URL) -> URL {
+        guard url.scheme == "http",
+              let host = url.host,
+              !httpExemptHosts.contains(where: { host == $0 || host.hasSuffix(".\($0)") }),
+              var components = URLComponents(url: url, resolvingAgainstBaseURL: false) else {
+            return url
         }
+        components.scheme = "https"
+        return components.url ?? url
+    }
+
+    /// 상태 코드 · Content-Type · Content-Length를 검증하고 HTTP 응답을 돌려준다.
+    private nonisolated static func validate(_ response: URLResponse, for url: URL) throws -> HTTPURLResponse {
+        guard let http = response as? HTTPURLResponse,
+              (200..<300).contains(http.statusCode) else {
+            let statusCode = (response as? HTTPURLResponse)?.statusCode
+            Logger.imageLoader.errorPrint("Invalid response (\(statusCode ?? 0)) for: \(url.absoluteString)")
+            throw statusCode == 404
+                ? ImageDownloadError.notFound
+                : ImageDownloadError.invalidResponse
+        }
+
+        // Content-Type이 image/* 인지 검증 — nil이면 거부
+        guard let mimeType = http.mimeType,
+              mimeType.hasPrefix("image/") else {
+            let actual = http.mimeType ?? "nil"
+            Logger.imageLoader.errorPrint("Non-image Content-Type '\(actual)' for: \(url.lastPathComponent)")
+            throw ImageDownloadError.notImageContentType
+        }
+
+        // Content-Length 헤더로 사전 검사 — 본문 수신 전 조기 중단
+        if http.expectedContentLength > 0,
+           http.expectedContentLength > maxContentLength {
+            Logger.imageLoader.errorPrint(
+                "Content-Length \(http.expectedContentLength) exceeds limit for: \(url.lastPathComponent)"
+            )
+            throw ImageDownloadError.contentLengthExceeded
+        }
+
+        return http
+    }
+
+    /// 캐시 조회 → 네트워크 수신 → 검증 → 디코딩.
+    /// dedup용 Task 안에서 실행되므로 actor 상태를 건드리지 않는 nonisolated로 둔다.
+    private nonisolated static func fetchImage(url: URL, session: URLSession, cache: ImageCache) async throws -> UIImage {
+        if let cached = await cache.get(for: url) {
+            Logger.imageLoader.debugPrint("Cache hit: \(url.lastPathComponent)")
+            return cached
+        }
+
+        Logger.imageLoader.debugPrint("Downloading: \(url.lastPathComponent)")
+
+        let (bytes, response) = try await session.bytes(from: url)
+        let http = try validate(response, for: url)
+
+        // 스트리밍 수신 — 누적 크기가 상한을 넘으면 즉시 중단
+        let maxBytes = Int(maxContentLength)
+        var data = Data()
+        data.reserveCapacity(min(Int(http.expectedContentLength), maxBytes))
+        for try await byte in bytes {
+            data.append(byte)
+            if data.count > maxBytes {
+                Logger.imageLoader.errorPrint("Download size \(data.count) exceeds limit for: \(url.lastPathComponent)")
+                throw ImageDownloadError.contentLengthExceeded
+            }
+        }
+
+        guard let image = UIImage(data: data) else {
+            Logger.imageLoader.errorPrint("Invalid image data for: \(url.lastPathComponent)")
+            throw ImageDownloadError.invalidData
+        }
+
+        await cache.set(image, data: data, for: url)
+        Logger.imageLoader.debugPrint("Downloaded & cached: \(url.lastPathComponent) (\(data.count) bytes)")
+        return image
+    }
+
+    func download(from url: URL, priority: TaskPriority = .userInitiated) async throws -> UIImage {
+        let secureURL = Self.secureURL(for: url)
 
         // 1. 동일 URL 진행 중인 요청 재사용
         if let existing = inFlight[secureURL] {
             Logger.imageLoader.debugPrint("Reusing in-flight request: \(secureURL.lastPathComponent)")
             return try await existing.value
         }
-        
+
         // 2. 새로 URL 요청 생성
         // dedup 목적으로 생성하는 unstructured Task.
         // self 전체가 아닌 실제 필요한 session·cache만 명시적으로 캡처한다.
         let task = Task<UIImage, Error>(priority: priority) { [session = self.session, cache = self.cache] in
-            // 2-1. 캐시 히트
-            if let cached = await cache.get(for: secureURL) {
-                Logger.imageLoader.debugPrint("Cache hit: \(url.lastPathComponent)")
-                return cached
-            }
-            
-            // 2-2. 신규 요청
-            Logger.imageLoader.debugPrint("Downloading: \(secureURL.lastPathComponent)")
-            
-            let (bytes, response) = try await session.bytes(from: secureURL)
-
-            guard let http = response as? HTTPURLResponse,
-                  (200..<300).contains(http.statusCode) else {
-                let statusCode = (response as? HTTPURLResponse)?.statusCode
-                Logger.imageLoader.errorPrint("Invalid response (\(statusCode ?? 0)) for: \(secureURL.absoluteString)")
-                throw statusCode == 404
-                    ? ImageDownloadError.notFound
-                    : ImageDownloadError.invalidResponse
-            }
-
-            // Content-Type이 image/* 인지 검증 — nil이면 거부
-            guard let mimeType = http.mimeType,
-                  mimeType.hasPrefix("image/") else {
-                let actual = http.mimeType ?? "nil"
-                Logger.imageLoader.errorPrint("Non-image Content-Type '\(actual)' for: \(secureURL.lastPathComponent)")
-                throw ImageDownloadError.notImageContentType
-            }
-
-            // Content-Length 헤더로 사전 검사 — 본문 수신 전 조기 중단
-            let maxBytes = Int(ImageDownloader.maxContentLength)
-            if http.expectedContentLength > 0,
-               http.expectedContentLength > Int64(maxBytes) {
-                Logger.imageLoader.errorPrint("Content-Length \(http.expectedContentLength) exceeds limit for: \(secureURL.lastPathComponent)")
-                throw ImageDownloadError.contentLengthExceeded
-            }
-
-            // 스트리밍 수신 — 누적 크기가 상한을 넘으면 즉시 중단
-            var data = Data()
-            data.reserveCapacity(min(Int(http.expectedContentLength), maxBytes))
-            for try await byte in bytes {
-                data.append(byte)
-                if data.count > maxBytes {
-                    Logger.imageLoader.errorPrint("Download size \(data.count) exceeds limit for: \(secureURL.lastPathComponent)")
-                    throw ImageDownloadError.contentLengthExceeded
-                }
-            }
-
-            guard let image = UIImage(data: data) else {
-                Logger.imageLoader.errorPrint("Invalid image data for: \(secureURL.lastPathComponent)")
-                throw ImageDownloadError.invalidData
-            }
-
-            await cache.set(image, data: data, for: secureURL)
-            Logger.imageLoader.debugPrint("Downloaded & cached: \(secureURL.lastPathComponent) (\(data.count) bytes)")
-            return image
+            try await Self.fetchImage(url: secureURL, session: session, cache: cache)
         }
 
         inFlight[secureURL] = task

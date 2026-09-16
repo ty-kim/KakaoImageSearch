@@ -1,0 +1,63 @@
+included:
+  - App
+  - Domain
+  - Data
+  - Infrastructure
+  - Presentation
+
+excluded:
+  - KakaoImageSearchTests
+  - KakaoImageSearchUITests
+  - DerivedData
+  - "**/Preview Content"
+
+disabled_rules:
+  - todo
+
+opt_in_rules:
+  - empty_count
+  - empty_string
+  - explicit_init
+  - first_where
+  - last_where
+  - contains_over_first_not_nil
+  - sorted_first_last
+  - unneeded_parentheses_in_closure_argument
+  - redundant_nil_coalescing
+  - operator_usage_whitespace
+  - closure_end_indentation
+  - force_unwrapping
+
+line_length:
+  warning: 140
+  error: 200
+  ignores_urls: true
+  ignores_comments: true
+
+identifier_name:
+  min_length: 1
+  max_length:
+    warning: 60
+    error: 80
+  allowed_symbols: ["_"]
+
+type_name:
+  min_length: 3
+  max_length:
+    warning: 60
+    error: 80
+
+nesting:
+  type_level:
+    warning: 3
+  function_level:
+    warning: 4
+
+force_unwrapping:
+  severity: warning
+
+force_try:
+  severity: error
+
+force_cast:
+  severity: warning
