@@ -183,4 +183,62 @@ struct CachedAsyncImageViewModelTests {
         }
         #expect(vm.phase.label == "permanentFailure")
     }
+
+    // MARK: - 낡은 결과 덮어쓰기 방지
+
+    @Test("URL 변경으로 취소된 이전 다운로드가 늦게 끝나도 새 이미지를 덮지 않는다")
+    func lateCancelledDownloadDoesNotOverwrite() async {
+        let urlA = URL(string: "https://example.com/a.jpg")!
+        let urlB = URL(string: "https://example.com/b.jpg")!
+        let imageA = UIImage()
+        let imageB = UIImage()
+
+        let downloader = GatedImageDownloader()
+        let viewModel = CachedAsyncImageViewModel(downloader: downloader, analyzer: ImageAnalyzer(), backoffBase: 0)
+        var starts = downloader.started.makeAsyncIterator()
+
+        // A 로드 시작 (SwiftUI .task 에 해당)
+        let taskA = Task { await viewModel.load(url: urlA) }
+        _ = await starts.next()
+
+        // URL 이 B 로 바뀌며 바깥 task 취소 → 같은 ViewModel 에 B 로드
+        taskA.cancel()
+        let taskB = Task { await viewModel.load(url: urlB) }
+        _ = await starts.next()
+
+        downloader.complete(urlB, with: imageB)
+        await taskB.value
+        #expect(viewModel.phase == .success(imageB))
+
+        // A 가 뒤늦게 완료 — 취소됐으므로 반영되면 안 된다
+        downloader.complete(urlA, with: imageA)
+        await taskA.value
+        #expect(viewModel.phase == .success(imageB))
+    }
+
+    @Test("취소 없이 URL 이 바뀐 경우에도 늦게 끝난 이전 다운로드는 반영되지 않는다")
+    func lateDownloadOfPreviousURLIsIgnored() async {
+        let urlA = URL(string: "https://example.com/a.jpg")!
+        let urlB = URL(string: "https://example.com/b.jpg")!
+        let imageA = UIImage()
+        let imageB = UIImage()
+
+        let downloader = GatedImageDownloader()
+        let viewModel = CachedAsyncImageViewModel(downloader: downloader, analyzer: ImageAnalyzer(), backoffBase: 0)
+        var starts = downloader.started.makeAsyncIterator()
+
+        let taskA = Task { await viewModel.load(url: urlA) }
+        _ = await starts.next()
+
+        let taskB = Task { await viewModel.load(url: urlB) }
+        _ = await starts.next()
+
+        downloader.complete(urlB, with: imageB)
+        await taskB.value
+        #expect(viewModel.phase == .success(imageB))
+
+        downloader.complete(urlA, with: imageA)
+        await taskA.value
+        #expect(viewModel.phase == .success(imageB))
+    }
 }

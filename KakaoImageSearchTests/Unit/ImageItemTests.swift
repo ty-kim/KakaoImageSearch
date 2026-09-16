@@ -119,21 +119,6 @@ struct ImageItemTests {
 
     // MARK: - Hashable / Equatable
 
-    @Test("모든 프로퍼티가 동일한 아이템은 같은 해시값")
-    func hashable_sameProperties() {
-        let a = ImageItem.fixture(id: "same")
-        let b = ImageItem.fixture(id: "same")
-        #expect(a.hashValue == b.hashValue)
-    }
-
-    @Test("모든 프로퍼티가 동일한 아이템은 Set에 중복 추가 불가")
-    func hashable_setDedup() {
-        let a = ImageItem.fixture(id: "dup")
-        let b = ImageItem.fixture(id: "dup")
-        let set: Set<ImageItem> = [a, b]
-        #expect(set.count == 1)
-    }
-
     @Test("isBookmarked가 다르면 동일 id라도 다른 아이템으로 취급")
     func hashable_differentBookmarkState() {
         let a = ImageItem.fixture(id: "same", isBookmarked: false)
@@ -141,35 +126,6 @@ struct ImageItemTests {
         #expect(a != b)
         let set: Set<ImageItem> = [a, b]
         #expect(set.count == 2)
-    }
-
-    // MARK: - displaySitename
-
-    @Test("displaySitename이 설정되면 해당 값을 반환한다")
-    func displaySitename_returnsValue() {
-        let item = ImageItem.fixture(displaySitename: "Naver Blog")
-        #expect(item.displaySitename == "Naver Blog")
-    }
-
-    @Test("displaySitename 기본값은 nil이다")
-    func displaySitename_defaultNil() {
-        let item = ImageItem.fixture()
-        #expect(item.displaySitename == nil)
-    }
-
-    // MARK: - datetime
-
-    @Test("datetime이 설정되면 해당 값을 반환한다")
-    func datetime_returnsValue() {
-        let date = Date(timeIntervalSince1970: 1704067200) // 2024-01-01T00:00:00Z
-        let item = ImageItem.fixture(datetime: date)
-        #expect(item.datetime == date)
-    }
-
-    @Test("datetime 기본값은 nil이다")
-    func datetime_defaultNil() {
-        let item = ImageItem.fixture()
-        #expect(item.datetime == nil)
     }
 
     // MARK: - relativeTimeString

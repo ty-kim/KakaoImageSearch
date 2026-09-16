@@ -34,7 +34,7 @@ struct ImageDetailView: View {
             if let image {
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .scaleEffect(scale)
                     .offset(offset)
                     .gesture(

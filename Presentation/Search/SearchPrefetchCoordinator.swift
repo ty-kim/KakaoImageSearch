@@ -27,7 +27,7 @@ final class SearchPrefetchCoordinator {
             await imagePrefetcher.prefetch(urls: urls)
         }
     }
-    
+
     func cancel() {
         prefetchTask?.cancel()
         prefetchTask = nil

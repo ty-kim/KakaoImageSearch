@@ -27,7 +27,7 @@ final class SearchFlowController {
 
     private var currentQuery: String = ""
     private var currentPage: Int = 1
-    private var activeSearchID: UUID? = nil
+    private var activeSearchID: UUID?
 
     init(
         searchImageUseCase: SearchImageUseCase,

@@ -16,7 +16,7 @@
 
 ### 1. 외부 라이브러리 없이 필요한 기능 직접 구현
 
-과제 조건인 외부 라이브러리 금지에 맞춰, 네트워크 통신, 이미지 로딩, 의존성 조립을 직접 구현했습니다.
+외부 의존성 없이, 네트워크 통신, 이미지 로딩, 의존성 조립을 직접 구현했습니다.
 라이브러리로 해결할 수 있는 문제를 직접 다루면서, 각 구성 요소의 역할과 경계를 분리해두는 데 집중했습니다.
 
 | 직접 구현한 구성 요소 | 일반적으로 많이 사용하는 라이브러리 예시 |
@@ -28,7 +28,7 @@
 ### 2. Swift 6 Concurrency 제약에 맞춘 구조 정리
 
 Swift 6의 SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor 설정을 기준으로 동시성 관련 경고와 오류를 정리했습니다.
-@preconcurrency로 우회하기보다, 필요한 지점에 actor, nonisolated, nonisolated init(from:)를 적용해 현재 과제 범위에서 격리 규칙에 맞추는 방향을 택했습니다.
+@preconcurrency로 우회하기보다, 필요한 지점에 actor, nonisolated, nonisolated init(from:)를 적용해 이번 구현 범위에서 격리 규칙에 맞추는 방향을 택했습니다.
 이 과정에서 DTO 디코딩, 로거 격리, 지역화 문자열 접근처럼 실제로 충돌이 발생한 부분을 하나씩 수정했습니다.
 
 ### 3. App Lifecycle 선택
@@ -40,9 +40,9 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 기능 구현 외에도 다국어 지원, 테스트, 상태 관리를 함께 정리했습니다.
 
 - **다국어(ko / en / ja)**: .xcstrings String Catalog와 L10n 헬퍼 사용
-- **유닛 테스트**: Swift Testing Framework, 177개 케이스, Domain + ViewModel + BookmarkCoordinator + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
-- **통합 테스트**: Swift Testing Framework, 46개 케이스, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache / ImageAnalyzer I/O 검증 (`Integration/`, ImageAnalyzer는 실기기 전용)
-- **UI 테스트**: XCUITest, 28개 + 1개(Launch 테스트) 케이스, 주요 사용자 플로우 검증 (iPhone + iPad)
+- **유닛 테스트**: Swift Testing Framework, Domain + ViewModel + BookmarkCoordinator + CachedAsyncImageViewModel + DTO + SearchFlowController + SearchPrefetchCoordinator + SearchResultsStore 검증 중심 (`Unit/`)
+- **통합 테스트**: Swift Testing Framework, NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache / ImageAnalyzer I/O 검증 (`Integration/`, ImageAnalyzer는 실기기 전용)
+- **UI 테스트**: XCUITest, 주요 사용자 플로우 검증 (iPhone + iPad)
 - **Test Plan**: `UnitTests`(유닛+통합, CI 기본) / `AllTests`(전체) 분리로 UI 테스트 빌드 없이 빠른 피드백 확보
 - **OSLog**: 카테고리별 로깅 구성
 - **BookmarkCoordinator**: 탭 간 북마크 상태를 한 곳에서 관리
@@ -50,7 +50,7 @@ SwiftUI `App` 프로토콜(`@main struct KakaoImageSearchApp: App`)을 사용합
 
 ### 5. iPad 적응형 레이아웃
 
-과제 안내에 iPad 레이아웃 변경이 가능하다고 되어 있어, iPhone과 iPad에서 레이아웃을 분리해 구현했습니다.
+iPad에서는 화면을 더 넓게 쓸 수 있어, iPhone과 iPad에서 레이아웃을 분리해 구현했습니다.
 
 iPhone은 Portrait only로 제한했고, iPad는 4방향 회전을 모두 지원합니다.
 iPhone에서는 기존 TabView를 유지했고, iPad에서는 NavigationSplitView를 사용해 검색과 북마크를 한 화면에서 볼 수 있도록 했습니다.
@@ -69,7 +69,7 @@ iPad 검색 패널은 sidebar 폭에 맞춰 1열, 북마크 패널은 2열 그�
 - **이미지 에러 분류**: 재시도 가능 에러(일시적 서버 오류, 손상 데이터)와 불가 에러(404 Not Found·포맷·크기)를 구분해, 불가 에러는 즉시 영구 실패 처리.
 - **Toast 피드백**: 북마크 토글 실패처럼 콘텐츠를 유지해야 하는 일시적 에러는 toastMessage로 분리해 하단 Toast로 표시, 지속 시간은 생성자 주입으로 제어해 테스트에서는 즉시 완료.
 
-페이지네이션, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 과제에서도 비슷한 관점으로 정리했습니다.
+페이지네이션, 북마크, 일시적 오류 복구는 콘텐츠 탐색 화면에서 자주 다뤄지는 흐름이라, 이번 구현에서도 비슷한 관점으로 정리했습니다.
 
 #### 이미지 상세 뷰어
 
@@ -91,7 +91,7 @@ iPad 검색 패널은 sidebar 폭에 맞춰 1열, 북마크 패널은 2열 그�
 
 ### 8. RxSwift 대신 Swift Concurrency
 
-이번 과제에서는 외부 의존성을 두지 않는 조건에 맞춰, Swift Concurrency로 반응형 흐름을 구성했습니다.
+이번 구현에서는 외부 의존성을 두지 않는 조건에서, Swift Concurrency로 반응형 흐름을 구성했습니다.
 
 | RxSwift 패턴 | 이번 구현 |
 |---|---|
@@ -128,7 +128,7 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 
 #### ATS 예외 설정
 일부 검색 결과 이미지 CDN이 HTTPS를 지원하지 않고, 실제 이미지 호스트도 여러 서브도메인으로 분산되어 있어 `daum.net`, `naver.net` 계열 도메인에 ATS 예외를 적용했습니다.
-이 예외는 검색 결과 이미지 로딩에만 사용하며, API 통신이나 민감 정보 전송에는 적용하지 않습니다. 현재 과제 범위에서는 호스트 구성이 다양해 이 방식이 가장 현실적이었고, 사용 호스트를 더 좁힐 수 있다면 예외 범위도 함께 축소할 수 있습니다.
+이 예외는 검색 결과 이미지 로딩에만 사용하며, API 통신이나 민감 정보 전송에는 적용하지 않습니다. 이번 구현 범위에서는 호스트 구성이 다양해 이 방식이 가장 현실적이었고, 사용 호스트를 더 좁힐 수 있다면 예외 범위도 함께 축소할 수 있습니다.
 
 #### BookmarkCoordinator (공유 상태 관리)
 - `Presentation/Coordinator/`에 위치한 Presentation 레이어 공유 상태 객체
@@ -157,14 +157,12 @@ URL이 변경되면 이전 Task를 자동 취소하고 새 Task를 시작해, `L
 
 ## AI 활용 범위
 
-이 프로젝트에서는 **Claude(Anthropic)**를 보조 도구로 활용했습니다.
-
+이 프로젝트에서는 **Claude(Anthropic)**와 **Codex**를 보조 도구로 활용했습니다.
 구조 선택, 채택 여부 판단, 최종 검증은 직접 수행했습니다.
-AI는 초안 작성과 반복 작업에 활용했고, 아키텍처 선택과 품질 판단은 직접 진행했습니다.
 
-### AI가 도운 것: 초안, 반복 작업, 테스트 케이스 아이디어
-
-### 직접 판단한 것: 구조, 트레이드오프, 최종 검증
+- 한 모델이 작성한 코드를 다른 모델로 리뷰시켜 이슈를 뽑고, 반영 여부는 직접 판단했습니다.
+- 프로젝트별 개발 규칙과 테스트 기준을 문서로 고정해 일관된 방향으로 보조하도록 했습니다.
+- AI가 생성한 테스트는 약한 테스트 유형(tautology, 자기참조 상수, wall-clock flaky 등)을 체크리스트로 정리해 Phase 종료마다 걷어냈습니다.
 
 ---
 

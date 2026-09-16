@@ -14,6 +14,7 @@ struct KakaoImageSearchApp: App {
     var body: some Scene {
         WindowGroup {
             MainView(viewModel: viewModel)
+                .environment(\.imageDownloader, AppAssembler.imageDownloader)
         }
     }
 }

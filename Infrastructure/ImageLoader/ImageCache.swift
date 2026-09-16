@@ -118,7 +118,7 @@ actor ImageCache {
 
         // 1단계: TTL 초과 파일 삭제
         let expiredBefore = Date().addingTimeInterval(-ttl)
-        var surviving: [(url: URL, date: Date, size: Int)] = []
+        var surviving: [CachedFile] = []
         var removedCount = 0
 
         for fileURL in contents {
@@ -134,7 +134,7 @@ actor ImageCache {
                     Logger.imageLoader.errorPrint("Failed to remove expired cache: \(error)")
                 }
             } else {
-                surviving.append((fileURL, modDate, size))
+                surviving.append(CachedFile(url: fileURL, date: modDate, size: size))
             }
         }
 
@@ -157,6 +157,13 @@ actor ImageCache {
         if removedCount > 0 {
             Logger.imageLoader.debugPrint("Disk cache cleanup: \(removedCount) files removed, \(totalSize) bytes remaining")
         }
+    }
+
+    /// 디스크 캐시 정리에서 살아남은 파일의 메타데이터.
+    private struct CachedFile {
+        let url: URL
+        let date: Date
+        let size: Int
     }
 
     /// 비트맵 기준 메모리 바이트 수를 추정합니다. NSCache의 totalCostLimit 적용에 사용됩니다.

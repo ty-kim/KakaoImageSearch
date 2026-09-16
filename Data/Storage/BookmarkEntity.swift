@@ -20,7 +20,16 @@ final class BookmarkEntity {
     var datetime: Date?
     var createdAt: Date
 
-    init(id: String, imageURL: String?, thumbnailURL: String?, width: Int?, height: Int?, displaySitename: String? = nil, datetime: Date? = nil, createdAt: Date = Date()) {
+    init(
+        id: String,
+        imageURL: String?,
+        thumbnailURL: String?,
+        width: Int?,
+        height: Int?,
+        displaySitename: String? = nil,
+        datetime: Date? = nil,
+        createdAt: Date = Date()
+    ) {
         self.id = id
         self.imageURL = imageURL
         self.thumbnailURL = thumbnailURL

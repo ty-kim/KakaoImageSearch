@@ -29,8 +29,9 @@ SwiftUI로 만든 iOS 이미지 검색 앱입니다.
 - 추가 로드, 재시도, 북마크 반영이 동시에 일어날 때 상태가 꼬이는 문제
 - 대량 이미지 로딩에서 캐시, 중복 요청, 실패 복구를 함께 다뤄야 하는 문제
 
-이 프로젝트는 이런 흐름을 SwiftUI와 Swift Concurrency로 어떻게 분리하고,
-테스트 가능한 구조로 유지할 수 있는지 보여주기 위한 개인 프로젝트입니다.
+검색 화면의 비동기 상태 문제를 실서비스에서 오래 다뤄본 경험이 이 프로젝트의 출발점입니다.
+이런 흐름을 SwiftUI와 Swift Concurrency로 어떻게 분리하고, 테스트 가능한 구조로
+유지할 수 있는지 보여주기 위한 개인 프로젝트입니다.
 
 ## What I Focused On
 
@@ -64,7 +65,7 @@ SwiftUI로 만든 iOS 이미지 검색 앱입니다.
 
 ## 핵심 기술적 결정 3개
 
-1. **액터 재진입으로 in-flight 중복 요청 제거** — 같은 URL에 동시 요청이 들어오면 하나만 다운로드하고 나머지는 대기. `await` 전에 Dictionary에 Task를 등록해 재진입 문제를 해결
+1. **액터 재진입을 피해 in-flight 중복 요청 제거** — 같은 URL에 동시 요청이 들어오면 하나만 다운로드하고 나머지는 대기. `await` 전에 Dictionary에 Task를 등록해 재진입 문제를 해결
 2. **검색 취소 + 늦은 응답 방지** — 새 검색 시 이전 Task 취소 + `activeSearchID`(UUID)로 늦게 도착한 응답이 UI를 덮어쓰지 않도록 처리
 3. **Vision API + Foundation Models로 접근성 이미지 설명** — Vision API로 이미지 키워드를 영어로 추출하고, iOS 26+에서는 Foundation Models로 사용자 언어의 자연어 설명문으로 변환해 VoiceOver에 제공
 
@@ -113,9 +114,8 @@ xcodebuild -project KakaoImageSearch.xcodeproj -scheme KakaoImageSearch \
 테스트는 검색 취소, 늦은 응답, 페이지네이션, 북마크 동기화,
 이미지 캐시와 실패 복구처럼 회귀 위험이 큰 흐름을 중심으로 작성했습니다.
 
-- Unit + Integration: 223개
-- UI Test: 28개
-- CI: `UnitTests` 플랜 실행
+- Unit: 173개 / Integration: 46개 / UI Test: 28개 (총 247개)
+- CI: SwiftLint(strict) 통과 후 `UnitTests` 플랜 실행
 
 ## Architecture
 
@@ -157,5 +157,6 @@ View에 로직이 몰리지 않도록 구성했습니다.
 
 ## AI Usage
 
-AI는 초안 작성과 반복 작업에 보조적으로 활용했습니다.
-구조 선택, 채택 여부 판단, 최종 검증은 직접 수행했습니다.
+코딩 에이전트(Claude Code, Codex)를 구현과 리뷰에 사용했습니다. 개발 규칙과 테스트 기준은 [`CLAUDE.md`](CLAUDE.md)에 고정해 두고 그 안에서 작업하게 했고, 한 모델이 작성한 코드를 다른 모델로 리뷰시켜 이슈를 뽑았습니다. 구조 선택과 채택 판단, 최종 검증과 커밋은 직접 했습니다.
+
+AI가 생성한 테스트는 tautology·flaky가 섞이므로 약한 테스트 유형을 체크리스트로 정리해 주기적으로 걷어냈습니다.
