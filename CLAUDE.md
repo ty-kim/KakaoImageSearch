@@ -166,11 +166,20 @@ Infrastructure (NetworkService actor, ImageDownloader actor, ImageCache actor)
 | Presentation/Bookmark | BookmarkViewModel, BookmarkView | 북마크 CRUD |
 | Presentation/Components | CachedAsyncImage, ToastView, ImageDetailView 등 | 재사용 UI 컴포넌트 |
 
-## 테스트 구성 (247개)
+## 테스트 구성
 
-- Unit (173): SearchViewModel(33), FlowController(21), DTO(16), Endpoint(16), Entity(16), CachedAsyncImageVM(16), BookmarkCoordinator(13), ManageBookmarkUseCase(10), MainViewModel(8), SearchResultsStore(7), BookmarkViewModel(7), SearchPrefetchCoordinator(5), SearchImageUseCase(5)
-- Integration (46): NetworkService(10), BookmarkStorage(12), ImageDownloader(16), ImageCache(6), ImageAnalyzer(2, 실기기 전용)
-- UI (28): iPhone/iPad 시나리오 (검색, 페이지네이션, 북마크, 에러 복구)
+**테스트 개수는 README.md 한 곳에만 둔다.** 여러 문서에 흩어두면 반드시 어긋난다.
+테스트를 추가·삭제했으면 아래로 다시 세어 README만 갱신한다.
+
+```bash
+grep -rh '@Test' KakaoImageSearchTests/Unit | wc -l         # Unit
+grep -rh '@Test' KakaoImageSearchTests/Integration | wc -l  # Integration
+grep -rh 'func test' KakaoImageSearchUITests | wc -l        # UI (Launch 테스트 포함)
+```
+
+- Unit: UseCase / ViewModel / DTO / Endpoint / Entity / FlowController / PrefetchCoordinator / ResultsStore
+- Integration: NetworkService / BookmarkStorage(SwiftData) / ImageDownloader / ImageCache / ImageAnalyzer(실기기 전용)
+- UI: iPhone/iPad 시나리오 (검색, 페이지네이션, 북마크, 에러 복구)
 
 ## 주요 구현
 
